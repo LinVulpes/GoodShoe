@@ -16,6 +16,19 @@ build/
 [Bb]in/
 [Oo]bj/
 
+# Visual Studio system files
+.vs/
+.vscode/
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.dbmdl
+*.dbproj.schemaview
+
+# Visual Studio Code settings
+.vscode/
+
 # Rider project files
 .idea/
 *.sln.iml
@@ -27,9 +40,6 @@ ScaffoldingReadMe.txt
 *.log
 *.vspscc
 *.vssscc
-.vscode/
-*.dbmdl
-*.dbproj.schemaview
 
 # dotCover
 *.dotCover
