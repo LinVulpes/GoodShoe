@@ -1,0 +1,46 @@
+## Ignore Visual Studio Temporary files
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+[Bb]in/
+[Oo]bj/
+
+# Rider project files
+.idea/
+*.sln.iml
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Others
+*.log
+*.vspscc
+*.vssscc
+.vscode/
+*.dbmdl
+*.dbproj.schemaview
+
+# dotCover
+*.dotCover
+
+# Azure Pipelines
+.vsts/
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NPM
+node_modules/
