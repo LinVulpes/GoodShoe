@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using GoodShoe.Data;
+using GoodShoe.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<GoodShoeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext") ?? throw new InvalidOperationException("Connection string 'GoodShoeContext' not found.")));
@@ -9,6 +10,13 @@ builder.Services.AddDbContext<GoodShoeContext>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    ProductSeedData.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
