@@ -1,45 +1,94 @@
-## Ignore Visual Studio Temporary files
+## Git Ignore Temporary files
 
-# User-specific files
-*.rsuser
+#########################
+# Build results
+#########################
+[Bb]in/
+[Oo]bj/
+artifacts/
+build/
+x64/
+x86/
+*.dll
+*.exe
+*.app
+*.pdb
+
+
+#########################
+# Visual Studio
+#########################
+.vs/
 *.suo
 *.user
 *.userosscache
 *.sln.docstates
-
-# Build results
-[Dd]ebug/
-[Rr]elease/
-x64/
-x86/
-build/
-[Bb]in/
-[Oo]bj/
-
-# Visual Studio system files
-.vs/
-.vscode/
-*.ncb
-*.opensdf
-*.sdf
-*.cachefile
 *.dbmdl
-*.dbproj.schemaview
+*.cache
+*.sdf
+*.sln.ide
 
-# Visual Studio Code settings
-.vscode/
 
-# Rider project files
+#########################
+# JetBrains Rider
+#########################
 .idea/
 *.sln.iml
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/.idea.*
 
-# ASP.NET Scaffolding
-ScaffoldingReadMe.txt
 
-# Others
+#########################
+# ASP.NET Core
+#########################
+*.publish.xml
+*.deps.json
+*.runtimeconfig.json
+*.ApplicationInsights.config
+
+
+# User secrets & local settings (do not share in Git)
+secrets.json
+appsettings.Development.json
+appsettings.Local.json
+
+
+#########################
+# Entity Framework Core
+#########################
+# Allow Migrations folder and .cs files (DO NOT ignore these)
+# But ignore snapshot if regenerating automatically
+Migrations/*Snapshot.cs
+
+
+#########################
+# SQL Server LocalDB (keep code DB schema, ignore physical files)
+#########################
+*.mdf
+*.ldf
+
+
+#########################
+# Logs and diagnostics
+#########################
 *.log
+*.tlog
+
+
+#########################
+# Others
+#########################
 *.vspscc
 *.vssscc
+*.DS_Store
+Thumbs.db
+desktop.ini
+
+# Optional: ignore backups
+*.bak
+*.orig
+*.tmp
 
 # dotCover
 *.dotCover
