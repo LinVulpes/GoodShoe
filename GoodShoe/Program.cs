@@ -4,7 +4,8 @@ using GoodShoe.Data;
 using GoodShoe.Models;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<GoodShoeContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext") ?? throw new InvalidOperationException("Connection string 'GoodShoeContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

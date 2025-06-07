@@ -11,11 +11,11 @@ namespace GoodShoe.Models
             using (var context = new GoodShoeContext(
                 serviceProvider.GetRequiredService<DbContextOptions<GoodShoeContext>>()))
             {
-                // Look for any products
+                //Look for any products
                 if (context.Product.Any())
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
                 context.Product.AddRange(
                     new Product
                     {
