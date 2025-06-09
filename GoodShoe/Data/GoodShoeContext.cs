@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 
 namespace GoodShoe.Data
@@ -13,6 +9,23 @@ namespace GoodShoe.Data
             : base(options)
         {
         }
+        
         public DbSet<Product> Product { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Product>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+                entity.Property(e => e.Size).HasColumnType("decimal(3, 1)");
+
+                // Create index on Gender for filter
+                entity.HasIndex(e => e.Gender);
+                entity.HasIndex(e => e.IsActive);
+            });
+        }
     }
 }

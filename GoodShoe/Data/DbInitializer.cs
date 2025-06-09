@@ -4,7 +4,7 @@ using GoodShoe.Models;
 
 namespace GoodShoe.Data
 {
-    public static class DbInitializer
+    public static class DbInitializer // Product Seed
     {
         public static void Initialize(GoodShoeContext context)
         {
@@ -14,7 +14,7 @@ namespace GoodShoe.Data
             // Look for any products
             if (context.Product.Any())
             { 
-                return; // DB has been seeded.
+                return;
             }
             
             // Add existing seed data
@@ -30,7 +30,8 @@ namespace GoodShoe.Data
                     Description = "Lace up in Swiss-engineered runners with these Cloudsurfer Next trainers from On Running.",
                     StockCount = 3,
                     Color = "White",
-                    Gender = "Unisex"
+                    Gender = "Unisex",
+                    IsActive = true
                 },
                 new Product
                 {
@@ -42,8 +43,23 @@ namespace GoodShoe.Data
                     Description = "Hit every mile marker in long-distance confidence and premium cushioned comfort with Skechers Aero Burst™. This well-cushioned running style has been granted the APMA Seal of Acceptance and is designed for the daily runner.",
                     StockCount = 7,
                     Color = "Periwinkle",
-                    Gender = "Women"
-                }
+                    Gender = "Women",
+                    IsActive = true
+                },
+                // GoodShoe Collection
+                new Product
+                {
+                    Id = 3,
+                    Name = "GoodShoe 0.1",
+                    Brand = "GoodShoe",
+                    Price = 100.00M,
+                    Size = 8,
+                    Description = "Men's Shoes",
+                    StockCount = 5,
+                    Color = "Brown",
+                    Gender = "Men",
+                    IsActive = true
+                },
             };
             context.Product.AddRange(products);
             context.SaveChanges();

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Data;
 using GoodShoe.Models;
@@ -20,9 +15,16 @@ namespace GoodShoe.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string gender = "")
         {
-            return View(await _context.Product.ToListAsync());
+            var products = _context.Product.Where(p => p.IsActive);
+
+            if (!string.IsNullOrEmpty(gender))
+            {
+                products = products.Where(p => p.Gender == gender);
+            }
+            
+            return View(await products.ToListAsync());
         }
 
         // GET: Products/Details/5
@@ -34,7 +36,8 @@ namespace GoodShoe.Controllers
             }
 
             var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.IsActive);
+            
             if (product == null)
             {
                 return NotFound();
@@ -42,6 +45,26 @@ namespace GoodShoe.Controllers
 
             return View(product);
         }
+        
+        // Getting Gender-specific pages
+        public async Task<IActionResult> Men()
+        {
+            var menProducts = await _context.Product.Where(p => p.Gender == "Men" && p.IsActive).ToListAsync();
+            return View("Index", menProducts);
+        }
+        
+        public async Task<IActionResult> Women()
+        {
+            var womenProducts = await _context.Product.Where(p => p.Gender == "Women" && p.IsActive).ToListAsync();
+            return View("Index", womenProducts);
+        }
+        
+        public async Task<IActionResult> Unisex()
+        {
+            var unisexProducts = await _context.Product.Where(p => p.Gender == "Unisex" && p.IsActive).ToListAsync();
+            return View("Index", unisexProducts);
+        }
+        
 
         // GET: Products/Create
         public IActionResult Create()
