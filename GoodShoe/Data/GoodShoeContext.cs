@@ -13,7 +13,6 @@ namespace GoodShoe.Data
             : base(options)
         {
         }
-
-        public DbSet<GoodShoe.Models.Product> Product { get; set; } = default!;
+        public DbSet<Product> Product { get; set; } = default!;
     }
 }
