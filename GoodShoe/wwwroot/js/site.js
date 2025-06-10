@@ -1,4 +1,27 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function redirectToProduct(productId) {
+    window.location.href = '/Product/Details/' + productId;
+}
 
-// Write your JavaScript code.
+// Remove focus from dropdown buttons after click
+ document.addEventListener('DOMContentLoaded', function() {
+     const dropdownButtons = document.querySelectorAll('.dropdown-toggle');
+     dropdownButtons.forEach(button => {
+         button.addEventListener('click', function() {
+             // Remove focus after a short delay
+             setTimeout(() => {
+                 this.blur();
+             }, 150);
+         });
+     });
+
+     // Remove focus when dropdown closes
+     const dropdowns = document.querySelectorAll('.dropdown');
+     dropdowns.forEach(dropdown => {
+         dropdown.addEventListener('hidden.bs.dropdown', function() {
+             const button = this.querySelector('.dropdown-toggle');
+             if (button) {
+                 button.blur();
+             }
+         });
+     });
+ });

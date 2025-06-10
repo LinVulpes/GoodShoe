@@ -121,14 +121,7 @@
             "name_desc" => "Name Z-A",
             "price_asc" => "Price Low-High",
             "price_desc" => "Price High-Low",
-            "name_asc" or "" or null => "Name A-Z",
-            _=> "Name A-Z"
+            "name_asc" or "" or null or _ => "Name A-Z"
         };
     }
 }
-
-<script>
-function redirectToProduct(productId) {
-    window.location.href = '@Url.Action("Details", "Product")' + '/' + productId;
-}
-</script>
