@@ -1,4 +1,4 @@
-# GoodShoe - Shoe E-Commerce Web Application
+#GoodShoe - Shoe E-Commerce Web Application
 **GoodShoe**, a modern online store for sports shoes built as a full-stack web application using ASP .NET Core and Bootstrap. This project aims to recreate a real-world e-commerce platform designed to showcase and sell sport shoes. 
 User can browse, search, filter, and purchase shoes, track their orders, and personalize their user profile.
 
@@ -24,7 +24,7 @@ GoodShoe is a collaborative effort by a team from The University of Newcastle, A
 
 ## Installation
 1. **Clone the Repository**:
-   ```bash
+   ```bash
    git clone https://github.com/your-username/GoodShoe.git
    cd GoodShoe
 
