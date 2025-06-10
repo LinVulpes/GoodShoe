@@ -1,7 +1,7 @@
 ﻿@model GoodShoe.Models.ViewModels.ProductListViewModel
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Good Shoe - Home Page";
 }
 
 <div class="container main-context">
@@ -10,59 +10,78 @@
         <h1 class="main-title"> New Arrival </h1>
         <p class="subtitle">Good Shoes is a modern e-commerce website offering a stylish and high-quality collection of shoes to elevate every step you take.</p>
     </div>
-    <!-- Gender Navigation -->
-    <div class="gender-navigation mb-4">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="gender-filters">
-                    <a href="@Url.Action("Index", "Home")" 
-                       class="btn @(string.IsNullOrEmpty(Model.GenderFilter) ? "btn-dark" : "btn-outline-secondary") me-2">
-                        All (@Model.TotalProducts)
-                    </a>
-                    <a href="@Url.Action("Index", "Home", new { genderFilter = "Men" })" 
-                       class="btn @(Model.GenderFilter == "Men" ? "btn-dark" : "btn-outline-secondary") me-2">
-                        Men (@Model.MenCount)
-                    </a>
-                    <a href="@Url.Action("Index", "Home", new { genderFilter = "Women" })" 
-                       class="btn @(Model.GenderFilter == "Women" ? "btn-dark" : "btn-outline-secondary") me-2">
-                        Women (@Model.WomenCount)
-                    </a>
-                    <a href="@Url.Action("Index", "Home", new { genderFilter = "Unisex" })" 
-                       class="btn @(Model.GenderFilter == "Unisex" ? "btn-dark" : "btn-outline-secondary")">
-                        Unisex (@Model.UnisexCount)
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Filter and Sort Section -->
     <div class="row">
         <div class="col-md-12">
             <div class="filter-section">
                 <div class="row">
+                    <!-- Filter DropDown (Men, Women, Unisex) -->
                     <div class="col-md-2">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
-                                Filter
+                                Filter: @(string.IsNullOrEmpty(Model.GenderFilter) ? "All" : Model.GenderFilter)
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "", genderFilter = Model.GenderFilter })">Default</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "Price", genderFilter = Model.GenderFilter })">Price Low-High</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "price_desc", genderFilter = Model.GenderFilter })">Price High-Low</a></li>
+                                <li>
+                                    <a class="dropdown-item @(string.IsNullOrEmpty(Model.GenderFilter) ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
+                                        All
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.GenderFilter == "Men" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { genderFilter = "Men", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
+                                        Men
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.GenderFilter == "Women" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { genderFilter = "Women", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
+                                        Women
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.GenderFilter == "Unisex" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { genderFilter = "Unisex", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
+                                        Unisex
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    
+                    <!-- Sort Dropdown -->
+                    <div class="col-md-2 mb-2">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
-                                Sort
+                                Sort: @(GetSortDisplayName(Model.SortOrder))
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "", genderFilter = Model.GenderFilter })">Name A-Z</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "name_desc", genderFilter = Model.GenderFilter })">Name Z-A</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "Price", genderFilter = Model.GenderFilter })">Price Low-High</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { sortOrder = "price_desc", genderFilter = Model.GenderFilter })">Price High-Low</a></li>
+                                <li>
+                                    <a class="dropdown-item @(Model.SortOrder == "name_asc" || string.IsNullOrEmpty(Model.SortOrder) ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { sortOrder = "name_asc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
+                                        Name A-Z
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.SortOrder == "name_desc" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { sortOrder = "name_desc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
+                                        Name Z-A
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.SortOrder == "price_asc" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { sortOrder = "price_asc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
+                                        Price Low-High
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item @(Model.SortOrder == "price_desc" ? "active" : "")" 
+                                       href="@Url.Action("Index", "Home", new { sortOrder = "price_desc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
+                                        Price High-Low
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -79,11 +98,12 @@
                 <div class="product-info">
                     <h5 class="product-name">@product.Name</h5>
                     <p class="product-price">$@product.Price</p>
+                    <p class="product-description">@product.Description></p>
                 </div>
             </div>
         }
     </div>
-
+    
     @if (!Model.Products.Any())
     {
         <div class="no-products">
@@ -92,6 +112,20 @@
         </div>
     }
 </div>
+
+@functions {
+    public string GetSortDisplayName(string sortOrder)
+    {
+        return sortOrder switch
+        {
+            "name_desc" => "Name Z-A",
+            "price_asc" => "Price Low-High",
+            "price_desc" => "Price High-Low",
+            "name_asc" or "" or null => "Name A-Z",
+            _=> "Name A-Z"
+        };
+    }
+}
 
 <script>
 function redirectToProduct(productId) {

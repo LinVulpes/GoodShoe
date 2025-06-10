@@ -44,6 +44,10 @@ public class HomeController : Controller
         // Sorting Filter
         switch (sortOrder)
         {
+            case "name_asc":
+                products = products.OrderBy(p => p.Name);
+                break;
+            
             case "name_desc":
                 products = products.OrderByDescending(p => p.Name);
                 break;
@@ -55,7 +59,7 @@ public class HomeController : Controller
             case "price_desc":
                 products = products.OrderByDescending(p => p.Price);
                 break;
-            
+                
             default:
                 products = products.OrderBy(p => p.Name);
                 break;
