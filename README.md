@@ -22,21 +22,22 @@ GoodShoe is a collaborative effort by a team from The University of Newcastle, A
 - **Version Control**: Git & GitHub
 - **Hosting**: Localhost (Azure optional)
 
-## Installation
-1. **Clone the Repository**:
+### Installation
+1. ** Clone the Repository **:
    ```bash
    git clone https://github.com/your-username/GoodShoe.git
    cd GoodShoe
 
-2. **Install Dependencies**:
+2. ** Install Dependencies **:
    - Ensure you have .NET SDK installed.
    - Restore packages:
-   ```^Sbash
+
+   ```bash
    dotnet restore
 
-3. **Configure the Database**:
+3. ** Configure the Database **:
    - Update the appsettings.json file with your local database or SQLite connection string:
-   ```^Sjson
+   ```json
    {
   	"ConnectionStrings": {
     	"DefaultConnection": "Data Source=GoodShoe.db"
@@ -44,17 +45,15 @@ GoodShoe is a collaborative effort by a team from The University of Newcastle, A
    }
 
    - Run the initial migration to create the database:
-   ```^Sbash
+
+   ```bash
    dotnet ef database update
 
-4. **Run the Application**:
-   ```^Sbash
+4. ** Run the Application **:
+   ```bash
    dotnet run
 
-   Open your browser and navigate to your localhost port (e.g. https://localhost:5001).
-
-
-
+   Open your browser and navigate to your localhost port (e.g. https://localhost:5001).
 
 Build a full-stack web application where users can browse, search, and buy shoes.
 
