@@ -6,25 +6,19 @@
 
 GoodShoe is a collaborative project developed by a team from the University Of NewCastle, Australia, using the **Scrum Agile methodology**. The platform is to demonstrates expertise in full-stack development, UI/UX design, and database management, tailored for both customers and administators. GoodShoe is designed for athlethes and everyday users with a seamless and engaging online sport shoe shopping experience.
 
-## Project Overview
-
-Designed using the Scrum Agile methodology, GoodShoe is currently in serving as a practical demonstration of the team's full-stack development, UI/UX design, and database management skills, making it a standout portfolio project.
-GoodShoe is designed for athletes and everyday users, providing a simple and fun online sports shoe shopping experience.
-
-
 ## Features
 
-- **Home Page**: Browse a catalog of shoes with navigation, search, filtering (by category, price range), and sorting (name A-Z, Z-A, price low-high, high-low) options. Click a product to view details.
+- **Home Page**: Browse a catalog of shoes with navigation, search, filtering, and sorting options.
 - **User Profile Page**: Register, log in, log out, and manage account details, including order history.
 - **Shopping Cart & Orders**: Add items to a cart, view and remove products, proceed through a mock checkout, and track past orders with a confirmation popup.
-- **Admin Dashboard**: Restricted access for admins to manage users, products (add/edit/delete, stock status), and orders (view/update status).
+- **Admin Dashboard**: Restricted access for admins to manage products, and orders.
 
 ## Technologies
 
 - **Frontend**: HTML, CSS, Bootstrap, Razor
 - **Backend**: ASP.NET Core (MVC), C#, JavaScript
 - **Authentication**: ASP.NET Identity
-- **Database**: SQLite (with plans for SQL Server)
+- **Database**: SQL Server
 - **Development Tools**: Visual Studio / JetBrains Rider
 - **Version Control**: Git & GitHub
 - **Hosting**: Localhost (Azure optional)
@@ -43,16 +37,13 @@ GoodShoe is designed for athletes and everyday users, providing a simple and fun
    dotnet restore
 
 3. **Configure the Database**:
-   - Update the appsettings.json file with your local database or SQLite connection string:
-   ```json
-   {
-  	"ConnectionStrings": {
-    	"DefaultConnection": "Data Source=GoodShoe.db"
-  	}
+   - Update the appsettings.json file with your local database or SQLite connection string :
+   ```json                                                                                  {                                                                                             "ConnectionStrings": {
+        "DefaultConnection": "Data Source=GoodShoe.db"
+        }
    }
 
-   - Run the initial migration to create the database:
-
+   - Run the Initial Migration to create the database :
    ```bash
    dotnet ef database update
 
