@@ -38,17 +38,18 @@ GoodShoe is a collaborative project developed by a team from the University Of N
 
 3. **Configure the Database**:
    - Update the appsettings.json file with your local database or SQLite connection string :
-   ```json                                                                                  {                                                                                             "ConnectionStrings": {
+   ```bash
+   {                                                                                             "ConnectionStrings": {
         "DefaultConnection": "Data Source=GoodShoe.db"
         }
    }
 
-   - Run the Initial Migration to create the database :
+- Run the Initial Migration to create the database :
    ```bash
    dotnet ef database update
 
-4. **Run the Application**:
+4. **Run the Application** :
    ```bash
    dotnet run
 
-   Open your browser and navigate to your localhost port (e.g. https://localhost:5001).
+Open your browser and navigate to your localhost port (e.g. https://localhost:5001).
