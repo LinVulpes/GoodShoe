@@ -1,9 +1,16 @@
 #GoodShoe - Shoe E-Commerce Web Application
+
 **GoodShoe**, a modern online store for sports shoes built as a full-stack web application using ASP .NET Core and Bootstrap. This project aims to recreate a real-world e-commerce platform designed to showcase and sell sport shoes. 
-User can browse, search, filter, and purchase shoes, track their orders, and personalize their user profile.
 
 ## Project Overview
-GoodShoe is a collaborative effort by a team from The University of Newcastle, Australia. The platform allows users to explore a catalog of shoes, apply sorting and filtering options, and manage their shopping experience with a mock checkout process.
+
+GoodShoe is a collaborative project developed by a team from the University Of NewCastle, Australia, using the **Scrum Agile methodology**. The platform is to demonstrates expertise in full-stack development, UI/UX design, and database management, tailored for both customers and administators. GoodShoe is designed for athlethes and everyday users with a seamless and engaging online sport shoe shopping experience.
+
+## Project Overview
+
+Designed using the Scrum Agile methodology, GoodShoe is currently in serving as a practical demonstration of the team's full-stack development, UI/UX design, and database management skills, making it a standout portfolio project.
+GoodShoe is designed for athletes and everyday users, providing a simple and fun online sports shoe shopping experience.
+
 
 ## Features
 
@@ -23,19 +30,19 @@ GoodShoe is a collaborative effort by a team from The University of Newcastle, A
 - **Hosting**: Localhost (Azure optional)
 
 ### Installation
-1. ** Clone the Repository **:
+1. **Clone the Repository** :
    ```bash
    git clone https://github.com/your-username/GoodShoe.git
    cd GoodShoe
 
-2. ** Install Dependencies **:
+2. **Install Dependencies** :
    - Ensure you have .NET SDK installed.
    - Restore packages:
 
    ```bash
    dotnet restore
 
-3. ** Configure the Database **:
+3. **Configure the Database**:
    - Update the appsettings.json file with your local database or SQLite connection string:
    ```json
    {
@@ -49,16 +56,8 @@ GoodShoe is a collaborative effort by a team from The University of Newcastle, A
    ```bash
    dotnet ef database update
 
-4. ** Run the Application **:
+4. **Run the Application**:
    ```bash
    dotnet run
 
    Open your browser and navigate to your localhost port (e.g. https://localhost:5001).
-
-Build a full-stack web application where users can browse, search, and buy shoes.
-
-StepUp is a modern online store for sport shoes, built using ASP .NET Core and Bootstrap. 
-The purpose of this project is to recreate a real-world online shopping website designed to showcase and sell sport shoes online. 
-The platform is designed mainly for customers of both genders with a focus on athletes and everyday users. 
-Users can browse, search, and filter shoes by brand, size or price while allowing viewing products and purchasing them online.  
-Users can also track their purchases through an order history page, and maintain a profile to personalize their experience.
