@@ -1,4 +1,4 @@
-#GoodShoe - Shoe E-Commerce Web Application
+# GoodShoe - Shoe E-Commerce Web Application
 
 **GoodShoe**, a modern online store for sports shoes built as a full-stack web application using ASP .NET Core and Bootstrap. This project aims to recreate a real-world e-commerce platform designed to showcase and sell sport shoes. 
 
