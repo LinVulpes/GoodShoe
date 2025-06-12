@@ -8,15 +8,23 @@ namespace GoodShoe.Data
     {
         public static void Initialize(GoodShoeContext context)
         {
+            // Testing Database with Test Cases
+            // Test 1 : Start Databse //
+            Console.WriteLine("DbInitializer: Starting ....");
+            
             // Ensure the database is created
             context.Database.EnsureCreated();
             
             // Look for any products
             if (context.Product.Any())
             { 
+                // Test 2 : Test finding of products //
+                Console.WriteLine("DbInitializer: Products already exist.");
                 return;
             }
             
+            // Test 3 : Database adding seed data  //
+            Console.WriteLine("DbInitializer: Adding seed data/products ...");
             // Add existing seed data
             var products = new Product[]
             {
@@ -31,6 +39,7 @@ namespace GoodShoe.Data
                     StockCount = 3,
                     Color = "White",
                     Gender = "Unisex",
+                    ImageUrl = "images/products/image1.png",
                     IsActive = true
                 },
                 new Product
@@ -44,8 +53,10 @@ namespace GoodShoe.Data
                     StockCount = 7,
                     Color = "Periwinkle",
                     Gender = "Women",
+                    ImageUrl = "images/products/image2.png",
                     IsActive = true
                 },
+                
                 // GoodShoe Collection
                 new Product
                 {
@@ -58,11 +69,13 @@ namespace GoodShoe.Data
                     StockCount = 5,
                     Color = "Brown",
                     Gender = "Men",
+                    ImageUrl = "images/products/image3.png",
                     IsActive = true
                 },
             };
             context.Product.AddRange(products);
-            context.SaveChanges();
+            var savedCount = context.SaveChanges();
+            Console.WriteLine($"DbInitializer: Saved {savedCount} products to database");
         }
         
         // Initializing IServiceProvider

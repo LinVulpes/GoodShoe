@@ -16,7 +16,7 @@
         <div class="col-md-12">
             <div class="filter-section">
                 <div class="row">
-                    <!-- Filter DropDown (Men, Women, Unisex) -->
+                    <!-- Filter DropDown for Gender Category (Men, Women, Unisex) -->
                     <div class="col-md-2">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     
-                    <!-- Sort Dropdown -->
+                    <!-- Sort Dropdown (Name and Price) -->
                     <div class="col-md-2 mb-2">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
@@ -95,6 +95,12 @@
         @foreach (var product in Model.Products)
         {
             <div class="product-card" onclick="redirectToProduct(@product.Id)">
+                <div class="product-image">
+                    <img src="@product.ImageUrl" 
+                         alt="@product.Name" 
+                         onerror="this.src='/images/products/placeholder.jpg';" 
+                         loading="lazy" />
+                </div>                
                 <div class="product-info">
                     <h5 class="product-name">@product.Name</h5>
                     <p class="product-price">$@product.Price</p>

@@ -49,6 +49,13 @@ namespace GoodShoe.Migrations
                 oldType: "nvarchar(max)",
                 oldNullable: true);
 
+            migrationBuilder.Sql(@"
+                IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS 
+                               WHERE TABLE_NAME = 'Product' AND COLUMN_NAME = 'IsActive')
+                BEGIN
+                    ALTER TABLE Product ADD IsActive bit NOT NULL DEFAULT 0");
+            
+            
             migrationBuilder.AlterColumn<string>(
                 name: "Brand",
                 table: "Product",
@@ -58,14 +65,8 @@ namespace GoodShoe.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)",
                 oldNullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsActive",
-                table: "Product",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
+            
+            
             migrationBuilder.CreateIndex(
                 name: "IX_Product_Gender",
                 table: "Product",
