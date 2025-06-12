@@ -27,7 +27,7 @@ public class HomeController : Controller
         var products = from p in _logger.Product
             select p;
 
-        // Search filter
+        // Apply search filter
         if (!String.IsNullOrEmpty(searchString))
         {
             products = products.Where(p => p.Name.Contains(searchString) 

@@ -166,7 +166,31 @@ body {
   font-weight: 600;
 }
 
+/* Footer section */
+.footer-section {
+  border-top: 1px solid #f0f0f0;
+  padding: 30px 0;
+  margin-top: 60px;
+  background-color: #ffffff;
 
+.footer-brand {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+} 
+  
+.footer-link {
+  color: #666666;
+  text-decoration: none;
+  font-size: 14px;
+  margin-left: 20px;
+  transition: color 0.3s ease;
+}
+  
+.footer-link:hover {
+  color: #000000;
+}
+  
 /* Responsive design */
 @media (max-width: 992px) {
   .products-grid {
@@ -217,4 +241,4 @@ body {
   .product-image {
     height: 160px;
   }
-}
+}}

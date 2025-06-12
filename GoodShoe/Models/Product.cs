@@ -10,11 +10,11 @@ namespace GoodShoe.Models
         
         // Name
         [Required] [StringLength(100)] 
-        public string? Name { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
         // Brand
         [StringLength(50)]
-        public string? Brand { get; set; } = string.Empty;
+        public string Brand { get; set; } = string.Empty;
         
         // Price
         [Required]
@@ -23,7 +23,7 @@ namespace GoodShoe.Models
         
         // Description
         [StringLength(1000)]
-        public string? Description { get; set; }
+        public string Description { get; set; } = string.Empty;
         
         // Shoe Size
         public decimal Size {  get; set; }
@@ -32,16 +32,14 @@ namespace GoodShoe.Models
         public int StockCount { get; set; }
         
         // Color
-        public string? Color { get; set; } = string.Empty;
+        public string Color { get; set; } = string.Empty;
         
         // Gender
         [StringLength(50)] 
-        public string? Gender { get; set; } = string.Empty; // [Men/Women/Unisex]
-
-        // for stock availability
-        public bool IsActive { get; set; } = true;
+        public string Gender { get; set; } = string.Empty; // [Men/Women/Unisex]
         
         // ImageURL
-        [StringLength(200)] public string? ImageUrl { get; set; } = string.Empty;
+        [StringLength(200)] 
+        public string ImageUrl { get; set; } = string.Empty;
     }
 }

@@ -17,7 +17,7 @@ namespace GoodShoe.Controllers
         // GET: Products
         public async Task<IActionResult> Index(string gender = "")
         {
-            var products = _context.Product.Where(p => p.IsActive);
+            var products = _context.Product.AsQueryable();
 
             if (!string.IsNullOrEmpty(gender))
             {
@@ -36,7 +36,7 @@ namespace GoodShoe.Controllers
             }
 
             var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id && m.IsActive);
+                .FirstOrDefaultAsync(m => m.Id == id);
             
             if (product == null)
             {
@@ -49,19 +49,19 @@ namespace GoodShoe.Controllers
         // Getting Gender-specific pages
         public async Task<IActionResult> Men()
         {
-            var menProducts = await _context.Product.Where(p => p.Gender == "Men" && p.IsActive).ToListAsync();
+            var menProducts = await _context.Product.Where(p => p.Gender == "Men").ToListAsync();
             return View("Index", menProducts);
         }
         
         public async Task<IActionResult> Women()
         {
-            var womenProducts = await _context.Product.Where(p => p.Gender == "Women" && p.IsActive).ToListAsync();
+            var womenProducts = await _context.Product.Where(p => p.Gender == "Women").ToListAsync();
             return View("Index", womenProducts);
         }
         
         public async Task<IActionResult> Unisex()
         {
-            var unisexProducts = await _context.Product.Where(p => p.Gender == "Unisex" && p.IsActive).ToListAsync();
+            var unisexProducts = await _context.Product.Where(p => p.Gender == "Unisex").ToListAsync();
             return View("Index", unisexProducts);
         }
         
@@ -74,7 +74,6 @@ namespace GoodShoe.Controllers
 
         // POST: Products/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Gender")] Product product)

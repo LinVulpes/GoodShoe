@@ -24,7 +24,6 @@ namespace GoodShoe.Data
 
                 // Create index on Gender for filter
                 entity.HasIndex(e => e.Gender);
-                entity.HasIndex(e => e.IsActive);
             });
         }
     }

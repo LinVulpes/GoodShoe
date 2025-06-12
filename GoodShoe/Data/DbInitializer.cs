@@ -9,7 +9,7 @@ namespace GoodShoe.Data
         public static void Initialize(GoodShoeContext context)
         {
             // Testing Database with Test Cases
-            // Test 1 : Start Databse //
+            // Test 1 : Start Database //
             Console.WriteLine("DbInitializer: Starting ....");
             
             // Ensure the database is created
@@ -39,8 +39,7 @@ namespace GoodShoe.Data
                     StockCount = 3,
                     Color = "White",
                     Gender = "Unisex",
-                    ImageUrl = "images/products/image1.png",
-                    IsActive = true
+                    ImageUrl = "/images/products/image1.png",
                 },
                 new Product
                 {
@@ -53,8 +52,7 @@ namespace GoodShoe.Data
                     StockCount = 7,
                     Color = "Periwinkle",
                     Gender = "Women",
-                    ImageUrl = "images/products/image2.png",
-                    IsActive = true
+                    ImageUrl = "/images/products/image2.png",
                 },
                 
                 // GoodShoe Collection
@@ -69,8 +67,33 @@ namespace GoodShoe.Data
                     StockCount = 5,
                     Color = "Brown",
                     Gender = "Men",
-                    ImageUrl = "images/products/image3.png",
-                    IsActive = true
+                    ImageUrl = "/images/products/image3.png",
+                },
+                new Product
+                {
+                    Id = 4,
+                    Name = "GoodShoe 0.2",
+                    Brand = "GoodShoe",
+                    Price = 100.00M,
+                    Size = 8,
+                    Description = "Women's Shoes",
+                    StockCount = 5,
+                    Color = "Brown",
+                    Gender = "Men",
+                    ImageUrl = "/images/products/image4.png",
+                },      
+                new Product
+                {
+                    Id = 5,
+                    Name = "GoodShoe 0.3",
+                    Brand = "GoodShoe",
+                    Price = 100.00M,
+                    Size = 10,
+                    Description = "Unisex Shoes",
+                    StockCount = 10,
+                    Color = "Black",
+                    Gender = "Men",
+                    ImageUrl = "/images/products/image5.png",
                 },
             };
             context.Product.AddRange(products);
