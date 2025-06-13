@@ -17,7 +17,7 @@
             <div class="filter-section">
                 <div class="row">
                     <!-- Filter DropDown for Gender Category (Men, Women, Unisex) -->
-                    <div class="col-md-2">
+                    <div class="col-auto">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
                                 Filter: @(string.IsNullOrEmpty(Model.GenderFilter) ? "All" : Model.GenderFilter)
@@ -52,7 +52,7 @@
                     </div>
                     
                     <!-- Sort Dropdown (Name and Price) -->
-                    <div class="col-md-2 mb-2">
+                    <div class="col-auto">
                         <div class="dropdown">
                             <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
                                 Sort: @(GetSortDisplayName(Model.SortOrder))
