@@ -2,6 +2,8 @@
 
 **GoodShoe**, a modern online store for sports shoes built as a full-stack web application using ASP .NET Core and Bootstrap. This project aims to recreate a real-world e-commerce platform designed to showcase and sell sport shoes. 
 
+![HomeScreen Page](homescreen.png)
+
 ## Project Overview
 
 GoodShoe is a collaborative project developed by a team from the University Of NewCastle, Australia, using the **Scrum Agile methodology**. The platform is to demonstrates expertise in full-stack development, UI/UX design, and database management, tailored for both customers and administators. GoodShoe is designed for athlethes and everyday users with a seamless and engaging online sport shoe shopping experience.
