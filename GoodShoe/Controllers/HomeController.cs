@@ -23,6 +23,11 @@ public class HomeController : Controller
         ViewBag.CurrentSort = sortOrder;
         ViewBag.CurrentFilter = searchString;
         ViewBag.CurrentGender = genderFilter;
+        
+        if (_logger.Product == null)
+        {
+            return Problem("No product found!");
+        }
 
         var products = from p in _logger.Product
             select p;
@@ -34,7 +39,13 @@ public class HomeController : Controller
                                            || p.Brand.Contains(searchString)
                                            || p.Description.Contains(searchString));
         }
-            
+        
+        // Search Specific Item
+        if (!String.IsNullOrEmpty(searchString))
+        {
+            products = products.Where(p => p.Name!.ToUpper().Contains(searchString.ToUpper()));
+        }
+        
         // Gender Filter
         if (!String.IsNullOrEmpty(genderFilter))
         {
@@ -87,6 +98,11 @@ public class HomeController : Controller
     }
 
     public IActionResult Privacy()
+    {
+        return View();
+    }
+    
+    public IActionResult Contact()
     {
         return View();
     }

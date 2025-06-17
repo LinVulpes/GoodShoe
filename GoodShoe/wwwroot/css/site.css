@@ -48,21 +48,24 @@ body {
 }
 
 /* Updated Filter Section */
-.filter-section {
+.filter-section .row{
   margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.filter-section .col-auto:last-child {
+  margin-left: auto;
 }
 
 .filter-btn {
-  background-color: #f8f9fa;
   border: 1px solid #dee2e6;
   color: #000000;
   font-size: 14px;
-  padding: 8px 16px;
-  text-align: left;
-  cursor: pointer;
+  padding: 8px 12px;
 }
 
-.filter-btn:hover {
+.filter-btn:hover, .dropdown-item:hover {
   background-color: #e9ecef;
   border-color: #adb5bd;
   color: #000000;
@@ -87,19 +90,43 @@ body {
   transition: background-color 0.15s ease-in-out;
 }
 
-.dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #000000;
-}
-
 .dropdown-item.active {
   background-color: #000000;
   color: #ffffff;
 }
 
-.dropdown-item.active:hover {
-  background-color: #333333;
-  color: #ffffff;
+/* Search Filter */
+
+/* Custom Input Group for Rounded Design */
+.search-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 235px;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.search-button {
+  background: none;
+  border: none;
+  outline: none;
+  padding: 8px 12px;
+  display: flex;
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
 }
 
 /* Products Grid Styles */

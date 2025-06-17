@@ -85,6 +85,22 @@
                             </ul>
                         </div>
                     </div>
+                    
+                    <!-- Search Filter (Product Name) -->
+                    <div class="col-auto">
+                        <form asp-controller="Home" asp-action="Index" method="get">
+                            <div class="search-input-group">
+                                <input type="text" 
+                                       name="searchString" 
+                                       value="@Model.CurrentFilter" 
+                                       class="search-input" 
+                                       placeholder="Search product" />
+                                <button type="submit" class="search-button">
+                                    <img src="search-icon.png" alt="Search" class="search-icon" />
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
