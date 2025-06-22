@@ -4,146 +4,260 @@
     ViewData["Title"] = "Good Shoe - Home Page";
 }
 
-<div class="container main-context">
-    <!-- Title Section -->
-    <div class="title-section">
-        <h1 class="main-title"> New Arrival </h1>
-        <p class="subtitle">Good Shoes is a modern e-commerce website offering a stylish and high-quality collection of shoes to elevate every step you take.</p>
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@ViewData["Title"]</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body>
+    <!-- Hero Slider Section -->
+    <section class="hero-slider">
+        <div class="slider-container">
+            <!-- Slide 1 -->
+            <div class="slide active">
+                <!-- Left Column - Main Content -->
+                <div class="slide-left">
+                    <p class="brand-name">ALLDAY</p>
+                    <hr class="brand-divider"/>
+                    <h1 class="slide-title">
+                        AIRY &<br/>
+                        FLEXIBLE
+                    </h1>
+                    <p class="slide-description">
+                        Enjoy fresh, airy steps with<br>
+                        a lightweight that lets your<br>
+                        feet breathe
+                    </p>
+                </div>
 
-    <!-- Filter and Sort Section -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="filter-section">
-                <div class="row">
-                    <!-- Filter DropDown for Gender Category (Men, Women, Unisex) -->
-                    <div class="col-auto">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
-                                Filter: @(string.IsNullOrEmpty(Model.GenderFilter) ? "All" : Model.GenderFilter)
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item @(string.IsNullOrEmpty(Model.GenderFilter) ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
-                                        All
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.GenderFilter == "Men" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { genderFilter = "Men", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
-                                        Men
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.GenderFilter == "Women" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { genderFilter = "Women", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
-                                        Women
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.GenderFilter == "Unisex" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { genderFilter = "Unisex", sortOrder = Model.SortOrder, searchString = Model.CurrentFilter })">
-                                        Unisex
-                                    </a>
-                                </li>
-                            </ul>
+                <!-- Center Column - Image -->
+                <div class="slide-center">
+                    <img src="~/images/slider/slide1-img.png" alt="Airy & Flexible Shoe" class="slide-image"/>
+                </div>
+
+                <!-- Right Column -->
+                <div class="slide-right">
+                    <div class="slide-tagline">
+                        <p>Where comfort meets<br>confidence</p>
+                    </div>
+                    <div class="slide-meta">
+                        <span class="badge"><em>Dropping On</em></span>
+                        <hr class="divider"/>
+                        <p>11-12<br>DECEMBER</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="slide active">
+                <!-- Left Column - Main Content -->
+                <div class="slide-left">
+                    <p class="brand-name">ALLEGERO</p>
+                    <hr class="brand-divider"/>
+                    <h1 class="slide-title">
+                        Skin-<br/>
+                        Friendly
+                    </h1>
+                    <p class="slide-description">
+                        Feel the luxury of satin fabric<br>
+                        with a design crafted for ultimate<br>
+                        flexibility and comfort
+                    </p>
+                </div>
+
+                <!-- Center Column - Image -->
+                <div class="slide-center">
+                    <img src="~/images/slider/slide2-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+                </div>
+
+                <!-- Right Column -->
+                <div class="slide-right">
+                    <div class="slide-tagline">
+                        <p>Stylish &<br> Durability</p>
+                    </div>
+                    <div class="slide-meta">
+                        <span class="badge"><em>Dropping On</em></span>
+                        <hr class="divider"/>
+                        <p>1st <br> NOVEMBER</p>
+                    </div>
+                </div>
+            </div> 
+            
+            <!-- Slide 3 -->
+            <div class="slide active">
+                <!-- Left Column - Main Content -->
+                <div class="slide-left">
+                    <p class="brand-name">NIKE</p>
+                    <hr class="brand-divider"/>
+                    <h1 class="slide-title">
+                        Nike TC 7900<br/>
+                    </h1>
+                    <p class="slide-description">
+                        Synthetic materials with webbing <br>
+                        details for lasting <br>
+                        durability and rugged style.
+                    </p>
+                </div>
+
+                <!-- Center Column - Image -->
+                <div class="slide-center">
+                    <img src="~/images/slider/slide3-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+                </div>
+
+                <!-- Right Column -->
+                <div class="slide-right">
+                    <div class="slide-tagline">
+                        <p>Top Choice <br> Built for the modern athlete</p>
+                    </div>
+                    <div class="slide-meta">
+                        <span class="badge"><em>Available Now</em></span>
+                        <hr class="divider"/>
+                        <p>SHOP  TODAY!</p>
+                    </div>
+                </div>
+            </div> 
+            
+            <!-- Navigation Arrows -->
+            <button class="slider-nav prev" id="prevBtn">
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+            <button class="slider-nav next" id="nextBtn">
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section class="products-section py-5">
+        <div class="container">
+            <!-- Section Header -->
+            <div class="row align-items-center mb-5">
+                <div class="col">
+                    <h2 class="section-title mb-0">Our products</h2>
+                </div>
+                <div class="col-auto">
+                    <a href="/" class="explore-more-btn">
+                        Explore more
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Product Cards Row -->
+            <div class="row g-4">
+                <!-- Product 1 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/product-1.jpg" alt="GoodShoe 0.1" class="product-img" />
+                        </div>
+                        <div class="product-details">
+                            <h6 class="product-name">GoodShoe 0.1</h6>
+                            <p class="product-price">$120</p>
                         </div>
                     </div>
-                    
-                    <!-- Sort Dropdown (Name and Price) -->
-                    <div class="col-auto">
-                        <div class="dropdown">
-                            <button class="btn btn-outline-secondary dropdown-toggle filter-btn" type="button" data-bs-toggle="dropdown">
-                                Sort: @(GetSortDisplayName(Model.SortOrder))
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item @(Model.SortOrder == "name_asc" || string.IsNullOrEmpty(Model.SortOrder) ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { sortOrder = "name_asc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
-                                        Name A-Z
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.SortOrder == "name_desc" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { sortOrder = "name_desc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
-                                        Name Z-A
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.SortOrder == "price_asc" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { sortOrder = "price_asc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
-                                        Price Low-High
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item @(Model.SortOrder == "price_desc" ? "active" : "")" 
-                                       href="@Url.Action("Index", "Home", new { sortOrder = "price_desc", genderFilter = Model.GenderFilter, searchString = Model.CurrentFilter })">
-                                        Price High-Low
-                                    </a>
-                                </li>
-                            </ul>
+                </div>
+
+                <!-- Product 2 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/product-2.jpg" alt="GoodShoe 0.2" class="product-img" />
+                        </div>
+                        <div class="product-details">
+                            <h6 class="product-name">GoodShoe 0.2</h6>
+                            <p class="product-price">$120</p>
                         </div>
                     </div>
-                    
-                    <!-- Search Filter (Product Name) -->
-                    <div class="col-auto">
-                        <form asp-controller="Home" asp-action="Index" method="get">
-                            <div class="search-input-group">
-                                <input type="text" 
-                                       name="searchString" 
-                                       value="@Model.CurrentFilter" 
-                                       class="search-input" 
-                                       placeholder="Search product" />
-                                <button type="submit" class="search-button">
-                                    <img src="search-icon.png" alt="Search" class="search-icon" />
-                                </button>
+                </div>
+
+                <!-- Product 3 -->
+                <div class="col-lg-4 col-md-6">
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/product-3.jpg" alt="GoodShoe 0.3" class="product-img" />
+                        </div>
+                        <div class="product-details">
+                            <h6 class="product-name">GoodShoe 0.3</h6>
+                            <p class="product-price">$150</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section mt-5">
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="feature-item">
+                            <h6 class="feature-title">Safe Payment</h6>
+                            <p class="feature-description">Secure your purchase using the most trusted Payment Methods available!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="feature-item">
+                            <h6 class="feature-title">24/7 Support</h6>
+                            <p class="feature-description">Shop with confidence and Contact us 24 hours a day!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="feature-item">
+                            <h6 class="feature-title">Fast Delivery</h6>
+                            <p class="feature-description">Fast shipping & delivery upon an order!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="feature-item">
+                            <h6 class="feature-title">Cash Back</h6>
+                            <p class="feature-description">Experience a 100% satisfaction Guarantee or Receive a Full Refund within 30 days!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="about-section mt-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="about-image">
+                                    <img src="~/images/about-1.jpg" alt="Shoe Collection" class="img-fluid rounded" />
+                                </div>
                             </div>
-                        </form>
+                            <div class="col-6">
+                                <div class="about-image">
+                                    <img src="~/images/about-2.jpg" alt="Shoe Details" class="img-fluid rounded" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="about-content">
+                            <h3 class="about-title">About Us</h3>
+                            <h4 class="about-subtitle">We provide high quality shoes that blend comfort, style, and innovation for every step of your journey.</h4>
+                            <ul class="about-list">
+                                <li>Delivering unmatched comfort in every pair</li>
+                                <li>Building a sustainable future for footwear</li>
+                                <li>Creating designs that empower your lifestyle</li>
+                                <li>Providing exceptional service that exceeds expectations</li>
+                            </ul>
+                            <a href="/" class="explore-about-btn">
+                                Explore more
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- Products Grid -->
-    <div class="products-grid">
-        @foreach (var product in Model.Products)
-        {
-            <div class="product-card" onclick="redirectToProduct(@product.Id)">
-                <div class="product-image">
-                    <img src="@product.ImageUrl" 
-                         alt="@product.Name" 
-                         onerror="this.src='/images/products/placeholder.jpg';" 
-                         loading="lazy" />
-                </div>                
-                <div class="product-info">
-                    <h5 class="product-name">@product.Name</h5>
-                    <p class="product-price">$@product.Price</p>
-                    <p class="product-description">@product.Description></p>
-                </div>
-            </div>
-        }
-    </div>
-    
-    @if (!Model.Products.Any())
-    {
-        <div class="no-products">
-            <h3>No products found</h3>
-            <p>Try adjusting your filters or search criteria.</p>
-        </div>
-    }
-</div>
-
-@functions {
-    public string GetSortDisplayName(string sortOrder)
-    {
-        return sortOrder switch
-        {
-            "name_desc" => "Name Z-A",
-            "price_asc" => "Price Low-High",
-            "price_desc" => "Price High-Low",
-            "name_asc" or "" or null or _ => "Name A-Z"
-        };
-    }
-}
+    </section>
+    <script src="~/js/landing.js"></script>
+</body>
+</html>

@@ -16,8 +16,13 @@ public class HomeController : Controller
         _logger = logger;
     }
     
+    public async Task<IActionResult> Index()
+    {
+        return View();
+    }
+    
     // Adding Filters
-    public async Task<IActionResult> Index(string sortOrder, string searchString, string genderFilter)
+    public async Task<IActionResult> Products(string sortOrder, string searchString, string genderFilter)
     {
         // Viewing data from dropdowns
         ViewBag.CurrentSort = sortOrder;
@@ -103,6 +108,11 @@ public class HomeController : Controller
     }
     
     public IActionResult Contact()
+    {
+        return View();
+    }
+    
+    public IActionResult About()
     {
         return View();
     }
