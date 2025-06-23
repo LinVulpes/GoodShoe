@@ -1,6 +1,7 @@
-// Hero Slider JavaScript
+// Landing Page JavaScript
 document.addEventListener('DOMContentLoaded', function() {
     initializeHeroSlider();
+    initializeProductCards();
 });
 
 function initializeHeroSlider() {
@@ -10,10 +11,6 @@ function initializeHeroSlider() {
 
     let currentSlide = 0;
     let isTransitioning = false;
-    
-    /*
-    let autoplayInterval;
-    const autoplayDelay = 5000; // 5 seconds*/
 
     // Ensure only the first slide is active initially
     function initializeSlides() {
@@ -64,7 +61,6 @@ function initializeHeroSlider() {
         nextBtn.addEventListener('click', (e) => {
             e.preventDefault();
             nextSlide();
-            resetAutoplay();
         });
     }
 
@@ -72,7 +68,6 @@ function initializeHeroSlider() {
         prevBtn.addEventListener('click', (e) => {
             e.preventDefault();
             prevSlide();
-            resetAutoplay();
         });
     }
 
@@ -80,10 +75,8 @@ function initializeHeroSlider() {
     document.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowLeft') {
             prevSlide();
-            resetAutoplay();
         } else if (e.key === 'ArrowRight') {
             nextSlide();
-            resetAutoplay();
         }
     });
 
@@ -135,7 +128,6 @@ function initializeHeroSlider() {
                 } else {
                     prevSlide();
                 }
-                resetAutoplay();
             }
         });
     }
@@ -151,92 +143,55 @@ function initializeHeroSlider() {
                 // Swipe right - previous slide
                 prevSlide();
             }
-            resetAutoplay();
         }
     }
-
-    // Autoplay functionality
-    function startAutoplay() {
-        if (slides.length <= 1) return; // Don't autoplay if only one slide
-
-        autoplayInterval = setInterval(() => {
-            nextSlide();
-        }, autoplayDelay);
-    }
-
-    function stopAutoplay() {
-        if (autoplayInterval) {
-            clearInterval(autoplayInterval);
-            autoplayInterval = null;
-        }
-    }
-
-    function resetAutoplay() {
-        stopAutoplay();
-        startAutoplay();
-    }
-
-    // Pause autoplay on hover and focus
-    const heroSlider = document.querySelector('.hero-slider');
-    if (heroSlider) {
-        heroSlider.addEventListener('mouseenter', stopAutoplay);
-        heroSlider.addEventListener('mouseleave', startAutoplay);
-        heroSlider.addEventListener('focusin', stopAutoplay);
-        heroSlider.addEventListener('focusout', startAutoplay);
-    }
-
-    // Pause autoplay when page is not visible
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) {
-            stopAutoplay();
-        } else if (!document.hidden && slides.length > 1) {
-            startAutoplay();
-        }
-    });
-
-    // Pause autoplay when window loses focus
-    window.addEventListener('blur', stopAutoplay);
-    window.addEventListener('focus', () => {
-        if (slides.length > 1) {
-            startAutoplay();
-        }
-    });
 
     // Initialize slider
     if (slides.length > 0) {
         initializeSlides();
-
-        // Start autoplay only if there are multiple slides
-        if (slides.length > 1) {
-            startAutoplay();
-        }
-
         console.log(`Hero slider initialized with ${slides.length} slide(s)`);
     } else {
         console.warn('No slides found for hero slider');
     }
+}
 
-    // Add resize handler to ensure proper display
-    window.addEventListener('resize', debounce(() => {
-        // Recalculate any position-dependent elements if needed
-        // Currently not needed but good for future enhancements
-    }, 250));
+// Product Cards Functionality
+function initializeProductCards() {
+    const productCards = document.querySelectorAll('.product-card-new');
 
-    // Return public methods for external control (optional)
-    return {
-        nextSlide,
-        prevSlide,
-        showSlide: (index) => {
-            if (index >= 0 && index < slides.length) {
-                showSlide(index);
-                resetAutoplay();
-            }
-        },
-        getCurrentSlide: () => currentSlide,
-        getTotalSlides: () => slides.length,
-        startAutoplay,
-        stopAutoplay
-    };
+    productCards.forEach((card, index) => {
+        // Add click functionality to product cards
+        card.addEventListener('click', function() {
+            const productName = card.querySelector('.product-name').textContent;
+            console.log(`Clicked on product: ${productName}`);
+
+            // Navigate to products page
+            window.location.href = '~/Home/Products';
+        });
+
+        // Add hover effects
+        card.addEventListener('mouseenter', function() {
+            this.style.cursor = 'pointer';
+        });
+
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Add staggered animation delay
+                    setTimeout(() => {
+                        entry.target.classList.add('animate-in');
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        });
+
+        observer.observe(card);
+    });
 }
 
 // Utility function for debouncing
@@ -268,7 +223,7 @@ window.addEventListener('load', function() {
     }
 });
 
-// Add CSS for loading states
+// Add CSS for loading states and animations - Pop up the product grid
 const style = document.createElement('style');
 style.textContent = `
     body {
@@ -290,6 +245,17 @@ style.textContent = `
     
     .slide {
         user-select: none;
+    }
+    
+    .product-card-new {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .product-card-new.animate-in {
+        opacity: 1;
+        transform: translateY(0);
     }
 `;
 document.head.appendChild(style);
