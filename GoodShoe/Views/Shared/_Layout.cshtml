@@ -53,15 +53,26 @@
 
                     <!-- Profile Redirect Button -->
                     <div class="me-lg-4" title="Profile">
-                        @{
-                            var profileLink = User.Identity != null && User.Identity.IsAuthenticated
-                            ? Url.Page("/Account/Manage/Index", null, new { area = "Identity" }, null)
-                            : Url.Page("/Account/Login", null, new { area = "Identity" }, null);
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <a href="@Url.Page("/Account/Manage/Index", null, new { area = "Identity" }, null)">
+                                <img src="~/images/profile.png" alt="User Icon" width="50" height="50" style="border-radius: 50%;" />
+                            </a>
                         }
-                        <a href="@profileLink">
+                        else
+                        {
+                            <!-- If user haven't login, only show icon without redirecting them to anywhere' -->
                             <img src="~/images/profile.png" alt="User Icon" width="50" height="50" style="border-radius: 50%;" />
-                        </a>
+                        }
+
                     </div>
+                    <!-- Sign In Button -->
+                    <button class="btn btn-dark btn-sm signin-btn me-lg-4" onclick="handleSignIn()">Sign In</button>
+                    <script>
+                        function handleSignIn() {
+                            window.location.href = '/Identity/Account/Login';
+                        }
+                    </script>
                 </div>
             </div>
         </nav>
