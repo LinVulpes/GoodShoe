@@ -1,5 +1,5 @@
-﻿function redirectToProduct(productId) {
-    window.location.href = '/Product/Details/' + productId;
+﻿function redirectToProduct(url) {
+    window.location.href = url;
 }
 
 // Remove focus from dropdown buttons after click
