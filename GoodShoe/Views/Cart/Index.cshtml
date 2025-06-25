@@ -1,7 +1,7 @@
 ﻿@model List<GoodShoe.Models.ViewModels.CartItem>
 
 <h2>Your Cart</h2>
-@if (!Model.Any())
+@if (Model == null || !Model.Any())
 {
     <p>Your cart is empty.</p>
 }
