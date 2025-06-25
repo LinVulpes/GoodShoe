@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 
 namespace GoodShoe.Data
 {
-    public class GoodShoeContext : DbContext
+    public class GoodShoeContext : IdentityDbContext
     {
         public GoodShoeContext (DbContextOptions<GoodShoeContext> options)
             : base(options)
