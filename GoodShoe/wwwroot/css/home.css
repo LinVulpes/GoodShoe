@@ -386,7 +386,7 @@
 
 .about-image-item.right {
     grid-column: 2;
-    grid-row: 1 / 3; /* Spans both rows */
+    grid-row: 1 / 3;
 }
 
 .about-image-item img {
@@ -394,10 +394,6 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-}
-
-.about-image-item:hover img {
-    transform: scale(1.05);
 }
 
 .about-content {
