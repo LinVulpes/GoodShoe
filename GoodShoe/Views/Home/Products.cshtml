@@ -110,19 +110,21 @@
     <div class="products-grid">
         @foreach (var product in Model.Products)
         {
-            <div class="product-card" onclick="redirectToProduct(@product.Id)">
-                <div class="product-image">
-                    <img src="@product.ImageUrl" 
-                         alt="@product.Name" 
-                         onerror="this.src='/images/products/placeholder.jpg';" 
-                         loading="lazy" />
-                </div>                
-                <div class="product-info">
-                    <h5 class="product-name">@product.Name</h5>
-                    <p class="product-price">$@product.Price</p>
-                    <p class="product-description">@product.Description></p>
+            <a asp-controller="Shop" asp-action="Details" asp-route-id="@product.Id" class="text-decoration-none">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img src="@product.ImageUrl" 
+                             alt="@product.Name" 
+                             onerror="this.src='/images/products/placeholder.jpg';" 
+                             loading="lazy" />
+                    </div>                
+                    <div class="product-info">
+                        <h5 class="product-name">@product.Name</h5>
+                        <p class="product-price">$@product.Price</p>
+                        <p class="product-description">@product.Description</p>
+                    </div>
                 </div>
-            </div>
+            </a>
         }
     </div>
     
