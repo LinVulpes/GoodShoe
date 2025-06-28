@@ -1,25 +1,40 @@
-using GoodShoe.Data;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using GoodShoe.Areas.Identity.Data;
+using GoodShoe.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the Container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
-builder.Services.AddRazorPages();
 
 // Added Entity Framework
 builder.Services.AddDbContext<GoodShoeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-})
+// Add Identity services
+builder.Services.AddDefaultIdentity<IdentityUser>(options => 
+    {
+        // Configure password requirements
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    
+        // Configure sign-in requirements
+        options.SignIn.RequireConfirmedAccount = false;
+        options.SignIn.RequireConfirmedEmail = false;
+    })
 .AddEntityFrameworkStores<GoodShoeContext>();
+
+// Configure application cookie
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+// MVC services
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -44,10 +59,6 @@ app.MapControllerRoute(
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-app.MapRazorPages();
-
-app.MapRazorPages();
-
 // Initializing database
 using (var scope = app.Services.CreateScope())
 {
@@ -61,5 +72,4 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Error initializing database: {ex.Message}");
     }
 }
-
 app.Run();

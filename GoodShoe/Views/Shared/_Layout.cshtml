@@ -47,7 +47,7 @@
                 <div class="right-buttons d-flex align-items-center">
                     <!-- Shopping Cart -->
                     <div class="me-lg-4" title="Shopping Cart">
-                        <a href="/cart-page">
+                        <a asp-controller="Cart" asp-action="Index">
                             <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30" />
                         </a>
                     </div>
@@ -62,10 +62,14 @@
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
                                 <li>
-                                    <a class="dropdown-item" href="@Url.Page("/Account/Manage/Index", null, new { area = "Identity" }, null)">Profile</a>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a>
                                 </li>
                                 <li>
-                                    <form method="post" asp-area="Identity" asp-page="/Account/Logout" id="logoutForm">
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="History">Order History</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
                                         <button type="submit" class="dropdown-item">Logout</button>
                                     </form>
                                 </li>
@@ -82,12 +86,10 @@
                         <button class="btn btn-dark btn-sm signin-btn me-lg-4" onclick="handleSignIn()">Sign In</button>
                         <script>
                             function handleSignIn() {
-                                window.location.href = '/Identity/Account/Login';
+                                window.location.href = '/Account/Login';
                             }
                         </script>
                     }
-
-                    
                 </div>
             </div>
         </nav>

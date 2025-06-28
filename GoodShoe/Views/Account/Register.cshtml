@@ -1,0 +1,60 @@
+@model GoodShoe.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="text-center" style="max-width: 400px; width: 100%;">
+        <!-- Logo -->
+        <img src="~/images/logo.png" alt="GoodShoe Logo" style="width: 100px; margin-bottom: 20px;" />
+
+        <!-- Title -->
+        <h3 class="mb-4">Create Account</h3>
+
+        <!-- Register Form -->
+        <form asp-controller="Account" asp-action="Register" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-2"></div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Name" class="form-control" placeholder="Full Name" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email Address" autocomplete="username" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Password" class="form-control" placeholder="Password" type="password" autocomplete="new-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="ConfirmPassword" class="form-control" placeholder="Confirm Password" type="password" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Address" class="form-control" placeholder="Address (Optional)" />
+                <span asp-validation-for="Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <p class="text-muted small">
+                    By continuing, I agree to Good Shoes' Privacy Policy and Terms of Use
+                </p>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 py-2">Create Account</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>Already have an account? <a asp-controller="Account" asp-action="Login">Login here</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
