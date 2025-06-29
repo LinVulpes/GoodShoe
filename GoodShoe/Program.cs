@@ -4,22 +4,16 @@ using GoodShoe.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-<<<<<<< HEAD
-
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(); 
 
-=======
->>>>>>> 2777667fb22dd6c797869d783929c4c7e883d195
 // Added Entity Framework
 builder.Services.AddDbContext<GoodShoeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()));
 
-<<<<<<< HEAD
-=======
 // Add Identity services
 builder.Services.AddDefaultIdentity<IdentityUser>(options => 
     {
@@ -46,7 +40,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // MVC services
 builder.Services.AddControllersWithViews();
->>>>>>> 2777667fb22dd6c797869d783929c4c7e883d195
 
 var app = builder.Build();
 
@@ -59,15 +52,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-<<<<<<< HEAD
-app.UseRouting();
-app.UseSession(); 
-app.UseAuthorization();
 app.MapStaticAssets();
-=======
->>>>>>> 2777667fb22dd6c797869d783929c4c7e883d195
 
 app.UseRouting();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
