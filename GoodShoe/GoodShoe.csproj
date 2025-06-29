@@ -26,4 +26,10 @@
       </Content>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Views\Shop\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Admin\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Views\Admin\Delete.cshtml" />
+    </ItemGroup>
+
 </Project>

@@ -3,13 +3,17 @@ using GoodShoe.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(); 
 
 // Added Entity Framework
 builder.Services.AddDbContext<GoodShoeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()));
+
 
 var app = builder.Build();
 
@@ -23,6 +27,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession(); 
 app.UseAuthorization();
 app.MapStaticAssets();
 

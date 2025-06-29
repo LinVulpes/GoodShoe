@@ -1,66 +1,292 @@
-﻿@model GoodShoe.Models.Product
+@model GoodShoe.Models.Product
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Product Details";
 }
 
-<h1>Details</h1>
+<!-- Include Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Size)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Size)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockCount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockCount)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender)
-        </dd>
-    </dl>
+<div class="product-page">
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Left Column - Back Button and Product Image -->
+                <div class="col-6 left-section">
+                    <!-- Back Button -->
+                    <div class="back-button-container mb-4">
+                        <a href="@Url.Action("Products", "Home")" class="back-arrow">
+                            <i class="bi bi-arrow-left"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Product Image -->
+                    <div class="product-image-container text-center">
+                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.Id}.png")"
+                             alt="@Model.Name"
+                             class="product-main-image"
+                             onerror="this.src='/images/products/placeholder.jpg'">
+                    </div>
+                </div>
+
+                <!-- Right Column - Product Details -->
+                <div class="col-6 mt-5 right-section">
+                    <div class="product-info">
+                        <!-- Product Name -->
+                        <h1 class="product-name">@Model.Name</h1>
+                        
+                        <!-- Product Category -->
+                        <p class="product-category">@Model.Gender's @Model.Brand</p>
+                        
+                        <!-- Price -->
+                        <h2 class="product-price">${@Model.Price.ToString("F2")}</h2>
+                        
+                        <!-- Description -->
+                        <p class="product-description">@Model.Description</p>
+                        
+                        <!-- Select Size Section -->
+                        <div class="size-section mt-5">
+                            <h3 class="size-heading">Select Size</h3>
+                            
+                            <div class="size-options" id="sizeOptions">
+                                @for (int size = 8; size <= 16; size++)
+                                {
+                                    <button type="button" 
+                                            class="size-button @(size == 14 || size == 16 ? "disabled" : "")" 
+                                            data-size="@size"
+                                            @(size == 14 || size == 16 ? "disabled" : "")
+                                            onclick="selectSize(this, @size)">
+                                        US @size
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        
+                        <!-- Add to Cart Button -->
+                        <div class="cart-section mt-4">
+                            <button type="button" 
+                                    class="add-to-cart-button" 
+                                    id="addToCartBtn"
+                                    disabled
+                                    onclick="addToCart(@Model.Id)">
+                                Add to cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background-color: #ffffff;
+    }
+
+    .product-page {
+        min-height: 10vh;
+    }
+
+    /* Main Content */
+    .main-content {
+        padding: 20px 40px;
+    }
+
+    .left-section {
+        padding-right: 10px;
+    }
+
+    .right-section {
+        padding-left: 65px;
+        padding-right: 0;
+        display: flex;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
+
+    /* Back Button */
+    .back-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        color: #333;
+        text-decoration: none;
+        font-size: 1.4rem;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+    }
+
+    .back-arrow:hover {
+        background-color: #e9ecef;
+        color: #000;
+    }
+
+    /* Product Image */
+    .product-image-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    .product-main-image {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        object-fit: contain;
+    }
+    
+    .product-info {
+        width: 100%;
+        max-width: 450px;
+    }
+
+    .product-name {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+        line-height: 1.2;
+    }
+
+    .product-category {
+        font-size: 1rem;
+        color: #888;
+        margin-bottom: 20px;
+    }
+
+    .product-price {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 24px;
+    }
+
+    .product-description {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 0;
+        min-height: 50px;
+    }
+
+    /* Size Section */
+    .size-section {
+        margin-top: 40px;
+    }
+
+    .size-heading {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .size-options {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-bottom: 30px;
+    }
+
+    .size-button {
+        padding: 12px 8px;
+        border: 1px solid #ddd;
+        background-color: white;
+        color: #333;
+        font-size: 0.95rem;
+        font-weight: 500;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .size-button:hover:not(.disabled) {
+        border-color: #333;
+        background-color: #f9f9f9;
+    }
+
+    .size-button.selected {
+        background-color: #333;
+        color: white;
+        border-color: #333;
+    }
+
+    .size-button.disabled {
+        background-color: #f5f5f5;
+        color: #ccc;
+        border-color: #e5e5e5;
+        cursor: not-allowed;
+        position: relative;
+    }
+
+    .size-button.disabled::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 20%;
+        right: 20%;
+        height: 1px;
+        background-color: #ccc;
+        transform: rotate(-45deg);
+    }
+
+    /* Add to Cart Button */
+    .add-to-cart-button {
+        width: 100%;
+        padding: 15px;
+        background-color: #000;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .add-to-cart-button:hover:not(:disabled) {
+        background-color: #333;
+    }
+
+    .add-to-cart-button:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+</style>
+
+<script>
+    let selectedSize = null;
+
+    function selectSize(button, size) {
+        if (button.classList.contains('disabled')) {
+            return;
+        }
+
+        // Remove selection from all buttons
+        document.querySelectorAll('.size-button').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+
+        // Add selection to clicked button
+        button.classList.add('selected');
+        selectedSize = size;
+
+        // Enable add to cart button
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        addToCartBtn.disabled = false;
+    }
+
+    function addToCart(productId) {
+        if (!selectedSize) {
+            alert('Please select a size first.');
+            return;
+        }
+    }
+</script>

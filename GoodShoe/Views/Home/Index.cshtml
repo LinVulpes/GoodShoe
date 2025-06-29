@@ -1,267 +1,266 @@
-﻿@model GoodShoe.Models.ViewModels.ProductListViewModel
+﻿@model GoodShoe.Models.Product
 
 @{
     ViewData["Title"] = "Good Shoe - Home Page";
+    Layout = "_Layout";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>@ViewData["Title"]</title>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <script type="importmap"></script>
+@section Scripts {
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-</head>
-<body>
-    <!-- Hero Slider Section -->
-    <section class="hero-slider">
-        <div class="slider-container">
-            <!-- Slide 1 -->
-            <div class="slide active">
-                <!-- Left Column - Main Content -->
-                <div class="slide-left">
-                    <p class="brand-name">ALLDAY</p>
-                    <hr class="brand-divider"/>
-                    <h1 class="slide-title">
-                        AIRY &<br/>
-                        FLEXIBLE
-                    </h1>
-                    <p class="slide-description">
-                        Enjoy fresh, airy steps with<br>
-                        a lightweight that lets your<br>
-                        feet breathe
-                    </p>
-                </div>
+}
 
-                <!-- Center Column - Image -->
-                <div class="slide-center">
-                    <img src="~/images/slider/slide1-img.png" alt="Airy & Flexible Shoe" class="slide-image"/>
-                </div>
+<!-- Hero Slider Section -->
+<section class="hero-slider">
+    <div class="slider-container">
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <!-- Left Column - Main Content -->
+            <div class="slide-left">
+                <p class="brand-name">ALLDAY</p>
+                <hr class="brand-divider"/>
+                <h1 class="slide-title">
+                    AIRY &<br/>
+                    FLEXIBLE
+                </h1>
+                <p class="slide-description">
+                    Enjoy fresh, airy steps with<br>
+                    a lightweight that lets your<br>
+                    feet breathe
+                </p>
+            </div>
 
-                <!-- Right Column -->
-                <div class="slide-right">
-                    <div class="slide-tagline">
-                        <p>Where comfort meets<br>confidence</p>
-                    </div>
-                    <div class="slide-meta">
-                        <span class="badge"><em>Dropping On</em></span>
-                        <hr class="divider"/>
-                        <p>11-12<br>DECEMBER</p>
-                    </div>
+            <!-- Center Column - Image -->
+            <div class="slide-center">
+                <img src="~/images/slider/slide1-img.png" alt="Airy & Flexible Shoe" class="slide-image"/>
+            </div>
+
+            <!-- Right Column -->
+            <div class="slide-right">
+                <div class="slide-tagline">
+                    <p>Where comfort meets<br>confidence</p>
+                </div>
+                <div class="slide-meta">
+                    <span class="badge"><em>Dropping On</em></span>
+                    <hr class="divider"/>
+                    <p>11-12<br>DECEMBER</p>
                 </div>
             </div>
-            
-            <!-- Slide 2 -->
-            <div class="slide">
-                <!-- Left Column - Main Content -->
-                <div class="slide-left">
-                    <p class="brand-name">ALLEGERO</p>
-                    <hr class="brand-divider"/>
-                    <h1 class="slide-title">
-                        Skin-<br/>
-                        Friendly
-                    </h1>
-                    <p class="slide-description">
-                        Feel the luxury of satin fabric<br>
-                        with a design crafted for ultimate<br>
-                        flexibility and comfort
-                    </p>
-                </div>
-
-                <!-- Center Column - Image -->
-                <div class="slide-center">
-                    <img src="~/images/slider/slide2-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
-                </div>
-
-                <!-- Right Column -->
-                <div class="slide-right">
-                    <div class="slide-tagline">
-                        <p>Stylish &<br> Durability</p>
-                    </div>
-                    <div class="slide-meta">
-                        <span class="badge"><em>Dropping On</em></span>
-                        <hr class="divider"/>
-                        <p>1st <br> NOVEMBER</p>
-                    </div>
-                </div>
-            </div> 
-            
-            <!-- Slide 3 -->
-            <div class="slide">
-                <!-- Left Column - Main Content -->
-                <div class="slide-left">
-                    <p class="brand-name">NIKE</p>
-                    <hr class="brand-divider"/>
-                    <h1 class="slide-title">
-                        Nike TC 7900<br/>
-                    </h1>
-                    <p class="slide-description">
-                        Synthetic materials with webbing <br>
-                        details for lasting <br>
-                        durability and rugged style.
-                    </p>
-                </div>
-
-                <!-- Center Column - Image -->
-                <div class="slide-center">
-                    <img src="~/images/slider/slide3-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
-                </div>
-
-                <!-- Right Column -->
-                <div class="slide-right">
-                    <div class="slide-tagline">
-                        <p>Top Choice <br> Built for the modern athlete</p>
-                    </div>
-                    <div class="slide-meta">
-                        <span class="badge"><em>Available Now</em></span>
-                        <hr class="divider"/>
-                        <p>SHOP  TODAY!</p>
-                    </div>
-                </div>
-            </div> 
-            
-            <!-- Navigation Arrows -->
-            <button class="slider-nav prev" id="prevBtn">
-                <i class="fa-solid fa-angle-left"></i>
-            </button>
-            <button class="slider-nav next" id="nextBtn">
-                <i class="fa-solid fa-angle-right"></i>
-            </button>
         </div>
-    </section>
 
-    <!-- Products Section -->
-    <section class="products-section py-4">
-        <div class="container">
-            <!-- Section Header -->
-            <div class="row align-items-center mb-4">
-                <div class="col">
-                    <h3 class="section-title mb-0">Our products</h3>
-                </div>
-                <div class="col-auto">
-                    <a href="~/Home/Products" class="explore-about-btn">
-                        Explore more
-                        <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-            
-            <!-- Product Cards Row -->
-            <div class="row g-4">
-                <!-- Product 1 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card-new">
-                        <div class="product-image-container">
-                            <img src="~/images/slider/shoe1.webp" alt="GoodShoe 0.1" class="product-img" />
-                        </div>
-                        <div class="product-details">
-                            <p class="product-card-name">Nike Free Metcon 6</p>
-                            <p class="product-card-price">$125.00</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 2 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card-new">
-                        <div class="product-image-container">
-                            <img src="~/images/slider/shoe2.webp" alt="GoodShoe 0.2" class="product-img" />
-                        </div>
-                        <div class="product-details">
-                            <p class="product-card-name">Nike Zoom Vomero 5</p>
-                            <p class="product-card-price">$219.90</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="product-card-new">
-                        <div class="product-image-container">
-                            <img src="~/images/slider/shoe3.webp" alt="GoodShoe 0.3" class="product-img" />
-                        </div>
-                        <div class="product-details">
-                            <p class="product-card-name">NY 90 Shoes</p>
-                            <p class="product-card-price">$149.99</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Slide 2 -->
+        <div class="slide">
+            <!-- Left Column - Main Content -->
+            <div class="slide-left">
+                <p class="brand-name">ALLEGERO</p>
+                <hr class="brand-divider"/>
+                <h1 class="slide-title">
+                    Skin-<br/>
+                    Friendly
+                </h1>
+                <p class="slide-description">
+                    Feel the luxury of satin fabric<br>
+                    with a design crafted for ultimate<br>
+                    flexibility and comfort
+                </p>
             </div>
 
-            <!-- Features Section -->
-            <div class="features-section mt-5">
-                <div class="container-fluid px-0">
-                    <div class="row g-0 align-items-stretch">
-                        <div class="col-3">
-                            <div class="feature-item">
-                                <h6 class="feature-title">Safe Payment</h6>
-                                <p class="feature-description">Secure your purchase using the most trusted Payment Methods available!</p>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="feature-item border-start border-white">
-                                <h6 class="feature-title">24/7 Support</h6>
-                                <p class="feature-description">Shop with confidence and Contact us 24 hours a day!</p>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="feature-item border-start border-white">
-                                <h6 class="feature-title">Fast Delivery</h6>
-                                <p class="feature-description">Fast shipping & delivery upon an order!</p>
-                            </div>
-                        </div>
-                        <div class="col-3">
-                            <div class="feature-item border-start border-white">
-                                <h6 class="feature-title">Cash Back</h6>
-                                <p class="feature-description">Experience a 100% satisfaction Guarantee or Receive a Full Refund within 30 days!</p>
-                            </div>
-                        </div>
+            <!-- Center Column - Image -->
+            <div class="slide-center">
+                <img src="~/images/slider/slide2-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+            </div>
+
+            <!-- Right Column -->
+            <div class="slide-right">
+                <div class="slide-tagline">
+                    <p>Stylish &<br> Durability</p>
+                </div>
+                <div class="slide-meta">
+                    <span class="badge"><em>Dropping On</em></span>
+                    <hr class="divider"/>
+                    <p>1st <br> NOVEMBER</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <!-- Left Column - Main Content -->
+            <div class="slide-left">
+                <p class="brand-name">NIKE</p>
+                <hr class="brand-divider"/>
+                <h1 class="slide-title">
+                    Nike TC 7900<br/>
+                </h1>
+                <p class="slide-description">
+                    Synthetic materials with webbing <br>
+                    details for lasting <br>
+                    durability and rugged style.
+                </p>
+            </div>
+
+            <!-- Center Column - Image -->
+            <div class="slide-center">
+                <img src="~/images/slider/slide3-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+            </div>
+
+            <!-- Right Column -->
+            <div class="slide-right">
+                <div class="slide-tagline">
+                    <p>Top Choice <br> Built for the modern athlete</p>
+                </div>
+                <div class="slide-meta">
+                    <span class="badge"><em>Available Now</em></span>
+                    <hr class="divider"/>
+                    <p>SHOP TODAY!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Arrows -->
+        <button class="slider-nav prev" id="prevBtn">
+            <i class="fa-solid fa-angle-left"></i>
+        </button>
+        <button class="slider-nav next" id="nextBtn">
+            <i class="fa-solid fa-angle-right"></i>
+        </button>
+    </div>
+</section>
+
+<!-- Products Section -->
+<section class="products-section py-4">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col">
+                <h3 class="section-title mb-0">Our products</h3>
+            </div>
+            <div class="col-auto">
+                <a asp-controller="Home" asp-action="Products" class="explore-about-btn">
+                    Explore more
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Product Cards Row -->
+        <div class="row g-4">
+            <!-- Product 1 -->
+            <div class="col-lg-4 col-md-6">
+                <!-- For Clickable product card, will be implemented later -->
+                <!-- <a asp-controller="Products" asp-action="Details" asp-route-id="1" class="text-decoration-none"> -->
+
+                <div class="product-card-new">
+                    <div class="product-image-container">
+                        <img src="~/images/slider/shoe1.webp" alt="GoodShoe 0.1" class="product-img"/>
+                    </div>
+                    <div class="product-details">
+                        <p class="product-card-name">Nike Free Metcon 6</p>
+                        <p class="product-card-price">$125.00</p>
                     </div>
                 </div>
             </div>
 
-            <!-- About Section -->
-            <div class="about-section mt-5">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <div class="about-images-grid">
-                            <div class="about-image-item top-left">
-                                <img src="~/images/slider/about-img1.png" alt="Shoe Collection" />
-                            </div>
-                            <div class="about-image-item bottom-left">
-                                <img src="~/images/slider/about-img2.png" alt="Shoe Details" />
-                            </div>
-                            <div class="about-image-item right">
-                                <img src="~/images/slider/about-img3.png" alt="Shoe Stack" />
-                            </div>
+            <!-- Product 2 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card-new">
+                    <div class="product-image-container">
+                        <img src="~/images/slider/shoe2.webp" alt="GoodShoe 0.2" class="product-img"/>
+                    </div>
+                    <div class="product-details">
+                        <p class="product-card-name">Nike Zoom Vomero 5</p>
+                        <p class="product-card-price">$219.90</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="col-lg-4 col-md-6">
+                <div class="product-card-new">
+                    <div class="product-image-container">
+                        <img src="~/images/slider/shoe3.webp" alt="GoodShoe 0.3" class="product-img"/>
+                    </div>
+                    <div class="product-details">
+                        <p class="product-card-name">NY 90 Shoes</p>
+                        <p class="product-card-price">$149.99</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section mt-5">
+            <div class="container-fluid px-0">
+                <div class="row g-0 align-items-stretch">
+                    <div class="col-3">
+                        <div class="feature-item">
+                            <h6 class="feature-title">Safe Payment</h6>
+                            <p class="feature-description">Secure your purchase using the most trusted Payment Methods
+                                available!</p>
                         </div>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="about-content mt-3 mb-3">
-                            <h2 class="about-title">About Us</h2>
-                            <h3 class="about-subtitle">
-                                We provide high quality shoes that blend comfort, style, and innovation for every step of your journey.
-                            </h3>
-                            <ul class="about-list">
-                                <li>Delivering unmatched comfort in every pair</li>
-                                <li>Building a sustainable future for footwear</li>
-                                <li>Creating designs that empower your lifestyle</li>
-                                <li>Providing exceptional service that exceeds expectations</li>
-                            </ul>
-                            <a href="~/Home/Products" class="explore-about-btn">
-                                Explore more
-                                <i class="fas fa-arrow-right"></i>
-                            </a>
+                    <div class="col-3">
+                        <div class="feature-item border-start border-white">
+                            <h6 class="feature-title">24/7 Support</h6>
+                            <p class="feature-description">Shop with confidence and Contact us 24 hours a day!</p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="feature-item border-start border-white">
+                            <h6 class="feature-title">Fast Delivery</h6>
+                            <p class="feature-description">Fast shipping & delivery upon an order!</p>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="feature-item border-start border-white">
+                            <h6 class="feature-title">Cash Back</h6>
+                            <p class="feature-description">Experience a 100% satisfaction Guarantee or Receive a Full
+                                Refund within 30 days!</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-    <script src="~/js/landing.js"></script>
-</body>
-</html>
+
+        <!-- About Section -->
+        <div class="about-section mt-5">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="about-images-grid">
+                        <div class="about-image-item top-left">
+                            <img src="~/images/slider/about-img1.png" alt="Shoe Collection"/>
+                        </div>
+                        <div class="about-image-item bottom-left">
+                            <img src="~/images/slider/about-img2.png" alt="Shoe Details"/>
+                        </div>
+                        <div class="about-image-item right">
+                            <img src="~/images/slider/about-img3.png" alt="Shoe Stack"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-content mt-3 mb-3">
+                        <h2 class="about-title">About Us</h2>
+                        <h3 class="about-subtitle">
+                            We provide high quality shoes that blend comfort, style, and innovation for every step of
+                            your journey.
+                        </h3>
+                        <ul class="about-list">
+                            <li>Delivering unmatched comfort in every pair</li>
+                            <li>Building a sustainable future for footwear</li>
+                            <li>Creating designs that empower your lifestyle</li>
+                            <li>Providing exceptional service that exceeds expectations</li>
+                        </ul>
+                        <a asp-controller="Home" asp-action="Products" class="explore-about-btn">
+                            Shop Now
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script src="~/js/landing.js"></script>

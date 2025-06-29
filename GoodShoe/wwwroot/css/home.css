@@ -3,6 +3,7 @@
     position: relative;
     height: 80vh;
     min-height: 600px;
+    max-height: 800px;
     background: linear-gradient(to bottom, #C4B9A0 50%, #CAC3B2 50%);
     overflow: hidden;
     border-radius: 30px;
@@ -24,11 +25,11 @@
     opacity: 0;
     transition: opacity 0.6s ease-in-out;
     display: grid;
-    grid-template-columns: 0.5fr 1fr 0.5fr;
+    grid-template-columns: 1fr 2fr 1fr;
     grid-template-areas: "left center right";
     align-items: center;
-    padding: 0 60px;
-    gap: 40px;
+    padding: 0 4%;
+    gap: 3%;
 }
 
 .slide.active {
@@ -46,10 +47,13 @@
     flex-direction: column;
     justify-content: center;
     animation: slideInLeft 0.8s ease-out;
+    min-width: 200px;
 }
 
 .brand-name {
-    font-size: 22px;
+    font-size: 1.5vw;
+    min-font-size: 22px;
+    max-font-size: 28px;
     font-weight: 400;
     color: #ffffff;
     font-family: "The Seasons", serif;
@@ -60,29 +64,32 @@
 .brand-divider {
     border: none;
     border-bottom: 1px solid #ffffff;
-    width: 300px;
-    margin: 0 0 50px 0;
+    width: 90%;
+    max-width: 300px;
+    margin: 0 0 5vh 0;
     opacity: 1;
 }
 
 .slide-title {
-    font-size: 60px;
+    font-size: 4vw;
     font-weight: 200;
     transform: scale(1.1, 1.6);
     letter-spacing: 1px;
     color: #fff;
     line-height: 0.85;
     font-family: "The Seasons", serif;
-    margin-bottom: 200px; /* Change here for left side */
+    margin-bottom: 22vh;
+    word-wrap: break-word;
 }
 
 .slide-description {
     font-family: 'Libre Baskerville', serif;
-    font-size: 22px;
+    font-size: 1.65vw;
+    min-font-size: 22px;
     color: #7d522f;
     font-weight: 400;
     line-height: 1.4;
-    margin-bottom: 80px;
+    margin-bottom: 6vh;
 }
 
 /* Center Column - Image */
@@ -92,7 +99,7 @@
     align-items: flex-end;
     justify-content: center;
     height: 100%;
-    padding-bottom: 0; /* Remove padding to stick to bottom */
+    padding-bottom: 0;
     animation: slideInCenter 0.8s ease-out;
     position: relative;
     z-index: 2;
@@ -102,7 +109,9 @@
 }
 
 .slide-image {
-    width: 900px;
+    width: 60vw;
+    max-width: 900px;
+    min-width: 700px;
     height: auto;
     object-fit: contain;
     transition: transform 0.3s ease;
@@ -110,7 +119,8 @@
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    z-index: -1;
+    z-index: 1;
+    max-height: 100%;
 }
 
 /* Right Column - Additional Content */
