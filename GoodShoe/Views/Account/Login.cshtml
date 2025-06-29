@@ -1,0 +1,50 @@
+@model GoodShoe.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+    <div class="text-center" style="max-width: 400px; width: 100%;">
+        <!-- Logo -->
+        <img src="~/images/logo.png" alt="GoodShoe Logo" style="width: 100px; margin-bottom: 20px;" />
+
+        <!-- Title -->
+        <h3 class="mb-4">Login Here</h3>
+
+        <!-- Login Form -->
+        <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Email" class="form-control" placeholder="Email Address" autocomplete="username" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <input asp-for="Password" class="form-control" placeholder="Password" type="password" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3 text-start">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label">Remember me</label>
+            </div>
+
+            <div class="form-group mb-3">
+                <p class="text-muted small">
+                    By continuing, I agree to Good Shoes' Privacy Policy and Terms of Use
+                </p>
+            </div>
+
+            <button type="submit" class="btn btn-dark w-100 py-2">Continue</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a asp-controller="Account" asp-action="Register">Register here</a></p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

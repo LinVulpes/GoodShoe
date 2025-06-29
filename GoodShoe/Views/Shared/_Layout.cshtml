@@ -1,14 +1,15 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GoodShoe</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
 </head>
+<<<<<<< HEAD
 <body>
 <header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
@@ -49,51 +50,124 @@
                         <a asp-controller="Cart" asp-action="Index">
                         <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30">
                     </a>
+=======
+<body class="d-flex flex-column h-100">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <!-- Left-Side : Logo and Brand -->
+                <div class="d-flex align-items-center">
+                    <img src="~/images/Logo.png" alt="Good Shoe Logo" class="brand-logo"/>
+                    <a class="navbar-brand" asp-controller="Home" asp-action="Index">GoodShoe</a>
+>>>>>>> 2777667fb22dd6c797869d783929c4c7e883d195
                 </div>
 
-                <!-- User Profile -->
-                <div class="me-lg-4" title="User Profile">
-                    <div class="user-profile-circle">
-                        <a href="/profile-page">
-                            <img src="~/images/profile.png" alt="User Profile" width="50" height="50">
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>            
+
+                <!-- Center Navigation Link -->
+                <div class="navbar-nav navbar-collapse collapse justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="Products">Products</a>
+                        </li>
+                        <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Home" asp-action="Contact">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
+                        </li>
+                        <!-- TEMP: admin site for easy testing purposes. to delete after authentication bits are working -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right Side: Cart, User Profile, Login/Logout -->
+                <div class="right-buttons d-flex align-items-center">
+                    <!-- Shopping Cart -->
+                    <div class="me-lg-4" title="Shopping Cart">
+                        <a asp-controller="Cart" asp-action="Index">
+                            <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30" />
                         </a>
                     </div>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <!-- Logged-in user: show profile picture + name in a dropdown -->
+                        <div class="dropdown me-lg-4 d-flex align-items-center">
+                            <img src="~/images/profile.png" alt="User Icon" width="40" height="40" style="border-radius: 50%; margin-right: 8px;" />
+                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                @User.Identity.Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="History">Order History</a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
+                                        <button type="submit" class="dropdown-item">Logout</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Not logged in: show profile icon only + Sign In button -->
+                        <div class="me-lg-4" title="Profile">
+                            <img src="~/images/profile.png" alt="User Icon" width="40" height="40" style="border-radius: 50%;" />
+                        </div>
+
+                        <button class="btn btn-dark btn-sm signin-btn me-lg-4" onclick="handleSignIn()">Sign In</button>
+                        <script>
+                            function handleSignIn() {
+                                window.location.href = '/Account/Login';
+                            }
+                        </script>
+                    }
                 </div>
-                
-                <!-- Sign In Button -->
-                <button class="btn btn-dark btn-sm signin-btn me-lg-4" onclick="handleSignIn()">Sign In</button>
             </div>
-        </div>
-    </nav>
-</header>
+        </nav>
+    </header>
 
-<!-- Main Content - Flex Grow -->
-<main role="main" class="flex-grow-1">
-    @RenderBody()
-</main>
 
-<!-- Footer -->
-<footer class="footer py-4 mt-5">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <a class="footer-brand" asp-controller="Home" asp-action="Index">GoodShoe</a>
-                <p class="mb-0">Premium sports footwear for athletes and enthusiasts.</p>
+    <!-- Main Content - Flex Grow -->
+    <main role="main" class="flex-grow-1 main-content">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <a class="footer-brand" asp-controller="Home" asp-action="Index">GoodShoe</a>
+                    <p class="mb-0">Premium sports footwear for athletes and enthusiasts.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <a href="#" class="footer-link me-3">Contact us</a>
+                    <a href="#" class="footer-link me-3">FAQ</a>
+                    <a href="#" class="footer-link me-3">Privacy</a>
+                    <a href="#" class="footer-link me-3">Term & Conditions</a>
+                    <p class="mb-0">&copy; 2025 GoodShoe. All rights reserved.</p>
+                </div>
             </div>
-            <div class="col-md-6 text-md-end">
-                <a href="#" class="footer-link me-3">Contact us</a>
-                <a href="#" class="footer-link me-3">FAQ</a>
-                <a href="#" class="footer-link me-3">Privacy</a>
-                <a href="#" class="footer-link me-3">Term & Conditions</a>
-                <p class="mb-0">&copy; 2025 GoodShoe. All rights reserved.</p>
-            </div>
-        </div>
-    </div>
-</footer>
+        </footer>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await RenderSectionAsync("Scripts", required: false)
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

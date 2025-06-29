@@ -1,12 +1,34 @@
 ﻿@model IEnumerable<GoodShoe.Models.Product>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "GoodShoe Administration";
+    Layout = "_Layout";
 }
 
-<h1>Index</h1>
+@section Scripts {
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+}
 
-<p>
+@*  The admin's landing page.
+    Mainly two functions: Inventory and product management, and order management.
+    Nav bar just has home, products list, orders list, user profile, and sign out. Footer can stay. To edit nav.
+    IF there's time, implement chart showing eg best selling products??
+*@
+
+<div class="container main-context">
+    <h1 class="main-title">Admin Management</h1>
+    <!-- For now just links to the relevant pages. MAYBE divide container into two grids and have products list and orders list directly there? to edit and see. -->
+    <ul>
+        <li><a asp-controller="Admin" asp-action="ProdList">Product Management</a></li>
+        <li><a asp-controller="Admin" asp-action="OrderList">Order Management</a></li>
+    </ul>
+</div>
+
+<!-- Below is Vulpes' code. To keep in case. -->
+@* <p>
     <a asp-action="Create">Create New</a>
 </p>
 <table class="table">
@@ -74,4 +96,4 @@
         </tr>
 }
     </tbody>
-</table>
+</table> *@
