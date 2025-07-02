@@ -1,5 +1,169 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿<!-- Order Management -->
+@model List<Product>
 @{
+    ViewData["Title"] = "Order Management";
+    Layout = "_Layout";
 }
+<link rel="stylesheet" href="~/css/admin.css" />
+
+<div class="admin-container">
+    <!-- Header -->
+    <div class="admin-header">
+        <h1 class-admin-title>
+            <i class="fas fa-list-alt"></i>
+            Order Status
+        </h1>
+        <div class="header-actions">
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+    </div>
+    
+    <!-- Search and Filters -->
+    <div class="admin-controls">
+        <div class="search-container">
+            <input type="text" id="orderSearch" placeholder="Search orders by email or ID ..." class="search-input">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+        <div class="filter-container">
+            <select id="statusFilter" class="filter-select">
+                <option value="">All Orders</option>
+                <option value="Pending">Pending</option>
+                <option value="Shipping">Shipping</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+    
+    <!-- Order Table-->
+    <div class="table-container">
+        <table class="admin-table" id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer's Email</th>
+                    <th>Date</th>
+                    <th>Total Cost</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        @*<tr class="order-row" data-status="@order.Status">
+                            <td class="order-id">
+                                <strong>#@order.Id.ToString("D5")</strong>
+                            </td>
+                            <td class="buyer-email">
+                                @if (!string.IsNullOrEmpty(order.UserEmail))
+                                    
+                            </td>
+                        </tr>*@
+                    }
+                }
+                else
+                {
+                    <!-- Hardcoded sample data for demonstration -->
+                    <tr class="order-row" data-status="Pending">
+                        <td class="order-id"><strong>#000001</strong></td>
+                        <td class="buyer-email">john.doe@example.com</td>
+                        <td class="order-date">
+                            Dec 15, 2024
+                            <br>
+                            <small class="text-muted">02:30 PM</small>
+                        </td>
+                        <td class="order-total"><span class="total-amount">$129.99</span></td>
+                        <td class="order-status">
+                            <span class="status-badge status-pending">Pending</span>
+                        </td>
+                        <td class="order-actions">
+                            <div class="status-update">
+                                <select class="status-select" onchange="updateOrderStatus(1, this.value)">
+                                    <option value="Pending" selected>Pending</option>
+                                    <option value="Shipping">Shipping</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="order-row" data-status="Shipping">
+                        <td class="order-id"><strong>#000002</strong></td>
+                        <td class="buyer-email">jane.smith@example.com</td>
+                        <td class="order-date">
+                            Dec 14, 2024
+                            <br>
+                            <small class="text-muted">10:15 AM</small>
+                        </td>
+                        <td class="order-total"><span class="total-amount">$89.99</span></td>
+                        <td class="order-status">
+                            <span class="status-badge status-shipping">Shipping</span>
+                        </td>
+                        <td class="order-actions">
+                            <div class="status-update">
+                                <select class="status-select" onchange="updateOrderStatus(2, this.value)">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Shipping" selected>Shipping</option>
+                                    <option value="Delivered">Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="order-row" data-status="Delivered">
+                        <td class="order-id"><strong>#000003</strong></td>
+                        <td class="buyer-email">mike.johnson@example.com</td>
+                        <td class="order-date">
+                            Dec 13, 2024
+                            <br>
+                            <small class="text-muted">04:45 PM</small>
+                        </td>
+                        <td class="order-total"><span class="total-amount">$199.99</span></td>
+                        <td class="order-status">
+                            <span class="status-badge status-delivered">Delivered</span>
+                        </td>
+                        <td class="order-actions">
+                            <div class="status-update">
+                                <select class="status-select" onchange="updateOrderStatus(3, this.value)">
+                                    <option value="Pending">Pending</option>
+                                    <option value="Shipping">Shipping</option>
+                                    <option value="Delivered" selected>Delivered</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (Model != null && !Model.Any())
+        {
+            <div class="empty-state">
+                <i class="fas fa-shopping-cart"></i>
+                <h3>No Orders Found</h3>
+                <p>Orders will appear here when customers make purchases.</p>
+            </div>
+        }
+    </div>
+
+    <!-- Summary -->
+    <div class="table-summary">
+        @if (Model != null && Model.Any())
+        {
+            <p>Showing <strong>@Model.Count()</strong> orders</p>
+        }
+        else
+        {
+            <p>Showing <strong>3</strong> sample orders</p>
+        }
+    </div>
+</div>
+
+<script src="~/js/admin.js"></script>
