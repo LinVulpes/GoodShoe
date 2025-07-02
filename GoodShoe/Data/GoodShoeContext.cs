@@ -10,7 +10,8 @@ namespace GoodShoe.Data
             : base(options)
         {
         }
-        
+
+
         public DbSet<Product> Product { get; set; } = default!;
         // doing the Orders later
         //public DbSet<Order> Order { get; set; } = default!;
