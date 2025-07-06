@@ -64,15 +64,24 @@
                             </div>
                         </div>
                         
-                        <!-- Add to Cart Button -->
                         <div class="cart-section mt-4">
-                            <button type="button" 
-                                    class="add-to-cart-button" 
-                                    id="addToCartBtn"
-                                    disabled
-                                    onclick="addToCart(@Model.Id)">
-                                Add to cart
-                            </button>
+                            <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm">
+                                @Html.AntiForgeryToken()
+
+                                <!-- productId stays the same -->
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <!-- size will be populated in JS -->
+                                <input type="hidden" name="size" id="selectedSize" />
+
+                                <!-- still a button (we’ll submit via JS) -->
+                                <button type="button"
+                                        class="btn btn-primary add-to-cart-button"
+                                        id="addToCartBtn"
+                                        disabled
+                                        onclick="addToCart()">
+                                    Add to cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -266,28 +275,23 @@
     let selectedSize = null;
 
     function selectSize(button, size) {
-        if (button.classList.contains('disabled')) {
-            return;
-        }
-
-        // Remove selection from all buttons
-        document.querySelectorAll('.size-button').forEach(btn => {
-            btn.classList.remove('selected');
-        });
-
-        // Add selection to clicked button
-        button.classList.add('selected');
-        selectedSize = size;
-
-        // Enable add to cart button
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        addToCartBtn.disabled = false;
+      if (button.classList.contains('disabled')) return;
+      document.querySelectorAll('.size-button').forEach(b => b.classList.remove('selected'));
+      button.classList.add('selected');
+      selectedSize = size;
+      document.getElementById('addToCartBtn').disabled = false;
     }
 
-    function addToCart(productId) {
-        if (!selectedSize) {
-            alert('Please select a size first.');
-            return;
-        }
+    function addToCart() {
+      if (!selectedSize) {
+        alert('Please select a size first.');
+        return;
+      }
+
+      // 1. write the exact label into the hidden field, e.g. "US 9"
+      document.getElementById('selectedSize').value = 'US ' + selectedSize;
+
+      // 2. submit the form to POST /Cart/AddToCart
+      document.getElementById('addToCartForm').submit();
     }
 </script>

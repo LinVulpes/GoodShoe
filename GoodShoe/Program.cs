@@ -1,18 +1,26 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Data;
+using GoodShoe.Services; //so ICartService/CartService are in scope
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession(); 
+builder.Services.AddSession();
+
+// Make IHttpContextAccessor available (needed by CartService)
+builder.Services.AddHttpContextAccessor();
+
+// Register your cart service
+builder.Services.AddScoped<ICartService, CartService>();
 
 // Added Entity Framework
 builder.Services.AddDbContext<GoodShoeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure()));
+        sqlOptions => sqlOptions.EnableRetryOnFailure()
+    ));
 
 // Add Identity services
 builder.Services.AddDefaultIdentity<IdentityUser>(options => 
@@ -38,8 +46,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// MVC services
-builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
