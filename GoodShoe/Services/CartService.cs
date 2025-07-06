@@ -50,13 +50,23 @@ namespace GoodShoe.Services
 
             if (existing != null)
             {
-                // If item exists, just increase its quantity
-                existing.Quantity += quantity;
+                // Calculate new quantity
+                var newQuantity = existing.Quantity + quantity;
                 
-                // Remove item if quantity becomes 0 or less
-                if (existing.Quantity <= 0)
+                // Debug logging (remove in production)
+                System.Diagnostics.Debug.WriteLine($"Existing item found. Current: {existing.Quantity}, Adding: {quantity}, New: {newQuantity}");
+                
+                if (newQuantity <= 0)
                 {
+                    // Remove item if quantity becomes 0 or less
                     cart.Remove(existing);
+                    System.Diagnostics.Debug.WriteLine($"Item removed from cart. ProductID: {productId}");
+                }
+                else
+                {
+                    // Update quantity
+                    existing.Quantity = newQuantity;
+                    System.Diagnostics.Debug.WriteLine($"Item quantity updated to: {existing.Quantity}");
                 }
             }
             else if (quantity > 0) // Only add new item if quantity is positive
@@ -80,10 +90,20 @@ namespace GoodShoe.Services
                     Size = size,           // Selected size (e.g. "US 9")
                     Quantity = quantity    // Start with requested qty
                 });
+                
+                System.Diagnostics.Debug.WriteLine($"New item added to cart. ProductID: {productId}, Quantity: {quantity}");
+            }
+            else
+            {
+                // Attempting to add negative quantity for non-existing item - do nothing
+                System.Diagnostics.Debug.WriteLine($"Attempted to add negative quantity ({quantity}) for non-existing item. ProductID: {productId}");
             }
 
             // Write updated cart back to session
             SaveCart(cart);
+            
+            // Debug: Print current cart state
+            System.Diagnostics.Debug.WriteLine($"Cart now has {cart.Count} items");
         }
 
         // Return the list of cart items for display

@@ -1,109 +1,136 @@
 @model List<GoodShoe.ViewModels.CartItemViewModel>
-<h2>Your Cart</h2> <!-- Page heading -->
 
-@if (!Model.Any())
-{
-    <p>Your cart is empty.</p> @* If there are no items in the cart, show this message *@
-}
-else
-{
-    <div class="cart-container">
-        <!-- Container for cart items and summary side-by-side -->
-        <div class="cart-items">
-            @foreach (var item in Model)
-            {
-                <div class="cart-item">
-                    <!-- Product image -->
-                    <img src="@item.ImageUrl"
-                         alt="@item.ProductName"
-                         class="item-image" />
+<div class="container-fluid px-4 py-3">
+    <!-- Back Arrow Button -->
+    <div class="cart-back-arrow mb-3">
+        <a asp-controller="Home" asp-action="Products" class="cart-back-link">
+            <i class="bi bi-arrow-left"></i> Back to Products
+        </a>
+    </div>
+    
+    <h2 class="cart-page-title mb-4">Your Cart</h2>
 
-                    <div class="item-details">
-                        <!-- Product name -->
-                        <h3>@item.ProductName</h3>
-                        <!-- Shoe size -->
-                        <p>Size: @item.Size</p>
-                        <!-- Quantity selected -->
-                        <p>Qty: @item.Quantity</p>
+    @if (!Model.Any())
+    {
+        <div class="cart-empty-state text-center py-5">
+            <p class="lead">Your cart is empty.</p>
+            <a asp-controller="Home" asp-action="Products" class="btn btn-secondary">
+                Start Shopping
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <!-- Cart Items Section -->
+            <div class="col-lg-8">
+                @foreach (var item in Model)
+                {
+                    <div class="cart-product-card mb-3">
+                        <div class="row align-items-center">
+                            <!-- Product Image -->
+                            <div class="col-md-3">
+                                <img src="@item.ImageUrl" 
+                                     alt="@item.ProductName" 
+                                     class="cart-product-image">
+                            </div>
+                            
+                            <!-- Product Details -->
+                            <div class="col-md-5">
+                                <h5 class="cart-product-name mb-1">@item.ProductName</h5>
+                                <p class="cart-product-category mb-1">Men's Everyday Shoe</p>
+                                <p class="cart-product-size mb-0">Size: @item.Size</p>
+                            </div>
+                            
+                            <!-- Quantity Controls -->
+                            <div class="col-md-2">
+                                <div class="cart-quantity-controls d-flex align-items-center">
+                                    <!-- Minus Button -->
+                                    <form asp-action="AddToCart" method="post" class="d-inline" onsubmit="console.log('Minus button clicked for product:', @item.ProductID);">
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="hidden" name="size" value="@item.Size" />
+                                        <input type="hidden" name="quantity" value="-1" />
+                                        <button type="submit" class="cart-quantity-btn btn btn-outline-secondary btn-sm" 
+                                                title="Decrease quantity">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Quantity Display -->
+                                    <span class="cart-quantity-display mx-2" id="qty-@item.ProductID">@item.Quantity</span>
+                                    
+                                    <!-- Plus Button -->
+                                    <form asp-action="AddToCart" method="post" class="d-inline" onsubmit="console.log('Plus button clicked for product:', @item.ProductID);">
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="hidden" name="size" value="@item.Size" />
+                                        <input type="hidden" name="quantity" value="1" />
+                                        <button type="submit" class="cart-quantity-btn btn btn-outline-secondary btn-sm"
+                                                title="Increase quantity">
+                                            <i class="bi bi-plus"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            
+                            <!-- Price and Remove -->
+                            <div class="col-md-2 text-end">
+                                <div class="cart-price-section">
+                                    <!-- Individual item price (never changes) -->
+                                    <p class="cart-item-price mb-1">@item.Price.ToString("C")</p>
+                                    
+                                    <!-- Subtotal for this specific item (changes with quantity) -->
+                                    <p class="cart-item-subtotal mb-2 text-muted small">Subtotal: @(item.Price * item.Quantity)</p>
+                                    
+                                    <!-- Remove Button -->
+                                    <form asp-action="RemoveFromCart" method="post" class="d-inline">
+                                        <input type="hidden" name="productId" value="@item.ProductID" />
+                                        <input type="hidden" name="size" value="@item.Size" />
+                                        <button type="submit" class="cart-remove-btn btn btn-link text-danger p-0"
+                                                title="Remove item from cart">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="item-quantity">
-                        <!-- minus button -->
-                        <form asp-action="AddToCart" method="post" class="d-inline">
-                            <input type="hidden" name="productId" value="@item.ProductID" />
-                            <input type="hidden" name="size" value="@item.Size" />
-                            <input type="hidden" name="quantity" value="-1" />
-                            <button type="submit" class="btn btn-light btn-sm">
-                                <i class="bi bi-dash"></i>
-                            </button>
-                        </form>
-
-                        <!-- current qty -->
-                        <span class="qty-number">@item.Quantity</span>
-
-                        <!-- plus button -->
-                        <form asp-action="AddToCart" method="post" class="d-inline">
-                            <input type="hidden" name="productId" value="@item.ProductID" />
-                            <input type="hidden" name="size" value="@item.Size" />
-                            <input type="hidden" name="quantity" value="1" />
-                            <button type="submit" class="btn btn-light btn-sm">
-                                <i class="bi bi-plus"></i>
-                            </button>
-                        </form>
+                }
+            </div>
+            
+            <!-- Order Summary Section -->
+            <div class="col-lg-4">
+                <div class="cart-summary-card">
+                    <h4 class="cart-summary-title mb-3">Order Summary</h4>
+                    
+                    <div class="cart-summary-line d-flex justify-content-between mb-2">
+                        <span>Subtotal</span>
+                        <span>@(Model.Sum(i => i.Price * i.Quantity).ToString("C"))</span>
                     </div>
-
-                    <div class="item-price">
-                        <p>@item.Price.ToString("C")</p> <!-- Single item price formatted as currency -->
-                        <p>
-                            Subtotal:
-                            @(item.Price * item.Quantity).ToString("C")
-                            @* Total price for this item line *@
-                        </p>
-
-                        <form asp-action="RemoveFromCart" method="post">
-                            @* Form to remove this item from the cart *@
-                            <input type="hidden" name="productId" value="@item.ProductID" />
-                            <input type="hidden" name="size" value="@item.Size" />
-                            <button type="submit" class="remove-btn">Remove Item</button>  <!--remove item button-->
+                    
+                    <div class="cart-summary-line d-flex justify-content-between mb-3">
+                        <span>Estimated Delivery & Handling</span>
+                        <span>$20.00</span>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="cart-summary-total d-flex justify-content-between mb-4">
+                        <strong>Total</strong>
+                        <strong>@((Model.Sum(i => i.Price * i.Quantity) + 20).ToString("C"))</strong>
+                    </div>
+                    
+                    <!-- Checkout Button -->
+                    <div class="d-grid gap-2">
+                        <form asp-controller="Order" asp-action="Checkout" method="get">
+                            <button type="submit" 
+                                    class="btn btn-dark w-100 cart-checkout-button"
+                                    @(Model.Count == 0 ? "disabled" : "")>
+                                Continue to Checkout
+                            </button>
                         </form>
                     </div>
                 </div>
-            }
+            </div>
         </div>
-
-        <div class="summary">
-            <h3>Order Summary</h3> <!-- Summary box heading -->
-            <div class="summary-line">
-                <span>Subtotal</span>
-                <span>@(Model.Sum(i => i.Price * i.Quantity).ToString("C"))</span>
-            </div>
-            <div class="summary-line">
-                <span>Delivery & Handling</span>
-                <p>FREE</p> <!-- free shipping fee -->
-            </div>
-            <div class="summary-line total">
-                <span>Total</span>
-                <span>
-                    @(Model.Sum(i => i.Price * i.Quantity)).ToString("C")
-                    @* Grand total including shipping *@
-                </span>
-            </div>
-
-            <form asp-controller="Order" asp-action="Checkout" method="get">
-                @* Button to proceed to payment page *@
-                <button type="submit"
-                        class="payment-button"
-                @(Model.Count == 0 ? "disabled" : "")>
-                    Proceed to Check Out
-                </button>
-            </form>
-
-            <form asp-controller="Home" asp-action="Products" method="get">
-                @* Button to continue shopping *@
-                <button type="submit" class="btn btn-secondary">
-                    Continue Shopping
-                </button>
-            </form>
-        </div>
-    </div>
-}
+    }
+</div>
