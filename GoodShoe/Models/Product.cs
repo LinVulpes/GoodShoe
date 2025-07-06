@@ -41,5 +41,8 @@ namespace GoodShoe.Models
         // ImageURL
         [StringLength(200)] 
         public string ImageUrl { get; set; } = string.Empty;
+        
+        // Available Shoe Sizes
+        //public string? AvailableSizes { get; set; }
     }
 }

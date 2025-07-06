@@ -1,4 +1,6 @@
-﻿@model IEnumerable<GoodShoe.Models.Product>
+﻿<!-- Admin Dashboard -->
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@model IEnumerable<GoodShoe.Models.Product>
 
 @{
     ViewData["Title"] = "GoodShoe Administration";
@@ -10,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }
 
 @*  The admin's landing page.
@@ -19,81 +22,95 @@
 *@
 
 <div class="container main-context">
+    <div class="admin-header">
+        <h1 class="admin-title">
+            <i class="bi bi-person-gear"></i>
+            Admin Dashboard
+        </h1>
+        <p class="admin-subtitle">Manage your GoodShoe E-commerce platform here!</p>
+    </div>
+    
+    <!-- Statics  Cards -->
+    <div class="stats-grid">
+        
+        <!-- Products Statics -->
+        <div class="stat-card">
+            <div class="stat-icon products">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.TotalProducts</h3>
+                <p>Total Products</p>
+            </div>
+        </div>
+
+        <!-- Orders Statics -->
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.TotalOrders</h3>
+                <p>Total Orders</p>
+            </div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon pending">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.PendingOrders</h3>
+                <p>Pending Orders</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.LowStockProducts</h3>
+                <p>Low Stock Items</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="action-grid">
+            <a asp-controller="Admin" asp-action="ProdList" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-inboxes"></i>
+                </div>
+                <h3>Manage Products</h3>
+                <p>Add, edit, or delete products from your inventory</p>
+            </a>
+
+            <a asp-controller="Admin" asp-action="OrderList" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-list-alt"></i>
+                </div>
+                <h3>Manage Orders</h3>
+                <p>View and update order statuses</p>
+            </a>
+
+            <a asp-controller="Admin" asp-action="Create" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <h3>Add New Product</h3>
+                <p>Add a new shoe to your product catalog</p>
+            </a>
+        </div>
+    </div>
+    
+    @* Reena's code
     <h1 class="main-title">Admin Management</h1>
     <!-- For now just links to the relevant pages. MAYBE divide container into two grids and have products list and orders list directly there? to edit and see. -->
     <ul>
         <li><a asp-controller="Admin" asp-action="ProdList">Product Management</a></li>
         <li><a asp-controller="Admin" asp-action="OrderList">Order Management</a></li>
-    </ul>
+    </ul> *@
 </div>
-
-<!-- Below is Vulpes' code. To keep in case. -->
-@* <p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Brand)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Size)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StockCount)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Color)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StockCount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Color)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table> *@
