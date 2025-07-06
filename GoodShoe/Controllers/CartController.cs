@@ -1,4 +1,4 @@
-﻿using GoodShoe.Models.ViewModels;
+using GoodShoe.Models.ViewModels;
 using GoodShoe.Services;
 using Microsoft.AspNetCore.Mvc;
 

@@ -37,10 +37,10 @@
                         <h1 class="product-name">@Model.Name</h1>
                         
                         <!-- Product Category -->
-                        <p class="product-category">@Model.Gender's @Model.Brand</p>
+                        <p class="product-category">@Model.Category's @Model.Brand</p>
                         
                         <!-- Price -->
-                        <h2 class="product-price">${@Model.Price.ToString("F2")}</h2>
+                        <h2 class="product-price">$@Model.Price.ToString("F2")</h2>
                         
                         <!-- Description -->
                         <p class="product-description">@Model.Description</p>

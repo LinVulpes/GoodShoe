@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GoodShoe.Migrations
 {
-    [DbContext(typeof(GoodShoeContext))]
+    [DbContext(typeof(GoodShoeDbContext))]
     [Migration("20250612134400_AddNikeMax260")]
     partial class AddNikeMax260
     {

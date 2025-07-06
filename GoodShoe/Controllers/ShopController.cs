@@ -7,9 +7,9 @@ namespace GoodShoe.Controllers;
 
 public class ShopController : Controller
 {
-    private readonly GoodShoeContext _context;
+    private readonly GoodShoeDbContext _context;
 
-    public ShopController(GoodShoeContext context)
+    public ShopController(GoodShoeDbContext context)
     {
         _context = context;
     }

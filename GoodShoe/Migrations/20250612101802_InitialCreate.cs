@@ -18,11 +18,12 @@ namespace GoodShoe.Migrations
                     Brand = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    Size = table.Column<decimal>(type: "decimal(3,1)", nullable: false),
                     StockCount = table.Column<int>(type: "int", nullable: false),
                     Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    ImageUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
+                    ImageUrl = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    // Note: Size column will be removed in SimpleECommerceStructure migration
+                    Size = table.Column<decimal>(type: "decimal(3,1)", nullable: false)
                 },
                 constraints: table =>
                 {

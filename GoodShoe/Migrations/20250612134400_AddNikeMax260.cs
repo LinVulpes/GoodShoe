@@ -10,7 +10,7 @@ namespace GoodShoe.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Using EF's InsertData method (more type-safe)
+            // Using EF's InsertData method (keeping original structure for this migration)
             migrationBuilder.InsertData(
                 table: "Product",
                 columns: new[] { "Name", "Brand", "Price", "Size", "Description", "StockCount", "Color", "Gender", "ImageUrl" },

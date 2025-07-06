@@ -7,21 +7,21 @@ namespace GoodShoe.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly GoodShoeContext _context;
+        private readonly GoodShoeDbContext _context;
 
-        public ProductsController(GoodShoeContext context)
+        public ProductsController(GoodShoeDbContext context)
         {
             _context = context;
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(string gender = "")
+        public async Task<IActionResult> Index(string Category = "")
         {
             var products = _context.Product.AsQueryable();
 
-            if (!string.IsNullOrEmpty(gender))
+            if (!string.IsNullOrEmpty(Category))
             {
-                products = products.Where(p => p.Gender == gender);
+                products = products.Where(p => p.Category == Category);
             }
             
             return View(await products.ToListAsync());
@@ -46,22 +46,22 @@ namespace GoodShoe.Controllers
             return View(product);
         }
         
-        // Getting Gender-specific pages
+        // Getting Category-specific pages
         public async Task<IActionResult> Men()
         {
-            var menProducts = await _context.Product.Where(p => p.Gender == "Men").ToListAsync();
+            var menProducts = await _context.Product.Where(p => p.Category == "Men").ToListAsync();
             return View("Index", menProducts);
         }
         
         public async Task<IActionResult> Women()
         {
-            var womenProducts = await _context.Product.Where(p => p.Gender == "Women").ToListAsync();
+            var womenProducts = await _context.Product.Where(p => p.Category == "Women").ToListAsync();
             return View("Index", womenProducts);
         }
         
         public async Task<IActionResult> Unisex()
         {
-            var unisexProducts = await _context.Product.Where(p => p.Gender == "Unisex").ToListAsync();
+            var unisexProducts = await _context.Product.Where(p => p.Category == "Unisex").ToListAsync();
             return View("Index", unisexProducts);
         }
         
@@ -76,7 +76,7 @@ namespace GoodShoe.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Gender")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Category")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +108,7 @@ namespace GoodShoe.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Gender")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Category")] Product product)
         {
             if (id != product.Id)
             {

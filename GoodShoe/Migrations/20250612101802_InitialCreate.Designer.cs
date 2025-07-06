@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GoodShoe.Migrations
 {
-    [DbContext(typeof(GoodShoeContext))]
+    [DbContext(typeof(GoodShoeDbContext))]
     [Migration("20250612101802_InitialCreate")]
     partial class InitialCreate
     {

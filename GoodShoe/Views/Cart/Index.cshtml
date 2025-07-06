@@ -1,5 +1,4 @@
-﻿@model List<GoodShoe.Models.ViewModels.CartItem>
-
+@model List<GoodShoe.ViewModels.CartItemViewModel>
 <h2>Your Cart</h2> <!-- Page heading -->
 
 @if (!Model.Any())
@@ -16,12 +15,12 @@ else
                 <div class="cart-item">
                     <!-- Product image -->
                     <img src="@item.ImageUrl"
-                         alt="@item.Name"
+                         alt="@item.ProductName"
                          class="item-image" />
 
                     <div class="item-details">
                         <!-- Product name -->
-                        <h3>@item.Name</h3>
+                        <h3>@item.ProductName</h3>
                         <!-- Shoe size -->
                         <p>Size: @item.Size</p>
                         <!-- Quantity selected -->
@@ -31,7 +30,7 @@ else
                     <div class="item-quantity">
                         <!-- minus button -->
                         <form asp-action="AddToCart" method="post" class="d-inline">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="productId" value="@item.ProductID" />
                             <input type="hidden" name="size" value="@item.Size" />
                             <input type="hidden" name="quantity" value="-1" />
                             <button type="submit" class="btn btn-light btn-sm">
@@ -44,7 +43,7 @@ else
 
                         <!-- plus button -->
                         <form asp-action="AddToCart" method="post" class="d-inline">
-                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="productId" value="@item.ProductID" />
                             <input type="hidden" name="size" value="@item.Size" />
                             <input type="hidden" name="quantity" value="1" />
                             <button type="submit" class="btn btn-light btn-sm">
@@ -63,7 +62,7 @@ else
 
                         <form asp-action="RemoveFromCart" method="post">
                             @* Form to remove this item from the cart *@
-                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="productId" value="@item.ProductID" />
                             <input type="hidden" name="size" value="@item.Size" />
                             <button type="submit" class="remove-btn">Remove Item</button>  <!--remove item button-->
                         </form>

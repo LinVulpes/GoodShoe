@@ -9,10 +9,12 @@ namespace GoodShoe.Models
         public int Id { get; set; }
         
         // Name
-        [Required] [StringLength(100)] 
+        [Required] 
+        [StringLength(100)] 
         public string Name { get; set; } = string.Empty;
 
         // Brand
+        [Required]
         [StringLength(50)]
         public string Brand { get; set; } = string.Empty;
         
@@ -22,27 +24,59 @@ namespace GoodShoe.Models
         public decimal Price { get; set; }
         
         // Description
+        [Required]
         [StringLength(1000)]
         public string Description { get; set; } = string.Empty;
-        
-        // Shoe Size
-        public decimal Size {  get; set; }
         
         // StockCount
         public int StockCount { get; set; }
         
         // Color
+        [Required]
         public string Color { get; set; } = string.Empty;
         
-        // Gender
+        // Category (Men/Women/Unisex)
+        [Required]
         [StringLength(50)] 
-        public string Gender { get; set; } = string.Empty; // [Men/Women/Unisex]
+        public string Category { get; set; } = string.Empty;
         
         // ImageURL
         [StringLength(200)] 
         public string ImageUrl { get; set; } = string.Empty;
         
-        // Available Shoe Sizes
-        //public string? AvailableSizes { get; set; }
+        // Available Shoe Sizes (comma-separated: "8,9,10,11,12")
+        [Required]
+        public string AvailableSizes { get; set; } = string.Empty;
+        
+        // Navigation properties
+        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        
+        // Helper methods
+        public List<string> GetSizesList()
+        {
+            return string.IsNullOrEmpty(AvailableSizes) 
+                ? new List<string>() 
+                : AvailableSizes.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        }
+        
+        public bool IsInStock => StockCount > 0;
+        public bool IsLowStock => StockCount <= 5;
+    }
+    
+    // Helper class for shoe sizes
+    public static class ShoeSizes
+    {
+        public static readonly string[] Available = { "8", "9", "10", "11", "12", "13", "14", "15", "16" };
+        
+        public static bool IsValid(string size)
+        {
+            return Available.Contains(size);
+        }
+        
+        public static string GetSizesAsString()
+        {
+            return string.Join(",", Available);
+        }
     }
 }

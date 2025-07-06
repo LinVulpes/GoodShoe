@@ -9,8 +9,8 @@ namespace GoodShoe.Controllers
     {
 
         // Establish the context
-        private GoodShoeContext context {  get; set; }
-        public AdminController(GoodShoeContext ctx)
+        private GoodShoeDbContext context {  get; set; }
+        public AdminController(GoodShoeDbContext ctx)
         {
             context = ctx;
         }

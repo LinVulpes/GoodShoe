@@ -17,7 +17,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICartService, CartService>();
 
 // Added Entity Framework
-builder.Services.AddDbContext<GoodShoeContext>(options =>
+builder.Services.AddDbContext<GoodShoeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
@@ -36,7 +36,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
         options.SignIn.RequireConfirmedAccount = false;
         options.SignIn.RequireConfirmedEmail = false;
     })
-.AddEntityFrameworkStores<GoodShoeContext>();
+.AddEntityFrameworkStores<GoodShoeDbContext>();
 
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>

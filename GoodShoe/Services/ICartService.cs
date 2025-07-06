@@ -1,5 +1,5 @@
-﻿// Import the CartItem view model so we know what data types the methods will work with
-using GoodShoe.Models.ViewModels;
+﻿// Import the Cart view models so we know what data types the methods will work with
+using GoodShoe.ViewModels;
 // Import List<T> so we can return collections of items
 using System.Collections.Generic;
 
@@ -20,8 +20,8 @@ namespace GoodShoe.Services
         /// <summary>
         /// Retrieve all items currently in the cart.
         /// </summary>
-        /// <returns>A list of CartItem objects representing the cart contents.</returns>
-        List<CartItem> GetCartItems();
+        /// <returns>A list of CartItemViewModel objects representing the cart contents.</returns>
+        List<CartItemViewModel> GetCartItems();
 
         /// <summary>
         /// Remove a specific item (by product and size) from the cart.

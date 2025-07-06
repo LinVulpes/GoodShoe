@@ -9,52 +9,46 @@ namespace GoodShoe.Controllers;
 
 public class HomeController : Controller
 {
-    private readonly GoodShoeContext _logger;
+    private readonly GoodShoeDbContext _context;
 
-    public HomeController(GoodShoeContext logger)
+    public HomeController(GoodShoeDbContext context)
     {
-        _logger = logger;
+        _context = context;
     }
     
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         return View();
     }
     
     // Adding Filters
-    public async Task<IActionResult> Products(string sortOrder, string searchString, string genderFilter)
+    public async Task<IActionResult> Products(string sortOrder, string searchString, string categoryFilter)
     {
         // Viewing data from dropdowns
         ViewBag.CurrentSort = sortOrder;
         ViewBag.CurrentFilter = searchString;
-        ViewBag.CurrentGender = genderFilter;
+        ViewBag.CurrentCategory = categoryFilter;
         
-        if (_logger.Product == null)
+        if (_context.Product == null)
         {
             return Problem("No product found!");
         }
 
-        var products = from p in _logger.Product
+        var products = from p in _context.Product
             select p;
 
         // Apply search filter
-        if (!String.IsNullOrEmpty(searchString))
+        if (!string.IsNullOrEmpty(searchString))
         {
-            products = products.Where(p => p.Name.Contains(searchString) 
-                                           || p.Brand.Contains(searchString)
-                                           || p.Description.Contains(searchString));
-        }
-        
-        // Search Specific Item
-        if (!String.IsNullOrEmpty(searchString))
-        {
-            products = products.Where(p => p.Name!.ToUpper().Contains(searchString.ToUpper()));
+            products = products.Where(p => (p.Name != null && p.Name.ToUpper().Contains(searchString.ToUpper())) 
+                                           || (p.Brand != null && p.Brand.ToUpper().Contains(searchString.ToUpper()))
+                                           || (p.Description != null && p.Description.ToUpper().Contains(searchString.ToUpper())));
         }
         
         // Gender Filter
-        if (!String.IsNullOrEmpty(genderFilter))
+        if (!string.IsNullOrEmpty(categoryFilter) && categoryFilter != "All")
         {
-            products = products.Where(p => p.Gender == genderFilter);
+            products = products.Where(p => p.Category != null && p.Category == categoryFilter);
         }
         
         // Sorting Filter
@@ -82,17 +76,17 @@ public class HomeController : Controller
         }
         
         // Gender counts
-        var allProducts = _logger.Product;
-        var menCount = await allProducts.CountAsync(p => p.Gender == "Men");
-        var womenCount = await allProducts.CountAsync(p => p.Gender == "Women");
-        var unisexCount = await allProducts.CountAsync(p => p.Gender == "Unisex");
+        var allProducts = _context.Product;
+        var menCount = await allProducts.CountAsync(p => p.Category == "Men");
+        var womenCount = await allProducts.CountAsync(p => p.Category == "Women");
+        var unisexCount = await allProducts.CountAsync(p => p.Category == "Unisex");
 
         var viewModel = new ProductListViewModel
         {
             Products = await products.ToListAsync(),
             SortOrder = sortOrder ?? "",
             CurrentFilter = searchString ?? "",
-            GenderFilter = genderFilter ?? "",
+            CategoryFilter = categoryFilter ?? "",
             TotalProducts = await products.CountAsync(),
             MenCount = menCount,
             WomenCount = womenCount,
