@@ -1,39 +1,71 @@
 ﻿@model List<GoodShoe.Models.ViewModels.CartItem>
 
-<h2>Your Cart</h2>
+<h2>Your Cart</h2> <!-- Page heading -->
 
 @if (!Model.Any())
 {
-    <p>Your cart is empty.</p>
+    <p>Your cart is empty.</p> @* If there are no items in the cart, show this message *@
 }
 else
 {
     <div class="cart-container">
+        <!-- Container for cart items and summary side-by-side -->
         <div class="cart-items">
             @foreach (var item in Model)
             {
                 <div class="cart-item">
+                    <!-- Product image -->
                     <img src="@item.ImageUrl"
                          alt="@item.Name"
                          class="item-image" />
 
                     <div class="item-details">
+                        <!-- Product name -->
                         <h3>@item.Name</h3>
+                        <!-- Shoe size -->
                         <p>Size: @item.Size</p>
+                        <!-- Quantity selected -->
                         <p>Qty: @item.Quantity</p>
                     </div>
 
+                    <div class="item-quantity">
+                        <!-- minus button -->
+                        <form asp-action="AddToCart" method="post" class="d-inline">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="size" value="@item.Size" />
+                            <input type="hidden" name="quantity" value="-1" />
+                            <button type="submit" class="btn btn-light btn-sm">
+                                <i class="bi bi-dash"></i>
+                            </button>
+                        </form>
+
+                        <!-- current qty -->
+                        <span class="qty-number">@item.Quantity</span>
+
+                        <!-- plus button -->
+                        <form asp-action="AddToCart" method="post" class="d-inline">
+                            <input type="hidden" name="productId" value="@item.ProductId" />
+                            <input type="hidden" name="size" value="@item.Size" />
+                            <input type="hidden" name="quantity" value="1" />
+                            <button type="submit" class="btn btn-light btn-sm">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </form>
+                    </div>
+
                     <div class="item-price">
-                        <p>@item.Price.ToString("C")</p>
+                        <p>@item.Price.ToString("C")</p> <!-- Single item price formatted as currency -->
                         <p>
                             Subtotal:
                             @(item.Price * item.Quantity).ToString("C")
+                            @* Total price for this item line *@
                         </p>
 
                         <form asp-action="RemoveFromCart" method="post">
+                            @* Form to remove this item from the cart *@
                             <input type="hidden" name="productId" value="@item.ProductId" />
                             <input type="hidden" name="size" value="@item.Size" />
-                            <button type="submit" class="remove-btn">Remove Item</button>
+                            <button type="submit" class="remove-btn">Remove Item</button>  <!--remove item button-->
                         </form>
                     </div>
                 </div>
@@ -41,31 +73,34 @@ else
         </div>
 
         <div class="summary">
-            <h3>Order Summary</h3>
+            <h3>Order Summary</h3> <!-- Summary box heading -->
             <div class="summary-line">
                 <span>Subtotal</span>
                 <span>@(Model.Sum(i => i.Price * i.Quantity).ToString("C"))</span>
             </div>
             <div class="summary-line">
-                <span>Estimated Delivery & Handling</span>
-                <span>$20.00</span>
+                <span>Delivery & Handling</span>
+                <p>FREE</p> <!-- free shipping fee -->
             </div>
             <div class="summary-line total">
                 <span>Total</span>
                 <span>
-                    @(Model.Sum(i => i.Price * i.Quantity) + 20).ToString("C")
+                    @(Model.Sum(i => i.Price * i.Quantity)).ToString("C")
+                    @* Grand total including shipping *@
                 </span>
             </div>
 
             <form asp-controller="Order" asp-action="Checkout" method="get">
+                @* Button to proceed to payment page *@
                 <button type="submit"
                         class="payment-button"
                 @(Model.Count == 0 ? "disabled" : "")>
-                    Proceed to Payment
+                    Proceed to Check Out
                 </button>
             </form>
 
             <form asp-controller="Home" asp-action="Products" method="get">
+                @* Button to continue shopping *@
                 <button type="submit" class="btn btn-secondary">
                     Continue Shopping
                 </button>
