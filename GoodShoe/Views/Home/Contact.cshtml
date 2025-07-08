@@ -1,7 +1,694 @@
 @{
-    ViewData["Title"] = "Contact";
+ViewData["Title"] = "Contact Us";
 }
 
-<h1>@ViewData["Title"]</h1>
+<style>
+    /* Color Variables */
+    .contact-hero {
+        background-image: url('/images/contact-banner1.png');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
 
-<p>This will be our contact page.</p>
+    .contact-hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(105, 105, 105, 0.3); /* grey overlay */
+    }
+    
+    /* Hero Section */
+    .hero-title {
+        font-size: 4rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2; /* make sure content appears above overlay */
+    }
+
+    .breadcrumb-custom {
+        font-size: 1rem;
+        position: relative;
+        color: #ffffff;
+        z-index: 2; /* make sure content appears above overlay */
+    }
+
+    .breadcrumb-custom a {
+        text-decoration: none;
+        font-weight: 400;
+        color: rgba(255, 255, 255, 0.9);
+    }
+
+    .breadcrumb-custom a:hover {
+        color: #ffffff;
+        text-decoration: underline;
+    }
+
+    /* Main Content Section */
+    .main-content {
+        padding: 30px 0;
+        margin: 0;
+        background: #ffffff;
+    }
+
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #000000;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    /* Contact Cards */
+    .contact-cards-section {
+        margin-bottom: 60px;
+    }
+
+    .contact-card {
+        background: #ffffff;
+        border: 2px solid #e9ecef;
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        height: 100%;
+        transition: all 0.4s ease;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .contact-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(196, 185, 160, 0.1), transparent);
+        transition: left 0.6s;
+    }
+
+    .contact-card:hover::before {
+        left: 100%;
+    }
+
+    .contact-card:hover {
+        transform: translateY(-8px);
+        border-color: #C4B9A0;
+        box-shadow: 0 15px 35px rgba(125, 82, 47, 0.15);
+    }
+
+    .contact-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #C4B9A0, #CAC3B2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: #ffffff;
+        font-size: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .contact-card:hover .contact-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .contact-card-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #000000;
+        margin-bottom: 0.75rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .contact-card-text {
+        color: #666666;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    /* Two Column Layout */
+    .two-column-section {
+        margin-top: 30px;
+    }
+
+    /* Image Section */
+    .image-section {
+        border: 2px solid #C4B9A0;
+        border-radius: 20px;
+        height: 500px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .image-section img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 18px;
+    }
+
+    /* Contact Form */
+    .contact-form-section {
+        background: #ffffff;
+        border: 2px solid #e9ecef;
+        border-radius: 20px;
+        padding: 2.5rem;
+        height: 500px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #000000;
+        margin-bottom: 0.75rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .form-subtitle {
+        color: #666666;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+
+    .form-floating {
+        margin-bottom: 1rem;
+        outline: none;
+    }
+
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #ffffff;
+        outline: none;
+    }
+
+    .form-control:focus {
+        border-color: #C4B9A0;
+        box-shadow: 0 0 0 0.25rem rgba(196, 185, 160, 0.25);
+        outline: none;
+    }
+
+    .form-control:hover {
+        border-color: #CAC3B2;
+    }
+
+    .contact-form-section textarea.form-control {
+        min-height: 80px;
+        height: 80px;
+        resize: vertical;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+    
+    .btn-submit {
+        background: linear-gradient(135deg, #C4B9A0, #CAC3B2);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        padding: 0.875rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        margin-top: auto;
+    }
+
+    .btn-submit::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+    }
+
+    .btn-submit:hover::before {
+        left: 100%;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(196, 185, 160, 0.4);
+    }
+    
+    /* Button Success State */
+    .btn-submit.btn-success-state {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+    }
+
+    .btn-submit.btn-success-state:hover {
+        background: linear-gradient(135deg, #218838 0%, #1abc9c 100%);
+        box-shadow: 0 12px 35px rgba(40, 167, 69, 0.6);
+    }
+
+    /* Success icon animation */
+    .btn-success .bi-check-circle {
+        animation: checkBounce 0.6s ease;
+    }
+
+    /* Social Media Section */
+    .social-section {
+        background: #C4B9A0;
+        padding: 2.5rem 0;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .social-title {
+        font-size: 2.25rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        font-family: 'Libre Baskerville', serif;
+    }
+
+    .social-subtitle {
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .social-icon {
+        width: 50px;
+        height: 50px;
+        background: #ffffff33;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        font-size: 1.75rem;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .social-icon:hover {
+        background: rgba(255, 255, 255, 0.9);
+        color: #C4B9A0;
+        transform: translateY(-5px) scale(1.1);
+        border-color: rgba(255, 255, 255, 0.8);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Map Section */
+    .map-section {
+        padding: 4rem 0;
+    }
+
+    .map-container {
+        background-image: url("/images/contact-map.png");
+        border: 3px dashed #7d522f;
+        border-radius: 20px;
+        height: 400px;
+        display: flex;
+        position: relative;
+        margin-bottom: 2.5rem;
+    }
+    
+    /* Newsletter Section */
+    .newsletter-section {
+        background: linear-gradient(135deg, #7d522f 0%, #5a3a21 100%);
+        padding: 2.5rem;
+        border-radius: 20px;
+        color: #ffffff;
+    }
+
+    .newsletter-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .newsletter-text {
+        font-size: 1rem;
+        opacity: 0.9;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .newsletter-form {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .newsletter-input {
+        flex: 1;
+        border: none;
+        border-radius: 12px;
+        padding: 0.875rem 1rem;
+        font-size: 1rem;
+        background: #ffffff;
+        color: #000000;
+    }
+
+    .newsletter-input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    .btn-newsletter {
+        background: #000000;
+        color: #7d522f;
+        border: none;
+        border-radius: 12px;
+        padding: 0.875rem 1.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .btn-newsletter:hover {
+        background: #f8f9fa;
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Button Success State */
+    .btn-submit.btn-success-state {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border-color: #28a745;
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit.btn-success-state:hover {
+        background: linear-gradient(135deg, #218838 0%, #1abc9c 100%);
+        box-shadow: 0 12px 35px rgba(40, 167, 69, 0.6);
+    }
+
+    /* Success icon animation */
+    .btn-success .bi-check-circle {
+        animation: checkBounce 0.6s ease;
+    }
+
+    /* Loading Animation */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+    }
+
+    /* Responsive Design */
+</style>
+
+<body>
+<!-- Hero Section -->
+<section class="contact-hero">
+    <div class="container">
+        <div class="text-white text-center">
+            <h1 class="hero-title">Contact Us</h1>
+            <div class="breadcrumb-custom">
+                <a href="/" class="text-light">Home</a> / Contact
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="main-content">
+    <div class="container">
+        <h2 class="section-title">Get in Touch with us?</h2>
+
+        <!-- 4 Contact Cards -->
+        <div class="contact-cards-section">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="contact-card h-100">
+                        <div class="contact-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <h3 class="contact-card-title">Customer Service</h3>
+                        <p class="contact-card-text">Get help with your orders, product information, and general inquiries from our dedicated support team.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="contact-card h-100">
+                        <div class="contact-icon">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </div>
+                        <h3 class="contact-card-title">Returns & Refunds</h3>
+                        <p class="contact-card-text">Need to return or exchange your purchase? Our returns team will guide you through the process.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="contact-card h-100">
+                        <div class="contact-icon">
+                            <i class="bi bi-palette"></i>
+                        </div>
+                        <h3 class="contact-card-title">Customize your Shoe!</h3>
+                        <p class="contact-card-text">Want something unique? Contact our design team to create custom shoes tailored to your style.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="contact-card h-100">
+                        <div class="contact-icon">
+                            <i class="bi bi-person-raised-hand"></i>
+                        </div>
+                        <h3 class="contact-card-title">Collaborate & Media</h3>
+                        <p class="contact-card-text">Interested in partnerships, sponsorships, or media inquiries? Let's work together.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Two Column Section -->
+        <div class="row two-column-section g-4 mb-4">
+            <!-- Contact Image -->
+            <div class="col-lg-6">
+                <div class="image-section">
+                    <img src="/images/your-contact-image.jpg" alt="Contact Image">
+                </div>
+            </div>
+            <!-- Contact Form-->
+            <div class="col-lg-6">
+                <div class="contact-form-section">
+                    <h3 class="form-title">Send us a Message!</h3>
+                    <p class="form-subtitle">Let us know how to get back to you</p>
+                    <form id="contactForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="fullName" required>
+                                    <label for="fullName">Full Name</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" required>
+                                    <label for="email">Email Address</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-floating">
+                            <input type="text" class="form-control" id="subject" required/>
+                            <label for="subject">Subject</label>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="message" required></textarea>
+                            <label for="message">Comments/Questions</label>
+                        </div>
+                        <button type="submit" class="btn-submit mt-3" id="submitBtn">
+                            <span class="btn-text">
+                                <i class="bi bi-send me-2"></i>Submit Message
+                            </span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Sending...
+                            </span>
+                            <span class="btn-success d-none">
+                                <i class="bi bi-check-circle me-2"></i>Sent!
+                            </span>
+                        </button>
+                    </form>
+                    <div id="successAlert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Social Media Section -->
+<section class="social-section">
+    <div class="container">
+        <h2 class="social-title">Connect with Us</h2>
+        <p class="social-subtitle mb-4">Stay connected to our new products and be up to date for discounts and exclusive offers</p>
+        <div class="social-icons">
+            <a href="#" class="social-icon" title="Facebook">
+                <i class="bi bi-facebook"></i>
+            </a>
+            <a href="#" class="social-icon" title="Instagram">
+                <i class="bi bi-instagram"></i>
+            </a>
+            <a href="#" class="social-icon" title="WhatsApp">
+                <i class="bi bi-whatsapp"></i>
+            </a>
+            <a href="#" class="social-icon" title="Twitter">
+                <i class="bi bi-twitter"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container">
+        <div class="map-container"></div>
+
+        <!-- Newsletter Section -->
+        <div class="newsletter-section">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="newsletter-content">
+                        <h3 class="newsletter-title">Our Newsletter</h3>
+                        <p class="newsletter-text">Subscribe to our newsletter and stay updated with the latest shoe collections, exclusive deals, and fashion trends delivered straight to your inbox.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <form class="newsletter-form" id="newsletterForm">
+                        <input type="email" class="newsletter-input" placeholder="Enter your email address">
+                        <button type="submit" class="btn-newsletter">
+                            <i class="bi bi-envelope me-2"></i>Subscribe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Contact Form Submission
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const form = this;
+        const submitBtn = document.getElementById('submitBtn');
+        const btnText = submitBtn.querySelector('.btn-text');
+        const btnLoading = submitBtn.querySelector('.btn-loading');
+        const btnSuccess = submitBtn.querySelector('.btn-success');
+        const successAlert = document.getElementById('successAlert');
+
+        // Show loading state
+        btnText.classList.add('d-none');
+        btnLoading.classList.remove('d-none');
+        submitBtn.disabled = true;
+
+        // Simulate form submission
+        setTimeout(() => {
+            // Show success state on button
+            btnLoading.classList.add('d-none');
+            btnSuccess.classList.remove('d-none');
+            submitBtn.classList.add('btn-success-state');
+
+            // Show floating success alert with animation
+            successAlert.style.display = 'block';
+
+            // Auto-hide success alert after 1 seconds
+            setTimeout(() => {
+                successAlert.style.display = 'none';
+            }, 1000);
+
+            // Reset button state after 2 seconds
+            setTimeout(() => {
+                btnSuccess.classList.add('d-none');
+                btnText.classList.remove('d-none');
+                submitBtn.classList.remove('btn-success-state');
+                submitBtn.disabled = false;
+
+                // Reset form
+                form.reset();
+            }, 2000);
+
+        }, 1500);
+    });
+
+
+    // Newsletter Form Submission
+    document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const emailInput = this.querySelector('.newsletter-input');
+        const submitBtn = this.querySelector('.btn-newsletter');
+
+        // Show loading state
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
+        submitBtn.disabled = true;
+
+        // Simulate subscription
+        setTimeout(() => {
+            submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Subscribed!';
+            submitBtn.style.background = '#28a745';
+
+            // Reset after 3 seconds
+            setTimeout(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.style.background = '';
+                submitBtn.disabled = false;
+                emailInput.value = '';
+            }, 2000);
+
+        }, 1500);
+    });
+
+    // Smooth hover effects for contact cards
+    document.querySelectorAll('.contact-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+
+</body>
