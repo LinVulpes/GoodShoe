@@ -25,3 +25,90 @@
          });
      });
  });
+
+
+//** Just Some animation & transition for Contact Page **//
+// Contact Form Submission
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const form = this;
+    const submitBtn = document.getElementById('submitBtn');
+    const btnText = submitBtn.querySelector('.btn-text');
+    const btnLoading = submitBtn.querySelector('.btn-loading');
+    const btnSuccess = submitBtn.querySelector('.btn-success');
+    const successAlert = document.getElementById('successAlert');
+
+    // Show loading state
+    btnText.classList.add('d-none');
+    btnLoading.classList.remove('d-none');
+    submitBtn.disabled = true;
+
+    // Simulate form submission
+    setTimeout(() => {
+        // Show success state on button
+        btnLoading.classList.add('d-none');
+        btnSuccess.classList.remove('d-none');
+        submitBtn.classList.add('btn-success-state');
+
+        // Show floating success alert with animation
+        successAlert.style.display = 'block';
+
+        // Auto-hide success alert after 1 seconds
+        setTimeout(() => {
+            successAlert.style.display = 'none';
+        }, 1000);
+
+        // Reset button state after 2 seconds
+        setTimeout(() => {
+            btnSuccess.classList.add('d-none');
+            btnText.classList.remove('d-none');
+            submitBtn.classList.remove('btn-success-state');
+            submitBtn.disabled = false;
+
+            // Reset form
+            form.reset();
+        }, 2000);
+
+    }, 1500);
+});
+
+// Newsletter Form Submission
+document.getElementById('newsletterForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const emailInput = this.querySelector('.newsletter-input');
+    const submitBtn = this.querySelector('.btn-newsletter');
+    const originalText = submitBtn.innerHTML;
+
+    // Show loading state
+    if (submitBtn.disabled) return; // this will prevent from multiple clicks of a button
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
+
+    // Simulate subscription
+    setTimeout(() => {
+        submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Subscribed!';
+        submitBtn.style.background = '#28a745';
+
+        // Reset loading after 2 seconds
+        setTimeout(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+            emailInput.value = '';
+        }, 2000);
+
+    }, 1500);
+});
+
+// Smooth hover effects for contact cards
+document.querySelectorAll('.contact-card').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-10px)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+    });
+});
