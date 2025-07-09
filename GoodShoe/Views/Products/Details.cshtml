@@ -1,7 +1,11 @@
 @model GoodShoe.Models.Product
 
-@{
+@{ 
     ViewData["Title"] = "Product Details";
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true"/>
 }
 
 <div class="product-page">
@@ -17,7 +21,7 @@
                             <i class="bi bi-arrow-left"></i>
                         </a>
                     </div>
-                    
+
                     <!-- Product Image -->
                     <div class="product-image-container text-center">
                         <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.Id}.png")"
@@ -32,35 +36,46 @@
                     <div class="product-info">
                         <!-- Product Name -->
                         <h1 class="product-name">@Model.Name</h1>
-                        
+
                         <!-- Product Category -->
                         <p class="product-category">@Model.Category's @Model.Brand</p>
-                        
+
                         <!-- Price -->
                         <h2 class="product-price">$@Model.Price.ToString("F2")</h2>
-                        
+
                         <!-- Description -->
                         <p class="product-description">@Model.Description</p>
                         
                         <!-- Select Size Section -->
-                        <!-- WORK IN PROGRESS to retrieve shoe size from the database-->
                         <div class="size-section mt-5">
                             <h3 class="size-heading">Select Size</h3>
-                            
+
                             <div class="size-options" id="sizeOptions">
+                                @{
+                                    var availableSizesList = Model.GetSizesList();
+                                }
                                 @for (int size = 8; size <= 16; size++)
                                 {
-                                    <button type="button" 
-                                            class="size-button @(size == 14 || size == 16 ? "disabled" : "")" 
+                                    var sizeString = size.ToString();
+                                    var isAvailable = availableSizesList.Contains(sizeString) && Model.IsInStock;
+
+                                    <button type="button"
+                                            class="size-button @(!isAvailable ? "disabled" : "")"
                                             data-size="@size"
-                                            @(size == 14 || size == 16 ? "disabled" : "")
-                                            onclick="selectSize(this, @size)">
+                                            data-size-label="US @size"
+                                            @(!isAvailable ? "disabled" : "")
+                                            onclick="selectSize(this, @size, 'US @size'); console.log('Button clicked: US @size, Available: @isAvailable');">
                                         US @size
                                     </button>
                                 }
                             </div>
+
+                            @if (!Model.IsInStock)
+                            {
+                                <p class="text-danger"><small>This product is currently out of stock.</small></p>
+                            }
                         </div>
-                        
+
                         <div class="cart-section mt-4">
                             <form asp-controller="Cart" asp-action="AddToCart" method="post" id="addToCartForm">
                                 @Html.AntiForgeryToken()
@@ -70,7 +85,7 @@
                                 <!-- size will be populated in JS -->
                                 <input type="hidden" name="size" id="selectedSize" />
 
-                                <!-- still a button (we�ll submit via JS) -->
+                                <!-- Add to cart button -->
                                 <button type="button"
                                         class="btn btn-primary add-to-cart-button"
                                         id="addToCartBtn"
@@ -86,209 +101,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background-color: #ffffff;
-    }
-
-    .product-page {
-        min-height: 10vh;
-    }
-
-    /* Main Content */
-    .main-content {
-        padding: 20px 40px;
-    }
-
-    .left-section {
-        padding-right: 10px;
-    }
-
-    .right-section {
-        padding-left: 65px;
-        padding-right: 0;
-        display: flex;
-        align-items: flex-start;
-        justify-content: flex-start;
-    }
-
-    /* Back Button */
-    .back-arrow {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        color: #333;
-        text-decoration: none;
-        font-size: 1.4rem;
-        border-radius: 50%;
-        transition: background-color 0.2s;
-    }
-
-    .back-arrow:hover {
-        background-color: #e9ecef;
-        color: #000;
-    }
-
-    /* Product Image */
-    .product-image-container {
-        max-width: 500px;
-        margin: 0 auto;
-    }
-
-    .product-main-image {
-        width: 100%;
-        height: auto;
-        max-height: 500px;
-        object-fit: contain;
-    }
-    
-    .product-info {
-        width: 100%;
-        max-width: 450px;
-    }
-
-    .product-name {
-        font-size: 2rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 8px;
-        line-height: 1.2;
-    }
-
-    .product-category {
-        font-size: 1rem;
-        color: #888;
-        margin-bottom: 20px;
-    }
-
-    .product-price {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 24px;
-    }
-
-    .product-description {
-        font-size: 1rem;
-        color: #666;
-        line-height: 1.5;
-        margin-bottom: 0;
-        min-height: 50px;
-    }
-
-    /* Size Section */
-    .size-section {
-        margin-top: 40px;
-    }
-
-    .size-heading {
-        font-size: 1.25rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    .size-options {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 12px;
-        margin-bottom: 30px;
-    }
-
-    .size-button {
-        padding: 12px 8px;
-        border: 1px solid #ddd;
-        background-color: white;
-        color: #333;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.2s;
-        text-align: center;
-    }
-
-    .size-button:hover:not(.disabled) {
-        border-color: #333;
-        background-color: #f9f9f9;
-    }
-
-    .size-button.selected {
-        background-color: #333;
-        color: white;
-        border-color: #333;
-    }
-
-    .size-button.disabled {
-        background-color: #f5f5f5;
-        color: #ccc;
-        border-color: #e5e5e5;
-        cursor: not-allowed;
-        position: relative;
-    }
-
-    .size-button.disabled::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 20%;
-        right: 20%;
-        height: 1px;
-        background-color: #ccc;
-        transform: rotate(-45deg);
-    }
-
-    /* Add to Cart Button */
-    .add-to-cart-button {
-        width: 100%;
-        padding: 15px;
-        background-color: #000;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .add-to-cart-button:hover:not(:disabled) {
-        background-color: #333;
-    }
-
-    .add-to-cart-button:disabled {
-        background-color: #ccc;
-        cursor: not-allowed;
-    }
-</style>
-
-<script>
-    let selectedSize = null;
-
-    function selectSize(button, size) {
-      if (button.classList.contains('disabled')) return;
-      document.querySelectorAll('.size-button').forEach(b => b.classList.remove('selected'));
-      button.classList.add('selected');
-      selectedSize = size;
-      document.getElementById('addToCartBtn').disabled = false;
-    }
-
-    function addToCart() {
-      if (!selectedSize) {
-        alert('Please select a size first.');
-        return;
-      }
-
-      // 1. write the exact label into the hidden field, e.g. "US 9"
-      document.getElementById('selectedSize').value = 'US ' + selectedSize;
-
-      // 2. submit the form to POST /Cart/AddToCart
-      document.getElementById('addToCartForm').submit();
-    }
-</script>
+<script src="~/js/site.js"></script>
