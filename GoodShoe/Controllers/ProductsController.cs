@@ -46,6 +46,49 @@ namespace GoodShoe.Controllers
             return View(product);
         }
         
+        // Method to check size availability
+        [HttpGet]
+        public async Task<IActionResult> CheckSizeAvailability(int productId, string size)
+        {
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null)
+            {
+                return Json(new { available = false, stock = 0 });
+            }
+            
+            // Removing US size when checking
+            var sizeToCheck = size.Replace("US ", "").Trim();
+            var isAvailable = product.IsSizeAvailable(sizeToCheck) && product.IsInStock;
+
+            return Json(new
+            {
+                available = isAvailable,
+                stock = product.StockCount
+            });
+        }
+        
+        // Get all available sizes for a product
+        [HttpGet]
+        public async Task<IActionResult> GetAvailableSizes(int productId)
+        {
+            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product == null)
+            {
+                return Json(new List<object>());
+            }
+
+            var availableSizes = product.GetSizesList()
+                .Select(size => new
+                {
+                    size = $"US {size}",
+                    stock = product.StockCount,
+                    available = product.IsInStock
+                })
+                .ToList();
+            
+            return Json(availableSizes);
+        }
+        
         // Getting Category-specific pages
         public async Task<IActionResult> Men()
         {
@@ -76,7 +119,7 @@ namespace GoodShoe.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Category")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Description,StockCount,Color,Category,AvailableSizes,ImageUrl")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -108,7 +151,7 @@ namespace GoodShoe.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Size,Description,StockCount,Color,Category")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Description,StockCount,Color,Category,AvailableSizes,ImageUrl")] Product product)
         {
             if (id != product.Id)
             {

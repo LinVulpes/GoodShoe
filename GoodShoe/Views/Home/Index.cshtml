@@ -145,36 +145,39 @@
         <!-- Product Cards Row -->
         <div class="row g-4">
             <!-- Product 1 -->
+            <!-- For Clickable product card, will be implemented later -->
             <div class="col-lg-4 col-md-6">
-                <!-- For Clickable product card, will be implemented later -->
-                <!-- <a asp-controller="Products" asp-action="Details" asp-route-id="1" class="text-decoration-none"> -->
-
-                <div class="product-card-new">
-                    <div class="product-image-container">
-                        <img src="~/images/slider/shoe1.webp" alt="GoodShoe 0.1" class="product-img"/>
+                <a asp-controller="Home" asp-action="Products" class="text-decoration-none">
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/slider/shoe1.webp" alt="GoodShoe 0.1" class="product-img"/>
+                        </div>
+                        <div class="product-details">
+                            <p class="product-card-name">Nike Free Metcon 6</p>
+                            <p class="product-card-price">$125.00</p>
+                        </div>
                     </div>
-                    <div class="product-details">
-                        <p class="product-card-name">Nike Free Metcon 6</p>
-                        <p class="product-card-price">$125.00</p>
-                    </div>
-                </div>
+                </a>
             </div>
 
             <!-- Product 2 -->
             <div class="col-lg-4 col-md-6">
-                <div class="product-card-new">
-                    <div class="product-image-container">
-                        <img src="~/images/slider/shoe2.webp" alt="GoodShoe 0.2" class="product-img"/>
+                <a asp-controller="Home" asp-action="Products" class="text-decoration-none">
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/slider/shoe2.webp" alt="GoodShoe 0.2" class="product-img"/>
+                        </div>
+                        <div class="product-details">
+                            <p class="product-card-name">Nike Zoom Vomero 5</p>
+                            <p class="product-card-price">$219.90</p>
+                        </div>
                     </div>
-                    <div class="product-details">
-                        <p class="product-card-name">Nike Zoom Vomero 5</p>
-                        <p class="product-card-price">$219.90</p>
-                    </div>
-                </div>
+                </a>
             </div>
 
             <!-- Product 3 -->
             <div class="col-lg-4 col-md-6">
+                <a asp-controller="Home" asp-action="Products" class="text-decoration-none">
                 <div class="product-card-new">
                     <div class="product-image-container">
                         <img src="~/images/slider/shoe3.webp" alt="GoodShoe 0.3" class="product-img"/>
@@ -184,6 +187,7 @@
                         <p class="product-card-price">$149.99</p>
                     </div>
                 </div>
+                </a>
             </div>
         </div>
 
