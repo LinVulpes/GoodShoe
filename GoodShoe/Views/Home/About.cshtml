@@ -1,7 +1,737 @@
 @{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "Good Shoe - About Us";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+<html lang="en">
+<head>
+    <style>
+        /* Hero Section */
+        .about-hero-section {
+            background-image: url("/images/aboutus1.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-<p>This will be our about page.</p>
+        .about-hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(105, 105, 105, 0.3); /* grey overlay */
+        }
+
+        .about-hero-content h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #ffffff;
+            position: relative;
+            margin-bottom: 1rem;
+            z-index: 2; /* this is to make sure content appears above overlay */
+        }
+
+        .about-hero-content p {
+            font-size: 1.3rem;
+            max-width: 600px;
+            position: relative;
+            color: #ffffff;
+            z-index: 2; /* this is to make sure content appears above overlay */
+        }
+        
+        /* DONE ✅ */
+        /* COLORS 
+        #ffffff  |  !* white *!
+        #E8E1D0  |  !* beige *!
+        #7d522f  |  !* brown *!
+        */
+
+        /* Our Story Section */
+        .story-section {
+            padding: 60px 0;
+        }
+
+        .container {
+            margin: 0 auto;
+        }
+
+        .story-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .story-text h2 {
+            font-weight: 600;
+            font-size: 2.5rem;
+            color: #000;
+            border-bottom: 4px solid #988372;
+            display: inline-block;
+            margin-bottom: 30px;
+            padding-bottom: 8px;
+        }
+
+        .story-text p {
+            font-size: 1.1rem;
+            color: #000;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .story-image {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+            flex: 1 1 400px; /* allows resizing */
+        }
+        
+        .image-placeholder {
+            position: relative;
+            width: 100%;
+            height: 480px; /* your desired height */
+            background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        /* Services Section */
+        .services-section {
+            padding: 80px 0;
+            background-color: #f9f6f3;
+        }
+
+        .services-inline {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            text-align: center;
+            gap: 20px;
+        }
+
+        .service-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .service-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #C4B9A0;
+            margin-bottom: 5px;
+        }
+
+        .service-label {
+            font-weight: 500;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #666666;
+        }
+
+        /* Brand Showcase */
+        .brand-slider-container {
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .brand-slider {
+            display: inline-block;
+            white-space: nowrap;
+            animation: none;
+            height: 100px;
+            width: 100px;
+        }
+
+        .brand-logo {
+            display: inline-block;
+            margin: 0 40px;
+            filter: grayscale(100%);
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+
+        .brand-logo:hover {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* Developer Cards */
+        .dev-section {
+            padding: 60px 20px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .dev-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .dev-subtitle {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+        .dev-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .dev-card {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 15px;
+            overflow: hidden;
+            height: 400px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+
+            background-color: rgba(0, 0, 0, 0.1); /* dark overlay */
+            background-blend-mode: multiply;      /* blend image + color */
+        }
+
+        
+        .dev-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .dev-info {
+            position: absolute; /* make it position relative to .dev-card */
+            bottom: 0;           /* stick to the bottom */
+            left: 0;
+            width: 100%;         /* stretch full width */
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.1); /* optional: semi-transparent background */
+            color: #fff;         /* make text readable on images */
+            z-index: 2;
+            text-align: left
+        }
+        
+        .dev-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .dev-role {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .dev-quote {
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+
+        /* Tech Stack */
+        .tech-section {
+            padding: 100px 0;
+        }
+
+        .tech-section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #C4B9A0;
+            margin-bottom: 50px;
+        }
+
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tech-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3a3a3a, #2a2a2a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #C4B9A0;
+            margin-bottom: 15px;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tech-item:hover .tech-icon {
+            background: linear-gradient(135deg, #C4B9A0, #CAC3B2);
+            color: #1a1a1a;
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(196, 185, 160, 0.3);
+        }
+
+        .tech-label {
+            font-size: 1rem;
+            color: #cccccc;
+            font-weight: 500;
+        }
+        
+        /* */
+        .about-section {
+            background-color: #fff;
+            color: #000;
+            padding: 80px 20px;
+            font-family: 'Comic Sans MS', 'Patrick Hand', cursive; /* playful font */
+        }
+
+        .image-placeholder {
+            position: relative;
+            width: 100%;
+            height: 480px; /* your desired height */
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .image-placeholder video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            border-radius: 15px; /* optional: match placeholder corners */
+        }
+
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .about-title {
+            font-size: 2.5rem;
+            text-align: left;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .about-title::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 3px;
+            background: #ffffff;
+            margin-top: 10px;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .about-text {
+            flex: 1 1 400px; /* allows resizing */
+            max-width: 600px;
+        }
+
+        .about-text p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .about-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .about-features li {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        
+        /* Image Section */
+        .image-section {
+            margin-top: 30px;
+            display: flex;
+            height: 500px;
+            gap: 10px;
+        }
+
+        .image-left {
+            flex: 7; /* Left takes 70% of width */
+            height: 100%;
+        }
+
+        .image-right {
+            flex: 3; /* Right takes 30% of width */
+            height: 100%;
+        }
+
+        .image-left img,
+        .image-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Fill area and crop excess */
+            border-radius: 10px; /* Optional rounded corners */
+        }
+    </style>
+</head>
+<body>
+<!-- Hero Section -->
+<section class="about-hero-section">
+    <div class="about-hero-content">
+        <h1>About Us</h1>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.</p>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <h2 class="about-title">What is GoodShoe?</h2>
+        <div class="about-content">
+            <div class="story-image">
+                <div class="image-placeholder">
+                    <video autoplay muted loop playsinline>
+                        <source src="/images/goodshoe-vid.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <div class="about-text">
+                <p>
+                    GoodShoe is a fictional, stylish, and smooth-running sneaker e‑commerce platform, recreated by 4 university students as a capstone project. It may not be real—yet—but it walks the talk.
+                </p>
+                <ul class="about-features">
+                    <li>✅ Built with ASP.NET Core MVC</li>
+                    <li>✅ Custom front-end with HTML/CSS/JavaScript</li>
+                    <li>✅ Real-world sneaker catalog structure</li>
+                    <li>✅ Full-stack features: cart, order, user login, etc.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Services Section -->
+<section class="services-section">
+    <div class="container">
+        <div class="services-inline">
+            <div class="service-item">
+                <span class="service-number" data-target="5000" data-start="4500">0</span>
+                <div class="service-label">Completed Orders</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="3000" data-start="2750">0</span>
+                <div class="service-label">Happy Customers</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="1250" data-start="950">0</span>
+                <div class="service-label">Good Reviews</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="7" data-start="1">0</span>
+                <div class="service-label">Country Reach</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Image Section -->
+<section class="image-section">
+    <div class="image-left">
+        <img src="/images/aboutus2.jpg" alt="Image 1">
+    </div>
+    <div class="image-right">
+        <img src="/images/aboutus3.jpg" alt="Image 2">
+    </div>
+</section>
+
+
+<!-- Our Story Section -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-content">
+            <div class="story-text">
+                <h2>Our Story</h2>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                    labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                    laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+                    pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+                    mollit anim id est laborum.</p>
+            </div>
+            <div class="story-image">
+                <div class="image-placeholder">
+                    <img src="/images/aboutus4.png" alt="Our Story Image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Brand Showcase -->
+<section class="brand-section">
+    <div class="brand-slider-container">
+        <div class="brand-slider" id="brandSlider">
+            <img src="/images/brand/converse.png" alt="Converse" class="brand-logo" />
+            <img src="/images/brand/adidas.png" alt="Adidas" class="brand-logo" />
+            <img src="/images/brand/nike.png" alt="Nike" class="brand-logo" />
+            <img src="/images/brand/newbalance.png" alt="NewBalance" class="brand-logo" />
+            <img src="/images/brand/sketchers.png" alt="Sketchers" class="brand-logo" />
+            
+            <!-- Duplicate logos for infinite loop -->
+            <img src="/images/brand/converse.png" alt="Converse" class="brand-logo" />
+            <img src="/images/brand/adidas.png" alt="Adidas" class="brand-logo" />
+            <img src="/images/brand/nike.png" alt="Nike" class="brand-logo" />
+            <img src="/images/brand/newbalance.png" alt="NewBalance" class="brand-logo" />
+            <img src="/images/brand/sketchers.png" alt="Sketchers" class="brand-logo" />
+        </div>
+    </div>
+</section>
+
+
+<!-- Who are We? - Developer Cards -->
+<section class="dev-section">
+    <div class="container">
+        <h2 class="dev-title">Meet Our Developers!</h2>
+        <p class="dev-subtitle">The passionate team behind GoodShoe.</p>
+
+        <div class="dev-grid">
+            <div class="dev-card" style="background-image: url('/images/developer/person1.png');">
+                <div class="dev-overlay">
+                    <div class="dev-info">
+                        <h3 class="dev-name">Thet Paing Hmu</h3>
+                        <p class="dev-role">Team Leader & Junior Developer</p>
+                        <p class="dev-quote">"Fueled by coffee and curiosity!"</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dev-card" style="background-image: url('/images/developer/person2.png');">
+                <div class="dev-overlay">
+                    <div class="dev-info">
+                        <h3 class="dev-name">Sarah Leena</h3>
+                        <p class="dev-role">Documentation Curator</p>
+                        <p class="dev-quote">"Writes like a poet, documents like a pro."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dev-card" style="background-image: url('/images/developer/person3.png');">
+                <div class="dev-overlay">
+                    <div class="dev-info">
+                        <h3 class="dev-name">Reena Yong Zi Ning</h3>
+                        <p class="dev-role">Testing & Database Designer</p>
+                        <p class="dev-quote">"Breaking things so they don't break later."</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dev-card" style="background-image: url('/images/developer/person4.png');">
+                <div class="dev-overlay">
+                    <div class="dev-info">
+                        <h3 class="dev-name">Queenara Valerie Tan</h3>
+                        <p class="dev-role">UI/UX Designer</p>
+                        <p class="dev-quote">"Pixels and perfection are best friends."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Tech Stack -->
+<section class="tech-section">
+    <div class="container">
+        <h2>Tech Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-microsoft"></i>
+                </div>
+                <div class="tech-label">ASP.NET CORE</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="tech-label">C#</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="tech-label">SQL</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="tech-label">Entity Framework</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-html5"></i>
+                </div>
+                <div class="tech-label">HTML/CSS/JS</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-bootstrap"></i>
+                </div>
+                <div class="tech-label">Bootstrap</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Count-up animation for service numbers
+    function animateCountUp() {
+        const counters = document.querySelectorAll('.service-number');
+        const duration = 2000; // 2 seconds duration
+
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const start = parseInt(counter.getAttribute('data-start')) || Math.floor(target * 0.7);
+            let current = start;
+            const increment = (target - start) / (duration / 16);
+
+            const updateCount = () => {
+                current += increment;
+
+                if (current >= target) {
+                    current = target;
+                }
+
+                // Format the number display
+                if (current >= 1000) {
+                    const kValue = current / 1000;
+                    if (kValue % 1 === 0) {
+                        // Whole number, no decimal
+                        counter.textContent = Math.floor(kValue) + 'k+';
+                    } else {
+                        // Has decimal, show up to 2 decimal places but remove trailing zeros
+                        const formatted = parseFloat(kValue.toFixed(2));
+                        counter.textContent = formatted + 'k+';
+                    }
+                } else {
+                    counter.textContent = Math.floor(current) + '+';
+                }
+
+                if (current < target) {
+                    requestAnimationFrame(updateCount);
+                }
+            };
+
+            updateCount();
+        });
+    }
+
+    // Intersection Observer for triggering animations
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (entry.target.classList.contains('services-section')) {
+                    animateCountUp();
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observe the services section
+    const servicesSection = document.querySelector('.services-section');
+    observer.observe(servicesSection);
+
+    // Smooth scrolling for any navigation links (if added)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any additional initialization code here
+        console.log('GoodShoe About Page Loaded');
+    });
+
+/*    // Add scroll-triggered animations for other sections
+    const fadeElements = document.querySelectorAll('.story-section, .brand-section, .dev-section, .tech-section');
+
+    const fadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    fadeElements.forEach(element => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(30px)';
+        element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        fadeObserver.observe(element);
+    });*/
+    
+    /* Brand Showcase */
+    const slider = document.getElementById("brandSlider");
+    let scrollAmount = 0;
+    let scrollSpeed = 1; // pixels per frame
+    let pause = false;
+
+    // Duplicate content to create infinite effect
+    slider.innerHTML += slider.innerHTML;
+
+    function animateSlider() {
+        if (!pause) {
+            scrollAmount += scrollSpeed;
+            scrollAmount = scrollAmount % (slider.scrollWidth / 2);
+            slider.style.transform = `translateX(-${scrollAmount}px)`;
+        }
+        requestAnimationFrame(animateSlider);
+    }
+
+    // Hover to pause
+    slider.addEventListener("mouseenter", () => (pause = true));
+    slider.addEventListener("mouseleave", () => (pause = false));
+
+    animateSlider();
+</script>
+</body>
+</html>
