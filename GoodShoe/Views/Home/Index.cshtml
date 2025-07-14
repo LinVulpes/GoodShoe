@@ -66,7 +66,7 @@
 
             <!-- Center Column - Image -->
             <div class="slide-center">
-                <img src="~/images/slider/slide2-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+                <img src="~/images/slider/slide2-img.webp" alt="Skin-Friendly Shoe" class="slide-image"/>
             </div>
 
             <!-- Right Column -->
@@ -100,7 +100,7 @@
 
             <!-- Center Column - Image -->
             <div class="slide-center">
-                <img src="~/images/slider/slide3-img.webp" alt="Airy & Flexible Shoe" class="slide-image"/>
+                <img src="~/images/slider/slide3-img.webp" alt="Nike TC 7900 Shoe" class="slide-image"/>
             </div>
 
             <!-- Right Column -->
@@ -132,7 +132,7 @@
         <!-- Section Header -->
         <div class="row align-items-center mb-4">
             <div class="col">
-                <h3 class="section-title mb-0">Our products</h3>
+                <h3 class="section-title mb-0">TOP PICKS</h3>
             </div>
             <div class="col-auto">
                 <a asp-controller="Home" asp-action="Products" class="explore-about-btn">
@@ -178,19 +178,67 @@
             <!-- Product 3 -->
             <div class="col-lg-4 col-md-6">
                 <a asp-controller="Home" asp-action="Products" class="text-decoration-none">
-                <div class="product-card-new">
-                    <div class="product-image-container">
-                        <img src="~/images/slider/shoe3.webp" alt="GoodShoe 0.3" class="product-img"/>
+                    <div class="product-card-new">
+                        <div class="product-image-container">
+                            <img src="~/images/slider/shoe3.webp" alt="GoodShoe 0.3" class="product-img"/>
+                        </div>
+                        <div class="product-details">
+                            <p class="product-card-name">NY 90 Shoes</p>
+                            <p class="product-card-price">$149.99</p>
+                        </div>
                     </div>
-                    <div class="product-details">
-                        <p class="product-card-name">NY 90 Shoes</p>
-                        <p class="product-card-price">$149.99</p>
-                    </div>
-                </div>
                 </a>
             </div>
         </div>
+    </div>
+</section>
 
+
+
+<!-- Shoes Variety Section -->
+<section class="shoes-variety-section">
+    <div class="container">
+        <h2 class="shoe-variety-title">Find a variety of shoes with the <br/> latest trending this year.</h2>
+        <div class="top-row">
+            <div class="shoe-category">
+                <div class="shoe-card">
+                    <img src="~/images/slider/men.jpg" alt="Men Stylish Shoes" class="shoe-img">
+                    <div class="category-info">
+                        <h3 class="category-title">Men Stylish</h3>
+                        <a asp-controller="Home" asp-action="Products" class="category-btn">
+                            <span class="long-arrow"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="shoe-category">
+                <div class="shoe-card">
+                    <img src="~/images/slider/women.jpg" alt="Women Stylish Shoes" class="shoe-img">
+                    <div class="category-info">
+                        <h3 class="category-title">Woman Stylish</h3>
+                        <a asp-controller="Home" asp-action="Products" class="category-btn">
+                            <span class="long-arrow"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Large Image Section -->
+<section class="large-image-section">
+    <div class="video-wrapper">
+        <video autoplay muted loop playsinline class="background-video">
+            <source src="/videos/walk_in_confidence.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+</section>
+
+<section class="products-section py-4">
+    <div class="container">
+        
         <!-- Features Section -->
         <div class="features-section mt-5">
             <div class="container-fluid px-0">
@@ -234,7 +282,7 @@
                             <img src="~/images/slider/about-img1.png" alt="Shoe Collection"/>
                         </div>
                         <div class="about-image-item bottom-left">
-                            <img src="~/images/slider/about-img2.png" alt="Shoe Details"/>
+                            <img src="~/images/slider/about-img2 (2).png" alt="Shoe Details"/>
                         </div>
                         <div class="about-image-item right">
                             <img src="~/images/slider/about-img3.png" alt="Shoe Stack"/>
