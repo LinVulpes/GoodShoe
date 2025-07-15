@@ -315,7 +315,7 @@
 
 <section id="testimonial-section" class="py-5 text-white">
     <div class="container text-center">
-        <h2 class="mb-5">Here's What Our Customers Say</h2>
+        <h1 class="testimonial-header mb-5">Here's What Our Customers Say</h1>
 
         <div class="testimonial-carousel position-relative">
             <div id="testimonial-cards" class="d-flex justify-content-center align-items-center">
@@ -337,37 +337,44 @@
 
 <script src="~/js/landing.js"></script>
 <script>
+    // Landing Page (testimonial section) //
     const testimonials = [
+        // Person 1
         {
             name: "Ben Martinez",
             image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
             review: "Great quality, timely delivery. Will buy again! The customer service was exceptional.",
             stars: 4
         },
+        // Person 2        
         {
             name: "Cathy Wong",
             image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face",
             review: "Impressed by the service and durability. These shoes have lasted me months of daily wear.",
             stars: 5
         },
+        // Person 3        
         {
             name: "David Thompson",
             image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face",
             review: "Best shopping experience for sneakers. The website is user-friendly and delivery was fast.",
             stars: 4
         },
+        // Person 4        
         {
             name: "Eva Rodriguez",
             image: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=150&h=150&fit=crop&crop=face",
             review: "Perfect for running and daily wear. The comfort level is outstanding and style is trendy.",
             stars: 5
         },
+        // Person 5        
         {
             name: "Frank Chen",
             image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&fit=crop&crop=face",
             review: "Excellent value for money. The quality exceeds expectations and fits perfectly.",
             stars: 5
         },
+        // Person 6
         {
             name: "Grace Kim",
             image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&fit=crop&crop=face",
@@ -447,7 +454,7 @@
             // Re-enable buttons
             leftBtn.disabled = false;
             rightBtn.disabled = false;
-        }, 600);
+        }, 100);
     }
 
     function rotateRight() {
@@ -470,7 +477,7 @@
             // Re-enable buttons
             leftBtn.disabled = false;
             rightBtn.disabled = false;
-        }, 600);
+        }, 100);
     }
 
     // Initialize
