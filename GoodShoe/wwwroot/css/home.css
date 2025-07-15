@@ -426,7 +426,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-width: 20px 18px 20px 18px;
+    border-width: 40px;
     border-style: solid;
     border-color: white;
     box-sizing: border-box;
@@ -633,13 +633,12 @@
 
 .testimonial-card {
     position: absolute;
-    width: 280px;
-    height: 350px;
+    width: 350px;
+    height: 400px;
     background-color: #7d522f;
     color: white;
     border-radius: 20px;
     padding: 25px;
-    transition: all 0.5s ease;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
     opacity: 0.4;
     z-index: 1;
@@ -672,7 +671,7 @@
 
 /* Simple slide animation */
 .testimonial-card.sliding {
-        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all 0.6s ease-in-out; /* Smooth ease-out */
 }
 
 .review-text {
@@ -714,7 +713,6 @@
 .customer-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #fff;
 }
 
 .star-rating {
@@ -727,17 +725,16 @@
 /* Navigation Controls */
 .carousel-controls {
     position: absolute;
-    bottom: -60px;
-    left: 50%;
+    bottom: -40px;
+    left: 53%;
     transform: translateX(-50%);
     display: flex;
-    gap: 110px;
+    gap: 220px;
     z-index: 10;
 }
 
 .carousel-nav {
     background: rgba(255, 255, 255, 0.9);
-    color: #111;
     font-size: 1.4rem;
     width: 60px;
     height: 60px;
@@ -817,6 +814,7 @@
 }
 
 /* Responsive Design */
+/* === 1024px (Large tablets & small laptops) === */
 @media (max-width: 1024px) {
     .hero-slider {
         height: 90vh;
@@ -840,8 +838,25 @@
         width: 60vw;
         min-width: 600px;
     }
+    
+    .testimonial-card {
+        width: 300px;
+        height: 380px;
+        padding: 20px;
+    }
+
+    .review-text {
+        font-size: 0.9rem;
+        padding: 18px;
+    }
+
+    .carousel-controls {
+        gap: 180px;
+        bottom: -30px;
+    }
 }
 
+/* === 768px (Tablets) === */
 @media (max-width: 768px) {
     .hero-slider {
         height: 100vh;
@@ -944,28 +959,28 @@
         margin: 0 auto 2rem auto;
     }
     .testimonial-card {
-        width: 250px;
-        height: 320px;
-        padding: 20px;
+        width: 260px;
+        height: 360px;
+        padding: 18px;
     }
 
-    .testimonial-carousel {
-        height: 450px;
+    .review-text {
+        font-size: 0.85rem;
+        padding: 16px;
     }
 
-    #testimonial-cards {
-        height: 350px;
+    .customer-name {
+        font-size: 1rem;
     }
 
+    .carousel-controls {
+        gap: 140px;
+        bottom: -25px;
+    }
     .carousel-nav {
         width: 50px;
         height: 50px;
         font-size: 1.2rem;
-    }
-
-    .carousel-controls {
-        bottom: -60px;
-        gap: 20px;
     }
 }
 
@@ -1050,5 +1065,43 @@
     .about-image-item.right {
         grid-column: 1;
         grid-row: 3;
+    }
+
+    .testimonial-card {
+        width: 220px;
+        height: 340px;
+        padding: 15px;
+    }
+
+    .review-text {
+        font-size: 0.8rem;
+        padding: 14px;
+    }
+
+    .customer-name {
+        font-size: 0.95rem;
+    }
+
+    .star-rating {
+        font-size: 0.85rem;
+    }
+
+    .carousel-controls {
+        gap: 100px;
+        bottom: -20px;
+    }
+
+    .carousel-nav {
+        width: 45px;
+        height: 45px;
+        font-size: 1rem;
+    }
+
+    .carousel-nav:hover {
+        transform: scale(1.05);
+    }
+
+    .carousel-nav i {
+        transform: scale(1);
     }
 }

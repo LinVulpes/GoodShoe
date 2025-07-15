@@ -236,8 +236,6 @@ function typeWriter() {
     }
 }
 
-document.addEventListener("DOMContentLoaded", typeWriter);
-
 // Add CSS for loading states and animations
 const style = document.createElement('style');
 style.textContent = `
