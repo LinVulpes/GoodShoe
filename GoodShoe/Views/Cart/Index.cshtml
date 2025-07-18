@@ -134,3 +134,13 @@
         </div>
     }
 </div>
+<script>
+    document.querySelectorAll('.payment-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            const selectedMethod = this.getAttribute('data-method');
+            document.querySelector(`input[name="PaymentMethod"]`).value = selectedMethod;
+        });
+    });
+</script>
