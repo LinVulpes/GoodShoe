@@ -44,5 +44,6 @@ namespace GoodShoe.ViewModels
         public decimal Subtotal => CartItems.Sum(i => i.Price * i.Quantity);
         public decimal DeliveryFee => 20.00m;
         public decimal Total => Subtotal + DeliveryFee;
+
     }
 }

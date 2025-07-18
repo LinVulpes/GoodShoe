@@ -7,8 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
+// Session configuration - updated with timeout 30 mins
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Make IHttpContextAccessor available (needed by CartService)
 builder.Services.AddHttpContextAccessor();
@@ -86,3 +92,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 app.Run();
+

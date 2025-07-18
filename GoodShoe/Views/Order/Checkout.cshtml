@@ -92,27 +92,6 @@
         <!-- Right Column - Order Summary -->
         <div class="col-lg-4">
             <div class="checkout-summary">
-                <h4 class="mb-3">Summary</h4>
-                
-                <div class="summary-line">
-                    <span>Subtotal</span>
-                    <span>@Model.Subtotal.ToString("C")</span>
-                </div>
-                
-                <div class="summary-line">
-                    <span>Estimated Delivery & Handling</span>
-                    <span>@Model.DeliveryFee.ToString("C")</span>
-                </div>
-                
-                <div class="summary-line total">
-                    <strong>Total</strong>
-                    <strong>@Model.Total.ToString("C")</strong>
-                </div>
-                
-                <div class="delivery-info mt-3">
-                    <p><strong>Arrives Mon, 24th - Fri, 30th May</strong></p>
-                </div>
-                
                 <!-- Cart Items Preview -->
                 <div class="cart-preview mt-4">
                     @foreach (var item in Model.CartItems)
@@ -123,11 +102,40 @@
                                 <h6 class="mb-1">@item.ProductName</h6>
                                 <p class="text-muted small mb-1">Men's Everyday Shoe</p>
                                 <p class="text-muted small mb-0">Size: @item.Size</p>
+                                <p class="text-muted small mb-0">Quantity: @item.Quantity</p>
                                 <p class="fw-bold">@item.Price.ToString("C")</p>
                             </div>
                         </div>
                     }
                 </div>
+
+                <h4 class="mb-3">Summary</h4>
+
+                <!-- summary with calculated totals from cart items -->
+                <div class="summary-line">
+                    <span>Subtotal (@Model.CartItems.Sum(i => i.Quantity) item@(Model.CartItems.Sum(i => i.Quantity) != 1 ? "s" : ""))</span>
+                    <span>@Model.Subtotal.ToString("C")</span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Subtotal</span>
+                    <span>@Model.Subtotal.ToString("C")</span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Estimated Delivery & Handling</span>
+                    <span>@Model.DeliveryFee.ToString("C")</span>
+                </div>
+
+                <div class="summary-line total">
+                    <strong>Total</strong>
+                    <strong>@Model.Total.ToString("C")</strong>
+                </div>
+
+                <div class="delivery-info mt-3">
+                    <p><strong>Arrives Mon, 24th - Fri, 30th May</strong></p>
+                </div>
+
             </div>
         </div>
     </div>
