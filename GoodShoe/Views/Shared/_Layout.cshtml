@@ -19,8 +19,6 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <!-- Checkout-specific styles -->
-    <link rel="stylesheet" href="~/css/checkout.css" />
 </head>
 <body class="d-flex flex-column h-100">
 <header>
@@ -113,21 +111,11 @@
                             </a>
                         </div>
                         
-                        <a class="btn btn-dark" asp-controller="Account" asp-action="Login">
-                            Sign In
-                        </a>
-                        @*<button class="btn btn-dark btn-sm signin-btn me-lg-4">Sign In</button>*@
-                        
-                        
-                        @*<!-- Not logged in: show Register and Login buttons -->
-                        <div class="d-flex align-items-center">
-                            <a class="btn btn-outline-dark me-2" asp-controller="Account" asp-action="Register">
-                                Register
+                        <div class="me-lg-4 btn-sm" title="Sign-In">
+                            <a class="btn btn-dark signin-btn" asp-controller="Account" asp-action="Login">
+                                Sign In
                             </a>
-                            <a class="btn btn-dark" asp-controller="Account" asp-action="Login">
-                                Login
-                            </a>
-                        </div>*@
+                        </div>
                     }
                 </div>
             </div>
