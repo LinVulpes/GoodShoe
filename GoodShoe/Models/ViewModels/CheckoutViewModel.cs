@@ -4,6 +4,36 @@ namespace GoodShoe.ViewModels
 {
     public class CheckoutViewModel
     {
+        // Estimate delivery dates 3-5 days (not including weekends)
+        // helper to count only Mon–Fri
+        private DateTime AddBusinessDays(DateTime from, int days)
+        {
+            var current = from;
+            int added = 0;
+            while (added < days)
+            {
+                current = current.AddDays(1);
+                if (current.DayOfWeek != DayOfWeek.Saturday
+                    && current.DayOfWeek != DayOfWeek.Sunday)
+                {
+                    added++;
+                }
+            }
+            return current;
+        }
+
+        // computed property for the view
+        public string DeliveryDateRange
+        {
+            get
+            {
+                var start = AddBusinessDays(DateTime.Now, 3);
+                var end = AddBusinessDays(DateTime.Now, 5);
+                return $"{start:ddd, MMM dd} – {end:ddd, MMM dd}";
+            }
+        }
+
+
         // Delivery Information
         [Required]
         [Display(Name = "First Name")]

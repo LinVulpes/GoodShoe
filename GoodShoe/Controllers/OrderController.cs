@@ -1,20 +1,26 @@
-using Microsoft.AspNetCore.Mvc;
-using GoodShoe.ViewModels;
+using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
+using GoodShoe.ViewModels; //view-model classes
 using GoodShoe.Extensions; // For session extension methods
 
 namespace GoodShoe.Controllers
 {
     public class OrderController : Controller
     {
+        //handle GET requests to /Order/Checkout
+
         [HttpGet]
         public IActionResult Checkout()
         {
+            //calls trace flow and data
             System.Diagnostics.Debug.WriteLine("=== OrderController.Checkout (GET) called ===");
 
+            //pull the list of items from session
             var cartItems = GetCartItems();
             System.Diagnostics.Debug.WriteLine($"OrderController: Retrieved {cartItems.Count} items for checkout");
 
             // Check if cart is empty
+            // If zero items, display "Your cart is empty. Please add items before checkout."
+            // Redirects to CartController.Index so the user can add stuff
             if (!cartItems.Any())
             {
                 System.Diagnostics.Debug.WriteLine("OrderController: Cart is empty, redirecting back to cart");
@@ -22,6 +28,7 @@ namespace GoodShoe.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
+            //Create a new “checkout” object and stick in the list of items from the cart.
             System.Diagnostics.Debug.WriteLine("OrderController: Creating checkout view model");
             var model = new CheckoutViewModel
             {
@@ -94,12 +101,13 @@ namespace GoodShoe.Controllers
                     return new List<CartItemViewModel>();
                 }
             }
+            //error handling
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"=== ERROR in GetCartItems ===");
                 System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                return new List<CartItemViewModel>();
+                return new List<CartItemViewModel>(); //return empty list so app dont crash
             }
         }
     }
