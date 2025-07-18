@@ -1,0 +1,98 @@
+﻿@using GoodShoe.Models.ViewModels
+@* Views/Profile/Index.cshtml *@
+@model ProfileViewModel
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3>Profile</h3>
+                    <a asp-action="Edit" class="btn btn-primary">Edit Profile</a>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Email:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            @Model.Email
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Password:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            ••••••••••
+                            <a asp-action="Edit" class="btn btn-sm btn-link">Edit</a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Phone Number:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            @Model.PhoneNumber
+                            <a asp-action="Edit" class="btn btn-sm btn-link">Edit</a>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-sm-3">
+                            <strong>Location:</strong>
+                        </div>
+                        <div class="col-sm-9">
+                            @Model.Location
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <h4>Purchase History</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="~/images/shoe1.jpg" alt="GoodShoe 1" class="me-3" style="width: 60px; height: 60px; object-fit: cover;" />
+                                <div>
+                                    <h6>GoodShoe 1</h6>
+                                    <small class="text-muted">Everyday wear</small><br />
+                                    <small class="text-muted">Size 10</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <strong>$259.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <img src="~/images/shoe2.jpg" alt="Aero Burst" class="me-3" style="width: 60px; height: 60px; object-fit: cover;" />
+                                <div>
+                                    <h6>Aero Burst</h6>
+                                    <small class="text-muted">Shoes for running</small><br />
+                                    <small class="text-muted">Size 9</small>
+                                </div>
+                                <div class="ms-auto">
+                                    <strong>$150.00</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

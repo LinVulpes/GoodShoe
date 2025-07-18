@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using GoodShoe.Data;
+﻿using GoodShoe.Data;
 using GoodShoe.Services; //so ICartService/CartService are in scope
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using GoodShoe.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +24,10 @@ builder.Services.AddDbContext<GoodShoeDbContext>(options =>
     ));
 
 // Add Identity services
-builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-    {
-        // Configure password requirements
-        options.Password.RequireDigit = false;
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+{
+    // Configure password requirements
+    options.Password.RequireDigit = false;
         options.Password.RequiredLength = 6;
         options.Password.RequireNonAlphanumeric = false;
         options.Password.RequireUppercase = false;
