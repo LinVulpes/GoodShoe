@@ -2,12 +2,14 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<link rel="stylesheet" href="~/css/admin.css" />
 
-<div class="container main-context">
-    <!-- First section of main container has title -->
-    <div class="section-title">
-        <h1>Edit Product</h1>
+<div class="create-container">
+    <!-- Header -->
+    <div class="create-header">
+        <h1 class="title">Edit Product</h1>
     </div>
 
     <!-- Next is the form section -->
@@ -15,19 +17,19 @@
 
         <div class="form-group">
             <label asp-for="Name" class="control-label">Name:</label>
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-input" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Brand" class="control-label"></label>
-            <input asp-for="Brand" class="form-control" />
+            <input asp-for="Brand" class="form-input" />
             <span asp-validation-for="Brand" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Price" class="control-label"></label>
-            <input asp-for="Price" class="form-control" />
+            <input asp-for="Price" class="form-input" />
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         
@@ -40,7 +42,7 @@
 
         <div class="form-group">
             <label asp-for="Description" class="control-label"></label>
-            <input asp-for="Description" class="form-control" />
+            <input asp-for="Description" class="form-input" />
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
@@ -52,13 +54,13 @@
 
         <div class="form-group">
             <label asp-for="Color" class="control-label"></label>
-            <input asp-for="Color" class="form-control" />
+            <input asp-for="Color" class="form-input" />
             <span asp-validation-for="Color" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="Category" class="control-label"></label>
-            <input asp-for="Category" class="form-control" />
+            <input asp-for="Category" class="form-input" />
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
 

@@ -4,29 +4,21 @@
     ViewData["Title"] = "Product Management";
     Layout = "_Layout";
 }
+<link rel="stylesheet" href="~/css/admin.css" />
 
-@section Scripts {
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
-}
-
-<div class="container main-context">
+<div class="admin-container">
     <!-- Header -->
     <div class="admin-header">
         <h1 class="admin-title">
             <i class="fas fa-box"></i>
             Product List</h1>
-        <div class="header-actions back-button-container mb-4">
-            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i>
-            </a>
-        </div>
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i>
+        </a>
     </div>
     <!-- Search bar, add new item -->
     <div class="admin-controls">
+        @* Todo: dynamic search *@
         <div class="search-container">
             <input type="text" id="prodSearch" placeholder="Search by name ..." class="search-input">
             <i class="fas fa-search search-icon"></i>
@@ -41,8 +33,8 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Size</th>
                     <th>Price</th>
+                    <th>Size</th>
                     <th>Stock</th>
                     <th></th>
                 </tr>
@@ -52,8 +44,8 @@
                 {
                     <tr>
                         <td>@product.Name</td>
-                        <td>@product.AvailableSizes</td>
                         <td>@product.Price</td>
+                        <td>@product.AvailableSizes</td>
                         <td>@product.StockCount</td>
                         <td>
                             <a asp-controller="Admin" asp-action="Edit"
