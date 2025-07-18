@@ -1,7 +1,391 @@
 @{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "Good Shoe - About Us";
+    Layout = "_Layout";
 }
 
-<h1>@ViewData["Title"]</h1>
+@section Scripts {
+    <link rel="stylesheet" href="~/css/aboutus.css" asp-append-version="true"/>
+}
 
-<p>This will be our about page.</p>
+<html lang="en">
+<head>
+    <title>GoodShoe - About Us</title>
+</head>
+<body>
+<!-- Hero Section -->
+<section class="about-hero-section">
+    <div class="about-hero-content">
+        <h1>About Us</h1>
+        <p>GoodShoe is a project bringing real-world sneaker shopping to life through smart design and modern web tech.</p>
+    </div>
+</section>
+
+<section class="about-section">
+    <div class="container">
+        <h2 class="about-title">What is GoodShoe?</h2>
+        <div class="about-content">
+            <div class="story-image">
+                <div class="image-placeholder">
+                    <video autoplay muted loop playsinline>
+                        <source src="/videos/goodshoe-vid.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+            <div class="about-text">
+                <div>
+                    <p>GoodShoe is a scrum-based e-commerce web application designed to make sneaker shopping simple and enjoyable.</p>
+                    <p>Originally a university project, GoodShoe was developed to mirror a real-world online shoe store — complete with search, filters, checkout, order tracking, and admin controls.</p>
+                    <ul class="about-features">
+                        <li>Built with ASP.NET Core & Bootstrap</li>
+                        <li>Clean, mobile-friendly design</li>
+                        <li>Curated sneaker collection</li>
+                        <li>Mock checkout & order history</li>
+                        <li>Admin dashboard to manage products and users</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Services Section -->
+<section class="services-section">
+    <div class="container">
+        <div class="services-inline">
+            <div class="service-item">
+                <span class="service-number" data-target="5000" data-start="4500">0</span>
+                <div class="service-label">Completed Orders</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="3000" data-start="2750">0</span>
+                <div class="service-label">Happy Customers</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="1250" data-start="950">0</span>
+                <div class="service-label">Good Reviews</div>
+            </div>
+            <div class="service-item">
+                <span class="service-number" data-target="7" data-start="1">0</span>
+                <div class="service-label">Country Reach</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Image Section -->
+<section class="image-section">
+    <div class="image-left">
+        <img src="/images/aboutus2.jpg" alt="Image 1">
+    </div>
+    <div class="image-right">
+        <img src="/images/aboutus3.jpg" alt="Image 2">
+    </div>
+</section>
+
+
+<!-- Our Story Section -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-content">
+            <div class="story-text">
+                <h2>Our Story</h2>
+                <p>GoodShoe started as more than just a university assignment — it was our chance to bring a real shopping experience to life. 
+                    From brainstorming sessions and refining wireframes to late-night coding sprints, we built a full-stack e-commerce site that reflects both our technical skills and  for clean, user-friendly website.</p>
+                <p>It’s not just a project. It’s the result of four students turning collaboration and creativity into something real.</p>
+            </div>
+            <div class="story-image">
+                <div class="image-placeholder">
+                    <img src="/images/aboutus4.png" alt="Our Story Image">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Brand Showcase -->
+<section class="brand-section">
+    <div class="brand-slider-container">
+        <div class="brand-slider" id="brandSlider">
+            <img src="/images/brand/converse.png" alt="Converse" class="shoe-brand-logo" />
+            <img src="/images/brand/adidas.png" alt="Adidas" class="shoe-brand-logo" />
+            <img src="/images/brand/nike.png" alt="Nike" class="shoe-brand-logo" />
+            <img src="/images/brand/new-balance.png" alt="NewBalance" class="shoe-brand-logo" />
+            <img src="/images/brand/sketchers.png" alt="Sketchers" class="shoe-brand-logo" />
+            
+            <!-- Duplicate logos for infinite loop -->
+            <img src="/images/brand/converse.png" alt="Converse" class="shoe-brand-logo" />
+            <img src="/images/brand/adidas.png" alt="Adidas" class="shoe-brand-logo" />
+            <img src="/images/brand/nike.png" alt="Nike" class="shoe-brand-logo" />
+            <img src="/images/brand/new-balance.png" alt="NewBalance" class="shoe-brand-logo" />
+            <img src="/images/brand/sketchers.png" alt="Sketchers" class="shoe-brand-logo" />
+        </div>
+    </div>
+</section>
+
+<!-- Our TimeLine Section -->
+<section class="timeline-section">
+    <div class="timeline-container">
+        <h2 class="timeline-title">Our Journey</h2>
+        <!-- Milestone 1 -->
+        <div class="timeline-item left">
+            <div class="content">
+                <h3>StartUp-Scrum</h3>
+                <span class="date">Week 1</span>
+                <p>Brainstormed GoodShoe as an ASP.NET Core project by 4 uni students. Sketched first ideas and formed
+                    team CtrlV.</p>
+            </div>
+        </div>
+
+        <!-- Milestone 2 -->
+        <div class="timeline-item right">
+            <div class="content">
+                <h3>Scrum 1</h3>
+                <span class="date">Week 2–3</span>
+                <p>Analysed sneaker stores. Built first Figma wireframes. Selected brands & color scheme. Created
+                    business scenarios.</p>
+            </div>
+        </div>
+
+        <!-- Milestone 3 -->
+        <div class="timeline-item left">
+            <div class="content">
+                <h3>Scrum 2</h3>
+                <span class="date">Week 5–7</span>
+                <p>Developed user login, cart, product list. Used SQL + Entity Framework for backend data. Implemented
+                    search & filter.</p>
+            </div>
+        </div>
+
+        <!-- Milestone 4 -->
+        <div class="timeline-item right">
+            <div class="content">
+                <h3>Final Scrum</h3>
+                <span class="date">Week 10</span>
+                <p>Added Admin Dashboard, order management, checkout process. Final testing and bug fixes completed.</p>
+            </div>
+        </div>
+
+        <!-- Milestone 5 -->
+        <div class="timeline-item left">
+            <div class="content">
+                <h3>Final Touch & Launch</h3>
+                <span class="date">Week 12</span>
+                <p>Polished UI, added animations & responsive design. Officially launched GoodShoe e-commerce
+                    platform.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Who are We? - Developer Cards -->
+<section class="dev-section">
+    <div class="container">
+        <h2 class="dev-title">Meet Our Developers!</h2>
+        <p class="dev-subtitle">The passionate team behind GoodShoe.</p>
+
+        <div class="dev-grid">
+            <div class="card">
+                <img src="/images/developer/person1.png" alt="Profile" class="card-image">
+                <div class="card-content">
+                    <h2 class="name">Thet Paing Hmu</h2>
+                    <p class="title">Team Leader & Junior Developer</p>
+                    <p class="dev-quote">"Fueled by coffee and curiosity!"</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="/images/developer/person1.png" alt="Profile" class="card-image">
+                <div class="card-content">
+                    <h2 class="name">Sarah Leena</h2>
+                    <p class="title">Documentation Curator</p>
+                    <p class="dev-quote">"Writes like a poet, documents like a pro."</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="/images/developer/person1.png" alt="Profile" class="card-image">
+                <div class="card-content">
+                    <h2 class="name">Reena Yong Zi Ning</h2>
+                    <p class="title">Testing & Database Designer</p>
+                    <p class="dev-quote">"Breaking things so they don't break later."</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <img src="/images/developer/person1.png" alt="Profile" class="card-image">
+                <div class="card-content">
+                    <h2 class="name">Queenara Valerie Tan</h2>
+                    <p class="title">UI/UX Designer</p>
+                    <p class="dev-quote">"Pixels and perfection are best friends."</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- Tech Stack -->
+<section class="tech-section">
+    <div class="container">
+        <h2>Tech Stack</h2>
+        <div class="tech-grid">
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-microsoft"></i>
+                </div>
+                <div class="tech-label">ASP.NET CORE</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="tech-label">C#</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="tech-label">SQL</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <div class="tech-label">Entity Framework</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-html5"></i>
+                </div>
+                <div class="tech-label">HTML/CSS/JS</div>
+            </div>
+            <div class="tech-item">
+                <div class="tech-icon">
+                    <i class="fab fa-bootstrap"></i>
+                </div>
+                <div class="tech-label">Bootstrap</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Count-up animation for service numbers
+    function animateCountUp() {
+        const counters = document.querySelectorAll('.service-number');
+        const duration = 2000; // 2 seconds duration
+
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const start = parseInt(counter.getAttribute('data-start')) || Math.floor(target * 0.7);
+            let current = start;
+            const increment = (target - start) / (duration / 16);
+
+            const updateCount = () => {
+                current += increment;
+
+                if (current >= target) {
+                    current = target;
+                }
+
+                // Format the number display
+                if (current >= 1000) {
+                    const kValue = current / 1000;
+                    if (kValue % 1 === 0) {
+                        // Whole number, no decimal
+                        counter.textContent = Math.floor(kValue) + 'k+';
+                    } else {
+                        // Has decimal, show up to 2 decimal places but remove trailing zeros
+                        const formatted = parseFloat(kValue.toFixed(2));
+                        counter.textContent = formatted + 'k+';
+                    }
+                } else {
+                    counter.textContent = Math.floor(current) + '+';
+                }
+
+                if (current < target) {
+                    requestAnimationFrame(updateCount);
+                }
+            };
+
+            updateCount();
+        });
+    }
+
+    // Intersection Observer for triggering animations
+    const observerOptions = {
+        threshold: 0.5,
+        rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                if (entry.target.classList.contains('services-section')) {
+                    animateCountUp();
+                    observer.unobserve(entry.target);
+                }
+            }
+        });
+    }, observerOptions);
+
+    // Observe the services section
+    const servicesSection = document.querySelector('.services-section');
+    observer.observe(servicesSection);
+    
+    /* Brand Showcase */
+    const slider = document.getElementById("brandSlider");
+    let scrollAmount = 0;
+    let scrollSpeed = 1; // pixels per frame
+    let pause = false;
+
+    // Duplicate content to create infinite effect
+    slider.innerHTML += slider.innerHTML;
+
+    function animateSlider() {
+        if (!pause) {
+            scrollAmount += scrollSpeed;
+            scrollAmount = scrollAmount % (slider.scrollWidth / 2);
+            slider.style.transform = `translateX(-${scrollAmount}px)`;
+        }
+        requestAnimationFrame(animateSlider);
+    }
+
+    // Hover to pause
+    slider.addEventListener("mouseenter", () => (pause = true));
+    slider.addEventListener("mouseleave", () => (pause = false));
+
+    animateSlider();
+    
+    /*** ========== Our Journey Timeline ========== ***/
+    // Intersection Observer for timeline animations
+    const timelineObserverConfig = {
+        threshold: 0.3,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const timelineObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
+            }
+        });
+    }, timelineObserverConfig);
+
+    // Observe all timeline items
+    document.querySelectorAll('.timeline-item').forEach(item => {
+        timelineObserver.observe(item);
+    });
+
+    // Smooth entrance animation delay
+    document.addEventListener('DOMContentLoaded', function() {
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.2}s`;
+        });
+    });
+</script>
+</body>
+</html>

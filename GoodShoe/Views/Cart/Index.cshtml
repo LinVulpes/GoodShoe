@@ -119,7 +119,7 @@
                         <strong>@((Model.Sum(i => i.Price * i.Quantity) + 20).ToString("C"))</strong>
                     </div>
                     
-                    <!-- Checkout Button -->
+                    <!-- Checkout Button | Working in progress -->
                     <div class="d-grid gap-2">
                         <form asp-controller="Order" asp-action="Checkout" method="get">
                             <button type="submit" 
@@ -134,3 +134,13 @@
         </div>
     }
 </div>
+<script>
+    document.querySelectorAll('.payment-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            const selectedMethod = this.getAttribute('data-method');
+            document.querySelector(`input[name="PaymentMethod"]`).value = selectedMethod;
+        });
+    });
+</script>
