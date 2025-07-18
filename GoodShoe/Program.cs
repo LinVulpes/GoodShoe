@@ -1,8 +1,8 @@
 ﻿using GoodShoe.Data;
 using GoodShoe.Services; //so ICartService/CartService are in scope
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 

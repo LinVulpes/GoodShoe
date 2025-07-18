@@ -1,4 +1,5 @@
 ﻿// Controllers/ProfileController.cs
+
 using GoodShoe.Models.ViewModels;
 using GoodShoe.ViewModels;
 using GoodShoe.Models;
@@ -128,3 +129,4 @@ namespace GoodShoe.Controllers
             return RedirectToAction("Edit");
         }
     }
+}
