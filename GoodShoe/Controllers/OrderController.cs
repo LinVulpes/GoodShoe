@@ -24,7 +24,7 @@ namespace GoodShoe.Controllers
                 TempData["OrderSuccess"] = "Order placed successfully!";
                 return RedirectToAction("Confirmation");
             }
-
+            
             model.CartItems = GetCartItems();
             return View(model);
         }
@@ -36,8 +36,28 @@ namespace GoodShoe.Controllers
 
         private List<CartItemViewModel> GetCartItems()
         {
-            // Replace with your actual cart logic
-            return new List<CartItemViewModel>();
+            // Test data - need to connect with database later for actual data
+            return new List<CartItemViewModel>
+            {
+                new CartItemViewModel
+                {
+                    ProductID = 1,
+                    ProductName = "GoodShoe 0.1",
+                    Price = 100.00m,
+                    Quantity = 1,
+                    Size = "9",
+                    ImageUrl = "https://via.placeholder.com/150x150/8B4513/FFFFFF?text=Shoe+1"
+                },
+                new CartItemViewModel
+                {
+                    ProductID = 2,
+                    ProductName = "GoodShoe 0.3",
+                    Price = 100.00m,
+                    Quantity = 1,
+                    Size = "10",
+                    ImageUrl = "https://via.placeholder.com/150x150/2F4F4F/FFFFFF?text=Shoe+2"
+                }
+            };
         }
     }
 }
