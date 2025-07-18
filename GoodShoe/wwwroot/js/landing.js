@@ -223,12 +223,25 @@ window.addEventListener('load', function() {
     }
 });
 
-// Add CSS for loading states and animations - Pop up the product grid
+//   Video AutoPlay
+const text = "Discover the Latest Trends";
+const autotypeEl = document.querySelector(".autotype");
+let index = 0;
+
+function typeWriter() {
+    if (index < text.length) {
+        autotypeEl.textContent += text.charAt(index);
+        index++;
+        setTimeout(typeWriter, 100); // typing speed
+    }
+}
+
+// Add CSS for loading states and animations
 const style = document.createElement('style');
 style.textContent = `
     body {
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.5s ease;
     }
     
     body.loaded {
@@ -237,6 +250,7 @@ style.textContent = `
     
     .slider-container {
         cursor: grab;
+        user-select: none;
     }
     
     .slider-container:active {
@@ -245,17 +259,32 @@ style.textContent = `
     
     .slide {
         user-select: none;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transform: translateZ(0);
     }
     
-    .product-card-new {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
+    .slide-image {
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        transform: translateX(-50%) translateZ(0);
     }
     
-    .product-card-new.animate-in {
-        opacity: 1;
-        transform: translateY(0);
+    .hero-slider.visible .slide-image {
+        will-change: transform;
+    }
+    
+    .hero-slider:not(.visible) .slide-image {
+        will-change: auto;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+        .slide,
+        .slide-image,
+        .slider-nav {
+            animation: none !important;
+            transition: none !important;
+        }
     }
 `;
 document.head.appendChild(style);
