@@ -1,88 +1,146 @@
-@model List<GoodShoe.ViewModels.CheckoutViewModel>
+@model GoodShoe.ViewModels.CheckoutViewModel
 
-@{
-    ViewData["Title"] = "Checkout";
-}
-<link rel="stylesheet" href="~/css/checkout.css" />
-
-<div class="container-fluid px-4 py-4">
-    <h2 class="checkout-title mb-4">Checkout</h2>
+<div class="container-fluid px-4 py-3">
     <div class="row">
-        <!-- LEFT: Delivery & Payment -->
-        <div class="col-lg-7">
-            <form asp-action="SubmitCheckout" method="post">
+        <!-- Left Column - Delivery & Payment Forms -->
+        <div class="col-lg-8">
+            <form asp-action="Checkout" method="post">
                 <!-- Delivery Section -->
-                <section class="mb-5">
-                    <h4 class="mb-3">Delivery</h4>
-                    <div class="mb-3"><input asp-for="FirstName" class="form-control" placeholder="First Name" /></div>
-                    <div class="mb-3"><input asp-for="LastName" class="form-control" placeholder="Last Name" /></div>
-                    <div class="mb-3"><input asp-for="ShippingAddress" class="form-control" placeholder="Street Address & Postcode" /></div>
-                    <div class="mb-3"><input asp-for="ContactNumber" class="form-control" placeholder="Contact Number" /></div>
-                </section>
-
-                <!-- Payment Selection -->
-                <section class="mb-4">
-                    <h4 class="mb-3">Payment</h4>
-                    <p>How would you like to pay?</p>
-                    <div class="btn-group-vertical w-100" role="group">
-                        <input type="radio" name="PaymentMethod" value="Card" checked hidden />
-                        <button type="button" class="btn btn-outline-dark mb-2 payment-btn active" data-method="Card">Credit / Debit Card</button>
-                        <button type="button" class="btn btn-outline-dark mb-2 payment-btn" data-method="ApplePay">Apple Pay</button>
-                        <button type="button" class="btn btn-outline-dark payment-btn" data-method="PayPal">PayPal</button>
+                <div class="checkout-section mb-4">
+                    <h3 class="checkout-section-title">Delivery</h3>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label">First Name</label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label">Last Name</label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
                     </div>
-                </section>
-
-                <!-- Card Details -->
-                <section class="mb-5">
-                    <h5 class="mb-3">Enter Your Payment Details</h5>
-                    <div class="mb-3"><input asp-for="CardName" class="form-control" placeholder="Name on Card" /></div>
-                    <div class="mb-3"><input asp-for="CardNumber" class="form-control" placeholder="Card Number" /></div>
-                    <div class="row g-2">
-                        <div class="col-md-6"><input asp-for="Expiry" class="form-control" placeholder="MM/YY" /></div>
-                        <div class="col-md-6"><input asp-for="CVV" class="form-control" placeholder="CVV" /></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Street Address & Postcode</label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
-                </section>
+                    
+                    <div class="mb-3">
+                        <label asp-for="ContactNumber" class="form-label">Contact Number</label>
+                        <input asp-for="ContactNumber" class="form-control" />
+                        <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                    </div>
+                </div>
 
-                <button type="submit" class="btn btn-dark w-100 py-2">Place Order</button>
+                <!-- Payment Section -->
+                <div class="checkout-section mb-4">
+                    <h3 class="checkout-section-title">Payment</h3>
+                    <p class="mb-3">How would you like to pay?</p>
+                    
+                    <!-- Payment Method Buttons -->
+                    <div class="payment-methods mb-4">
+                        <button type="button" class="payment-btn active" data-method="Credit / Debit Card">
+                            Credit / Debit Card
+                        </button>
+                        <button type="button" class="payment-btn" data-method="Apple Pay">
+                            Apple Pay
+                        </button>
+                        <button type="button" class="payment-btn" data-method="PayPal">
+                            PayPal
+                        </button>
+                    </div>
+                    
+                    <input type="hidden" asp-for="PaymentMethod" />
+                    
+                    <!-- Payment Details Form -->
+                    <div id="payment-details">
+                        <h4 class="mb-3">Enter Your Payment Details</h4>
+                        
+                        <div class="mb-3">
+                            <label asp-for="NameOnCard" class="form-label">Name on Card</label>
+                            <input asp-for="NameOnCard" class="form-control" />
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="CardNumber" class="form-label">Card Number</label>
+                            <input asp-for="CardNumber" class="form-control" />
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExpiryDate" class="form-label">MM/YY</label>
+                                <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CVV" class="form-label">CVV</label>
+                                <input asp-for="CVV" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Place Order Button -->
+                    <button type="submit" class="btn btn-dark btn-lg w-100 mt-4">
+                        Place Order
+                    </button>
+                </div>
             </form>
         </div>
-
-        <!-- RIGHT: Order Summary -->
-        <div class="col-lg-5 mt-5 mt-lg-0">
-            <div class="checkout-summary p-4 border rounded">
+        
+        <!-- Right Column - Order Summary -->
+        <div class="col-lg-4">
+            <div class="checkout-summary">
                 <h4 class="mb-3">Summary</h4>
-                <div class="d-flex justify-content-between mb-2">
+                
+                <div class="summary-line">
                     <span>Subtotal</span>
                     <span>@Model.Subtotal.ToString("C")</span>
                 </div>
-                <div class="d-flex justify-content-between mb-2">
+                
+                <div class="summary-line">
                     <span>Estimated Delivery & Handling</span>
-                    <span>$@Model.DeliveryFee</span>
+                    <span>@Model.DeliveryFee.ToString("C")</span>
                 </div>
-                <hr>
-                <div class="d-flex justify-content-between mb-4 fw-bold">
-                    <span>Total</span>
-                    <span>@Model.Total.ToString("C")</span>
+                
+                <div class="summary-line total">
+                    <strong>Total</strong>
+                    <strong>@Model.Total.ToString("C")</strong>
                 </div>
-
-                <p class="text-muted mb-3">Arrives Mon, 24th - Fri, 30th May</p>
-
-                @foreach (var item in Model.CartItems)
-                {
-                    <div class="d-flex mb-3 align-items-start">
-                        <img src="@item.ImageUrl" alt="@item.ProductName" class="img-thumbnail me-3" style="width: 80px;">
-                        <div>
-                            <p class="mb-1 fw-bold">@item.ProductName</p>
-                            <p class="mb-1 text-muted small">@item.Category<br>Size: @item.Size</p>
-                            <p class="mb-0 fw-semibold">@item.Price.ToString("C") x @item.Quantity</p>
+                
+                <div class="delivery-info mt-3">
+                    <p><strong>Arrives Mon, 24th - Fri, 30th May</strong></p>
+                </div>
+                
+                <!-- Cart Items Preview -->
+                <div class="cart-preview mt-4">
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <div class="cart-item-preview d-flex mb-3">
+                            <img src="@item.ImageUrl" alt="@item.ProductName" class="preview-image me-3" />
+                            <div class="item-details flex-grow-1">
+                                <h6 class="mb-1">@item.ProductName</h6>
+                                <p class="text-muted small mb-1">Men's Everyday Shoe</p>
+                                <p class="text-muted small mb-0">Size: @item.Size</p>
+                                <p class="fw-bold">@item.Price.ToString("C")</p>
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/js/checkout.js"></script>
-}
+<script>
+    // Payment method selection
+    document.querySelectorAll('.payment-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            const selectedMethod = this.getAttribute('data-method');
+            document.querySelector('input[name="PaymentMethod"]').value = selectedMethod;
+        });
+    });
+</script>
