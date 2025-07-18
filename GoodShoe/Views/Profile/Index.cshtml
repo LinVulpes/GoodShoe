@@ -1,98 +1,193 @@
-﻿@using GoodShoe.Models.ViewModels
-@* Views/Profile/Index.cshtml *@
+﻿@using GoodShoe.ViewModels
 @model GoodShoe.ViewModels.ProfileViewModel
 
 @{
-    ViewData["Title"] = "Profile";
+ViewData["Title"] = "Profile";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3>Profile</h3>
-                    <a asp-action="Edit" class="btn btn-primary">Edit Profile</a>
-                </div>
-                <div class="card-body">
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success">
-                            @TempData["Success"]
-                        </div>
-                    }
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #eaeaea;
+        min-height: 100vh;
+    }
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Email:</strong>
-                        </div>
-                        <div class="col-sm-9">
-                            @Model.Email
-                        </div>
-                    </div>
+    .profile-header {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Password:</strong>
-                        </div>
-                        <div class="col-sm-9">
-                            ••••••••••
-                            <a asp-action="Edit" class="btn btn-sm btn-link">Edit</a>
-                        </div>
-                    </div>
+    .profile-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Phone Number:</strong>
-                        </div>
-                        <div class="col-sm-9">
-                            @Model.PhoneNumber
-                            <a asp-action="Edit" class="btn btn-sm btn-link">Edit</a>
-                        </div>
-                    </div>
+    .profile-field {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
 
-                    <div class="row mb-3">
-                        <div class="col-sm-3">
-                            <strong>Location:</strong>
-                        </div>
-                        <div class="col-sm-9">
-                            @Model.Location
-                        </div>
-                    </div>
+    .profile-field:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
 
-                    <hr />
+    .field-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
 
-                    <h4>Purchase History</h4>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="~/images/shoe1.jpg" alt="GoodShoe 1" class="me-3" style="width: 60px; height: 60px; object-fit: cover;" />
-                                <div>
-                                    <h6>GoodShoe 1</h6>
-                                    <small class="text-muted">Everyday wear</small><br />
-                                    <small class="text-muted">Size 10</small>
-                                </div>
-                                <div class="ms-auto">
-                                    <strong>$259.00</strong>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center mb-3">
-                                <img src="~/images/shoe2.jpg" alt="Aero Burst" class="me-3" style="width: 60px; height: 60px; object-fit: cover;" />
-                                <div>
-                                    <h6>Aero Burst</h6>
-                                    <small class="text-muted">Shoes for running</small><br />
-                                    <small class="text-muted">Size 9</small>
-                                </div>
-                                <div class="ms-auto">
-                                    <strong>$150.00</strong>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    .field-value {
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .edit-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.85rem;
+        margin-left: 10px;
+    }
+
+    .edit-link:hover {
+        text-decoration: underline;
+    }
+
+    .purchase-history {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .purchase-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .purchase-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .purchase-item:last-child {
+        border-bottom: none;
+    }
+
+    .purchase-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 6px;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+
+    .purchase-details {
+        flex: 1;
+    }
+
+    .purchase-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2px;
+        font-size: 0.95rem;
+    }
+
+    .purchase-description {
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+    }
+
+    .purchase-size {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .purchase-price {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .password-value {
+        letter-spacing: 2px;
+        font-family: monospace;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Profile</h1>
+
+        @if (TempData["Success"] != null)
+        {
+        <div class="alert alert-success">
+            @TempData["Success"]
         </div>
+        }
+
+        <div class="profile-field">
+            <span class="field-label">Email:</span>
+            <span class="field-value">@Model.Email</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Password:</span>
+            <span class="field-value password-value">••••••••••</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Phone Number:</span>
+            <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Location:</span>
+            <div class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</div>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+    </div>
+
+    <div class="purchase-history">
+        <h2 class="purchase-title">Purchase History</h2>
+
+        @if (Model.PurchaseHistory != null && Model.PurchaseHistory.Any())
+        {
+        @foreach (var item in Model.PurchaseHistory)
+        {
+        <div class="purchase-item">
+            <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" />
+            <div class="purchase-details">
+                <div class="purchase-name">@item.ProductName</div>
+                <div class="purchase-description">@item.Description</div>
+                <div class="purchase-size">Size @item.Size</div>
+            </div>
+            <div class="purchase-price">$@item.Price.ToString("F2")</div>
+        </div>
+        }
+        }
+        else
+        {
+        <p class="text-muted">No purchase history available.</p>
+        }
     </div>
 </div>

@@ -17,7 +17,6 @@ namespace GoodShoe.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Admin> Admin { get; set; }
-        public DbSet<Purchase> Purchases { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

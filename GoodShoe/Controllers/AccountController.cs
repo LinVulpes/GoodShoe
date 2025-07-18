@@ -3,16 +3,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using GoodShoe.ViewModels;
+using GoodShoe.Models;
 
 namespace GoodShoe.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -22,41 +23,33 @@ namespace GoodShoe.Controllers
         // GET: Account/Login
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             
             return View();
         }
-
-        // POST: Account/Login
+        
+        // POST: Account/Login // Redirecting to home for now - havent connect with the database yet
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-
             if (ModelState.IsValid)
             {
-                // For testing purposes - uncomment this to bypass actual authentication
-                _logger.LogInformation("Bypassed login for testing purposes.");
-                return RedirectToLocal(returnUrl);
-                
-                /* This section is for the real authentication code
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-                
+
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User logged in successfully.");
-                    return RedirectToLocal(returnUrl);
+                    _logger.LogInformation("User logged in.");
+                    // Redirectling to Home/Index after login
+                    return RedirectToAction("Index",  "Home");
                 }
                 else
                 {
-                    _logger.LogWarning("Invalid login attempt for {Email}", model.Email);
+                    _logger.LogWarning("Invalid login attempt.");
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return RedirectToAction("Index",  "Home"); // Redirecting to home for now
                 }
-                */
             }
 
             return View(model);
@@ -75,7 +68,7 @@ namespace GoodShoe.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser 
+                var user = new ApplicationUser 
                 { 
                     UserName = model.Email, 
                     Email = model.Email 
@@ -104,6 +97,7 @@ namespace GoodShoe.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
         }
 
@@ -128,7 +122,7 @@ namespace GoodShoe.Controllers
             }
             else
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
             }
         }
     }

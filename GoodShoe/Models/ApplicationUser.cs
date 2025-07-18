@@ -4,7 +4,7 @@ namespace GoodShoe.Models
 {
     public class ApplicationUser : IdentityUser
     {
-        public string Location { get; set; }
+        public string? Location { get; set; }
     }
 }
 

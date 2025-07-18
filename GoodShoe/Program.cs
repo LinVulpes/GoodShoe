@@ -24,20 +24,21 @@ builder.Services.AddDbContext<GoodShoeDbContext>(options =>
     ));
 
 // Add Identity services
-builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     // Configure password requirements
-    options.Password.RequireDigit = false;
-        options.Password.RequiredLength = 6;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-    
-        // Configure sign-in requirements
-        options.SignIn.RequireConfirmedAccount = false;
-        options.SignIn.RequireConfirmedEmail = false;
-    })
-.AddEntityFrameworkStores<GoodShoeDbContext>();
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+
+    // Configure sign-in requirements
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedEmail = false;
+})
+.AddEntityFrameworkStores<GoodShoeDbContext>()
+.AddDefaultTokenProviders();
 
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>
