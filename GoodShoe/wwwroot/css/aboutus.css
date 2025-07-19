@@ -220,7 +220,7 @@
 }
 
 .dev-quote {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-style: italic;
 }
 
@@ -403,15 +403,15 @@
     height: 400px;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border: 2px solid #cbc1b8;
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .card:hover {
     transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .card-image {
@@ -430,21 +430,20 @@
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 30px 20px 20px;
-    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 10px 20px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
     color: white;
     transition: background 0.3s ease;
 }
 
 .card:hover .card-content {
-    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    background: linear-gradient(transparent, rgba(0,0,0,0.4));
 }
 
 .name {
     font-size: 24px;
     font-weight: bold;
     margin: 0 0 8px 0;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .title {
