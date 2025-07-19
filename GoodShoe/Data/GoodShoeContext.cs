@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using GoodShoe.Models;
+﻿using GoodShoe.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GoodShoe.Data
 {
-    public class GoodShoeDbContext : DbContext
+    public class GoodShoeDbContext : IdentityDbContext<ApplicationUser>
     {
         public GoodShoeDbContext(DbContextOptions<GoodShoeDbContext> options) : base(options)
         {
@@ -17,9 +18,16 @@ namespace GoodShoe.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Admin> Admin { get; set; }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.Property(e => e.Location).HasMaxLength(255);
+            });
+
 
             // Product configuration
             modelBuilder.Entity<Product>(entity =>

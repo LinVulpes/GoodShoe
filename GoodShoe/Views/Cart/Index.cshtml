@@ -121,10 +121,10 @@
                     
                     <!-- Checkout Button | Working in progress -->
                     <div class="d-grid gap-2">
-                        <form asp-controller="Order" asp-action="Checkout" method="get">
-                            <button type="submit" 
+                        <form asp-controller="Cart" asp-action="PrepareCheckout" method="post">
+                            <button type="submit"
                                     class="btn btn-dark w-100 cart-checkout-button"
-                                    @(Model.Count == 0 ? "disabled" : "")>
+                            @(Model.Count == 0 ? "disabled" : "")>
                                 Continue to Checkout
                             </button>
                         </form>

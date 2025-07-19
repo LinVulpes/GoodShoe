@@ -1,3 +1,9 @@
+@using Microsoft.AspNetCore.Identity
+@using GoodShoe.Models
+@using GoodShoe.ViewModels
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
 <!DOCTYPE html>
 <html lang="en" class="h-100">
 <head>
@@ -29,8 +35,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
 
-            <!-- Center Navigation Link -->
-            <div class="navbar-nav navbar-collapse collapse justify-content-between">
+            <!-- Center Navigation Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="Index">Home</a>
@@ -49,60 +55,73 @@
                         <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin</a>
                     </li>
                 </ul>
-            </div>
 
-            <!-- Right Side: Cart, User Profile, Login/Logout -->
-            <div class="right-buttons d-flex align-items-center">
-                <!-- Shopping Cart -->
-                <div class="me-lg-4" title="Shopping Cart">
-                    <a asp-controller="Cart" asp-action="Index">
-                        <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30" />
-                    </a>
-                </div>
+                <!-- Right Side: Cart, User Profile, Login/Logout -->
+                <div class="d-flex align-items-center ms-auto">
+                    <!-- Shopping Cart -->
+                    <div class="me-3" title="Shopping Cart">
+                        <a asp-controller="Cart" asp-action="Index" class="text-decoration-none">
+                            <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30" />
+                        </a>
+                    </div>
 
-                @if (User.Identity != null && User.Identity.IsAuthenticated)
-                {
-                <!-- Logged-in user: show profile picture + name in a dropdown -->
-                <div class="dropdown me-lg-4 d-flex align-items-center">
-                    <img src="~/images/profile.png" alt="User Icon" width="40" height="40" style="border-radius: 50%; margin-right: 8px;" />
-                    <button class="btn btn-outline-dark dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                        @User.Identity.Name
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                        <li>
-                            <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Profile</a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" asp-controller="Orders" asp-action="History">Order History</a>
-                        </li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li>
-                            <form method="post" asp-controller="Account" asp-action="Logout" class="d-inline">
-                                <button type="submit" class="dropdown-item">Logout</button>
-                            </form>
-                        </li>
-                    </ul>
-                </div>
-                }
-                else
-                {
-                <!-- Not logged in: show profile icon only + Sign In button -->
-                <div class="me-lg-4" title="Profile">
-                    <img src="~/images/profile.png" alt="User Icon" width="40" height="40" style="border-radius: 50%;" />
-                </div>
-
-                <button class="btn btn-dark btn-sm signin-btn me-lg-4" onclick="handleSignIn()">Sign In</button>
-                <script>
-                    function handleSignIn() {
-                        window.location.href = '/Account/Login';
+                    @if (SignInManager.IsSignedIn(User))
+                    {
+                        <!-- Logged-in user: show profile picture + name in a dropdown -->
+                        <div class="dropdown">
+                            <a asp-controller="Profile" asp-action="Index" class="text-decoration-none me-2">
+                                <img src="~/images/profile.png" alt="User Icon" width="40" height="40"
+                                     style="border-radius: 50%;" />
+                            </a>
+                            <button class="btn btn-outline-dark dropdown-toggle" type="button" id="userMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                @UserManager.GetUserName(User)
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
+                                        <i class="bi bi-person me-2"></i>Profile
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-controller="Orders" asp-action="History">
+                                        <i class="bi bi-clock-history me-2"></i>Order History
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <form method="post" asp-controller="Account" asp-action="Logout" 
+                                          asp-route-returnUrl="@Url.Action("Index", "Home")" class="d-inline">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     }
-                </script>
-                }
+                    else
+                    {
+                        <!-- Not logged in: show profile icon only + Sign In button -->
+                        <div class="me-lg-4" title="Profile">
+                            <a asp-controller="Profile" asp-action="Index" title="View Profile">
+                                <img src="~/images/profile.png" alt="User Icon" width="50" height="50" style="border-radius: 50%;" />
+                            </a>
+                        </div>
+                        
+                        <div class="me-lg-4 btn-sm" title="Sign-In">
+                            <a class="btn btn-dark signin-btn" asp-controller="Account" asp-action="Login">
+                                Sign In
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </nav>
 </header>
-
 
 <!-- Main Content - Flex Grow -->
 <main role="main" class="flex-grow-1 main-content">

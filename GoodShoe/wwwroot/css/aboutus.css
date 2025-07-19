@@ -216,7 +216,7 @@
     background: rgba(0, 0, 0, 0.1);
     color: #fff;         /* make text readable on images */
     z-index: 2;
-    text-align: left
+    text-align: left;
 }
 
 .dev-quote {

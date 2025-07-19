@@ -1,0 +1,192 @@
+﻿@using GoodShoe.ViewModels
+@model GoodShoe.ViewModels.ProfileViewModel
+
+@{
+ViewData["Title"] = "Profile";
+}
+
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    .profile-header {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .profile-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .profile-field {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .profile-field:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .field-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .field-value {
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .edit-link {
+        color: #007bff;
+        text-decoration: none;
+        font-size: 0.85rem;
+        margin-left: 10px;
+    }
+
+    .edit-link:hover {
+        text-decoration: underline;
+    }
+
+    .purchase-history {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .purchase-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .purchase-item {
+        display: flex;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .purchase-item:last-child {
+        border-bottom: none;
+    }
+
+    .purchase-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 6px;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+
+    .purchase-details {
+        flex: 1;
+    }
+
+    .purchase-name {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 2px;
+        font-size: 0.95rem;
+    }
+
+    .purchase-description {
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 2px;
+    }
+
+    .purchase-size {
+        color: #666;
+        font-size: 0.85rem;
+    }
+
+    .purchase-price {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .password-value {
+        letter-spacing: 2px;
+        font-family: monospace;
+    }
+</style>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1 class="profile-title">Profile</h1>
+
+        @if (TempData["Success"] != null)
+        {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+        }
+
+        <div class="profile-field">
+            <span class="field-label">Email:</span>
+            <span class="field-value">@Model.Email</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Password:</span>
+            <span class="field-value password-value">••••••••••</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Phone Number:</span>
+            <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+
+        <div class="profile-field">
+            <span class="field-label">Location:</span>
+            <div class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</div>
+            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+        </div>
+    </div>
+
+    <div class="purchase-history">
+        <h2 class="purchase-title">Purchase History</h2>
+
+        @if (Model.PurchaseHistory != null && Model.PurchaseHistory.Any())
+        {
+        @foreach (var item in Model.PurchaseHistory)
+        {
+        <div class="purchase-item">
+            <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" />
+            <div class="purchase-details">
+                <div class="purchase-name">@item.ProductName</div>
+                <div class="purchase-description">@item.Description</div>
+                <div class="purchase-size">Size @item.Size</div>
+            </div>
+            <div class="purchase-price">$@item.Price.ToString("F2")</div>
+        </div>
+        }
+        }
+        else
+        {
+        <p class="text-muted">No purchase history available.</p>
+        }
+    </div>
+</div>

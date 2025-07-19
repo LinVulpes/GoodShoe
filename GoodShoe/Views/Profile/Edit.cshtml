@@ -1,0 +1,211 @@
+﻿@model GoodShoe.ViewModels.EditProfileViewModel
+
+@{
+    ViewData["Title"] = "Edit Profile";
+}
+
+<style>
+    .edit-profile-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        min-height: 100vh;
+    }
+    
+    .edit-profile-card {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        margin-bottom: 20px;
+    }
+    
+    .edit-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #555;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 2px rgba(0,123,255,0.25);
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        border: 1px solid #007bff;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        margin-right: 10px;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        border: 1px solid #6c757d;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 6px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #545b62;
+        border-color: #545b62;
+        color: white;
+        text-decoration: none;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+        font-size: 0.875rem;
+        margin-top: 5px;
+    }
+    
+    .alert {
+        padding: 12px 20px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    
+    .alert-danger {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+    
+    .password-section {
+        border-top: 1px solid #eee;
+        padding-top: 30px;
+        margin-top: 30px;
+    }
+    
+    .password-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    
+    .button-group {
+        text-align: center;
+        margin-top: 30px;
+    }
+</style>
+
+<div class="edit-profile-container">
+    <div class="edit-profile-card">
+        <h1 class="edit-title">Edit Profile</h1>
+        
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Success"]
+            </div>
+        }
+        
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["Error"]
+            </div>
+        }
+
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" placeholder="e.g., +65 9123 4567" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Location" class="form-label"></label>
+                <input asp-for="Location" class="form-control" placeholder="e.g., Singapore" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-primary">Save Changes</button>
+                <a asp-action="Index" class="btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <!-- Change Password Section -->
+        <div class="password-section">
+            <h2 class="password-title">Change Password</h2>
+            
+            <form asp-action="ChangePassword" method="post">
+                <div class="form-group">
+                    <label for="CurrentPassword" class="form-label">Current Password</label>
+                    <input type="password" id="CurrentPassword" name="CurrentPassword" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="NewPassword" class="form-label">New Password</label>
+                    <input type="password" id="NewPassword" name="NewPassword" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="ConfirmPassword" class="form-label">Confirm New Password</label>
+                    <input type="password" id="ConfirmPassword" name="ConfirmPassword" class="form-control" required />
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn-primary">Change Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

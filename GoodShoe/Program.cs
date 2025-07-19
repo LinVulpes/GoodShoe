@@ -1,14 +1,21 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using GoodShoe.Data;
+﻿using GoodShoe.Data;
 using GoodShoe.Services; //so ICartService/CartService are in scope
+using Microsoft.EntityFrameworkCore;
+using GoodShoe.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
+// Session configuration - updated with timeout 30 mins
 builder.Services.AddDistributedMemoryCache();
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 // Make IHttpContextAccessor available (needed by CartService)
 builder.Services.AddHttpContextAccessor();
@@ -23,20 +30,21 @@ builder.Services.AddDbContext<GoodShoeDbContext>(options =>
     ));
 
 // Add Identity services
-builder.Services.AddDefaultIdentity<IdentityUser>(options => 
-    {
-        // Configure password requirements
-        options.Password.RequireDigit = false;
-        options.Password.RequiredLength = 6;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-    
-        // Configure sign-in requirements
-        options.SignIn.RequireConfirmedAccount = false;
-        options.SignIn.RequireConfirmedEmail = false;
-    })
-.AddEntityFrameworkStores<GoodShoeDbContext>();
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Configure password requirements
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+
+    // Configure sign-in requirements
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedEmail = false;
+})
+.AddEntityFrameworkStores<GoodShoeDbContext>()
+.AddDefaultTokenProviders();
 
 // Configure application cookie
 builder.Services.ConfigureApplicationCookie(options =>
@@ -86,3 +94,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 app.Run();
+
