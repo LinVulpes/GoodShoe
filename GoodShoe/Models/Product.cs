@@ -10,12 +10,12 @@ namespace GoodShoe.Models
         
         // Name
         [Required] 
-        [StringLength(100)] 
+        [StringLength(50)] 
         public string Name { get; set; } = string.Empty;
 
         // Brand
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string Brand { get; set; } = string.Empty;
         
         // Price
@@ -25,7 +25,7 @@ namespace GoodShoe.Models
         
         // Description
         [Required]
-        [StringLength(1000)]
+        [StringLength(200)]
         public string Description { get; set; } = string.Empty;
         
         // StockCount
