@@ -24,7 +24,7 @@
 
                     <!-- Product Image -->
                     <div class="product-image-container text-center">
-                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.Id}.png")"
+                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.ProductId}.png")"
                              alt="@Model.Name"
                              class="product-main-image"
                              onerror="this.src='/images/products/placeholder.jpg'">
@@ -51,28 +51,41 @@
                             <h3 class="size-heading">Select Size</h3>
 
                             <div class="size-options" id="sizeOptions">
-                                @{
-                                    var availableSizesList = Model.GetSizesList();
-                                }
                                 @for (int size = 8; size <= 16; size++)
                                 {
-                                    var sizeString = size.ToString();
-                                    var isAvailable = availableSizesList.Contains(sizeString) && Model.IsInStock;
+                                    var variant = Model.ProductVariants.FirstOrDefault(pv => pv.Size == size);
+                                    var isAvailable = variant != null && variant.StockCount > 0;
+                                    var stockCount = variant?.StockCount ?? 0;
 
                                     <button type="button"
                                             class="size-button @(!isAvailable ? "disabled" : "")"
                                             data-size="@size"
                                             data-size-label="US @size"
+                                            data-stock="@stockCount"
+                                            data-variant-id="@(variant?.Id ?? 0)"
                                             @(!isAvailable ? "disabled" : "")
-                                            onclick="selectSize(this, @size, 'US @size'); console.log('Button clicked: US @size, Available: @isAvailable');">
+                                            onclick="selectSize(this, @size, 'US @size', @stockCount, @(variant?.Id ?? 0))">
                                         US @size
+                                        @if (stockCount > 0 && stockCount <= 5)
+                                        {
+                                            <small class="stock-indicator">(@stockCount left)</small>
+                                        }
                                     </button>
                                 }
                             </div>
 
-                            @if (!Model.IsInStock)
+                            @{
+                                var totalStock = Model.ProductVariants.Sum(pv => pv.StockCount);
+                                var availableSizes = Model.ProductVariants.Count(pv => pv.StockCount > 0);
+                            }
+
+                            @if (totalStock == 0)
                             {
                                 <p class="text-danger"><small>This product is currently out of stock.</small></p>
+                            }
+                            else if (availableSizes <= 3)
+                            {
+                                <p class="text-warning"><small>Limited sizes available.</small></p>
                             }
                         </div>
 
@@ -81,9 +94,11 @@
                                 @Html.AntiForgeryToken()
 
                                 <!-- productId stays the same -->
-                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <input type="hidden" name="productId" value="@Model.ProductId" />
                                 <!-- size will be populated in JS -->
                                 <input type="hidden" name="size" id="selectedSize" />
+                                <!-- productVariantId will be populated in JS -->
+                                <input type="hidden" name="productVariantId" id="selectedVariantId" />
 
                                 <!-- Add to cart button -->
                                 <button type="button"
@@ -95,10 +110,124 @@
                                 </button>
                             </form>
                         </div>
+
+                        <!-- Stock Information -->
+                        <div class="stock-info mt-3">
+                            <small class="text-muted">
+                                Total available: @totalStock pairs across @availableSizes sizes
+                            </small>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<script src="~/js/site.js"></script>
+<script>
+    let selectedSizeValue = null;
+    let selectedVariantId = null;
+
+    function selectSize(button, sizeValue, sizeLabel, stockCount, variantId) {
+        console.log('Size selected:', sizeLabel, 'Stock:', stockCount, 'VariantId:', variantId);
+        
+        // Remove selection from all buttons
+        document.querySelectorAll('.size-button').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        // Add selection to clicked button
+        button.classList.add('selected');
+        
+        // Store selected values
+        selectedSizeValue = sizeValue;
+        selectedVariantId = variantId;
+        
+        // Update hidden form fields
+        document.getElementById('selectedSize').value = sizeValue;
+        document.getElementById('selectedVariantId').value = variantId;
+        
+        // Enable add to cart button
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        addToCartBtn.disabled = false;
+        addToCartBtn.textContent = `Add US ${sizeValue} to cart`;
+        
+        // Optional: Show stock info for selected size
+        if (stockCount <= 5 && stockCount > 0) {
+            addToCartBtn.textContent = `Add US ${sizeValue} to cart (${stockCount} left)`;
+        }
+    }
+
+    function addToCart() {
+        if (!selectedSizeValue || !selectedVariantId) {
+            alert('Please select a size first.');
+            return;
+        }
+        
+        // Check stock availability before submitting
+        fetch(`/Products/CheckSizeAvailability?productId=@Model.ProductId&size=${selectedSizeValue}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.available && data.stock > 0) {
+                    // Submit the form
+                    document.getElementById('addToCartForm').submit();
+                } else {
+                    alert('Sorry, this size is no longer available.');
+                    // Refresh the page to update stock info
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error checking availability:', error);
+                // Submit anyway if there's an error checking
+                document.getElementById('addToCartForm').submit();
+            });
+    }
+
+    // Load size availability on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSizeAvailability();
+    });
+
+    function updateSizeAvailability() {
+        fetch(`/Products/GetAvailableSizes?productId=@Model.ProductId`)
+            .then(response => response.json())
+            .then(sizes => {
+                console.log('Available sizes:', sizes);
+                
+                // Update button states based on current stock
+                document.querySelectorAll('.size-button').forEach(button => {
+                    const size = parseInt(button.dataset.size);
+                    const sizeData = sizes.find(s => s.sizeValue === size);
+                    
+                    if (sizeData && sizeData.available) {
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                        button.dataset.stock = sizeData.stock;
+                        
+                        // Update stock indicator
+                        if (sizeData.stock <= 5) {
+                            const stockIndicator = button.querySelector('.stock-indicator');
+                            if (stockIndicator) {
+                                stockIndicator.textContent = `(${sizeData.stock} left)`;
+                            } else {
+                                button.innerHTML += `<small class="stock-indicator">(${sizeData.stock} left)</small>`;
+                            }
+                        }
+                    } else {
+                        button.disabled = true;
+                        button.classList.add('disabled');
+                        button.classList.remove('selected');
+                        
+                        // Remove stock indicator
+                        const stockIndicator = button.querySelector('.stock-indicator');
+                        if (stockIndicator) {
+                            stockIndicator.remove();
+                        }
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error loading size availability:', error);
+            });
+    }
+</script>

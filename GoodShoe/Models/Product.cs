@@ -5,17 +5,18 @@ namespace GoodShoe.Models
 {
     public class Product
     {
-        // Product ID
-        public int Id { get; set; }
+        // Product Id
+        [Key]
+        public int ProductId { get; set; }
         
         // Name
         [Required] 
-        [StringLength(50)] 
+        [StringLength(100)] 
         public string Name { get; set; } = string.Empty;
 
         // Brand
         [Required]
-        [StringLength(20)]
+        [StringLength(50)]
         public string Brand { get; set; } = string.Empty;
         
         // Price
@@ -26,33 +27,34 @@ namespace GoodShoe.Models
         // Description
         [Required]
         [StringLength(200)]
-        public string Description { get; set; } = string.Empty;
-        
-        // StockCount
-        public int StockCount { get; set; }
+        public string? Description { get; set; }
         
         // Color
         [Required]
-        public string Color { get; set; } = string.Empty;
+        [StringLength(20)]
+        public string? Color { get; set; }
         
         // Category
         [Required]
-        [StringLength(50)] 
+        [StringLength(20)] 
         public string Category { get; set; } = string.Empty; // (Men/Women/Unisex)
         
         // ImageURL
-        [StringLength(200)] 
-        public string ImageUrl { get; set; } = string.Empty;
+        [StringLength(255)] 
+        public string? ImageUrl { get; set; }
         
-        [Required]
-        public string AvailableSizes { get; set; } = string.Empty; // Available Shoe Sizes
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
         
         // Navigation properties for the database
-        public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-        public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+        public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
+        
+        /*[Required]
+        public string AvailableSizes { get; set; } = string.Empty; // Available Shoe Sizes*/
         
         // Helper methods
-        public List<string> GetSizesList()
+        /*public List<string> GetSizesList()
         {
             return string.IsNullOrEmpty(AvailableSizes) 
                 ? new List<string>() 
@@ -97,6 +99,6 @@ namespace GoodShoe.Models
         public static string[] GetUSFormats()
         {
             return Available.Select(s => $"US {s}").ToArray();
-        }
+        }*/
     }
 }

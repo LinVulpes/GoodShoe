@@ -25,7 +25,7 @@ public class ShopController : Controller
         if (id == null) return NotFound();
         
         var product = await _context.Product
-            .FirstOrDefaultAsync(m => m.Id == id);
+            .FirstOrDefaultAsync(m => m.ProductId == id);
         
         if (product == null) return NotFound();
         

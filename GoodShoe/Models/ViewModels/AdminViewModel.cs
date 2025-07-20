@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+/*using System.ComponentModel.DataAnnotations;
 using GoodShoe.Models;
 
 namespace GoodShoe.ViewModels
@@ -16,7 +16,7 @@ namespace GoodShoe.ViewModels
 
     public class RecentOrderViewModel
     {
-        public int OrderID { get; set; }
+        public int OrderId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public int Items { get; set; }
         public decimal TotalAmount { get; set; }
@@ -38,7 +38,7 @@ namespace GoodShoe.ViewModels
 
     public class ProductListItemViewModel
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Brand { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
@@ -51,7 +51,7 @@ namespace GoodShoe.ViewModels
 
     public class ProductFormViewModel
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
 
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(100, ErrorMessage = "Product name cannot exceed 100 characters")]
@@ -97,7 +97,7 @@ namespace GoodShoe.ViewModels
         {
             return new ProductFormViewModel
             {
-                Id = product.Id,
+                ProductId = product.ProductId,
                 Name = product.Name,
                 Brand = product.Brand,
                 Price = product.Price,
@@ -159,4 +159,4 @@ namespace GoodShoe.ViewModels
 
         public List<string> Currencies { get; set; } = new() { "SGD", "USD"};
     }
-}
+}*/

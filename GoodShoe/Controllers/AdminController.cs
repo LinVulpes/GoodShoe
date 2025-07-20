@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 using GoodShoe.Data;
@@ -76,7 +77,7 @@ namespace GoodShoe.Controllers
         [HttpPost]
         public IActionResult Edit(Product prod, string[] selectedSizes)
         {
-            /*// Size Selection
+            /#1#/ Size Selection
             if (selectedSizes != null && selectedSizes.Length > 0)
             {
                 prod.AvailableSizes = string.Join(",", selectedSizes);
@@ -84,7 +85,7 @@ namespace GoodShoe.Controllers
             else
             {
                 prod.AvailableSizes = "";
-            }*/
+            }#1#
             
             if(ModelState.IsValid)
             {
@@ -131,3 +132,4 @@ namespace GoodShoe.Controllers
 
     }
 }
+*/

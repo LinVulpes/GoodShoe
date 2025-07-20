@@ -6,38 +6,42 @@ namespace GoodShoe.Models
     public class Order
     {
         [Key]
-        public int OrderID { get; set; }
+        public int OrderId { get; set; }
 
         [Required]
-        public int CustomerID { get; set; }
-
-        [Required]
+        public int CustomerId { get; set; }
+        
         [Column(TypeName = "decimal(18,2)")]
         public decimal TotalAmount { get; set; }
 
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string Status { get; set; } = "Pending"; // Pending, Shipped, Delivered, Cancelled
 
         [Required]
-        [StringLength(500)]
-        public string Address { get; set; } = string.Empty;
+        [StringLength(255)]
+        public string? Address { get; set; }
 
         [Required]
         [StringLength(50)]
-        public string PaymentMethod { get; set; } = string.Empty;
+        public string? PaymentMethod { get; set; }
+        
+        [StringLength(20)]
+        public string PaymentStatus { get; set; } = "Pending"; // Pending, Completed, Failed
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
         // Navigation properties
-        public virtual Customer Customer { get; set; } = null!;
+        [ForeignKey("CustomerId")]
+        public virtual Customer Customer { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
 
         // Helper properties
-        public int TotalItems => OrderItems.Sum(item => item.Quantity);
+        /*public int TotalItems => OrderItems.Sum(item => item.Quantity);
         public bool CanBeCancelled => Status == "Pending";
         public bool CanBeShipped => Status == "Pending";
-        public bool CanBeDelivered => Status == "Shipped";
+        public bool CanBeDelivered => Status == "Shipped";*/
         
         public string StatusColor => Status.ToLower() switch
         {
@@ -60,35 +64,44 @@ namespace GoodShoe.Models
     
     public class OrderItem
     {
+        [Key]
         public int Id { get; set; }
 
         [Required]
-        public int OrderID { get; set; }
+        public int OrderId { get; set; }
 
         [Required]
-        public int ProductID { get; set; }
-
+        public int ProductVariantId { get; set; }
+        
+        // To preserve data at time of order
         [Required]
         [StringLength(100)]
         public string ProductName { get; set; } = string.Empty;
 
         [Required]
-        [StringLength(10)]
-        public string Size { get; set; } = string.Empty;
+        public int Size { get; set; }
 
         [Required]
+        [Range(1, int.MaxValue)]
         public int Quantity { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Price { get; set; }
+        public decimal UnitPrice { get; set; }
+        
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal TotalPrice { get; set; }
+        
 
         // Navigation properties
-        public virtual Order Order { get; set; } = null!;
-        public virtual Product Product { get; set; } = null!;
+        [ForeignKey("OrderId")]
+        public virtual Order Order { get; set; }
+        
+        [ForeignKey("ProductVariantId")]
+        public virtual ProductVariant ProductVariant { get; set; }
 
-        // Helper properties
+        /*// Helper properties
         public decimal TotalPrice => Price * Quantity;
-        public string DisplayName => $"{ProductName}";
+        public string DisplayName => $"{ProductName}";*/
     }
 }

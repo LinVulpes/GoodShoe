@@ -8,7 +8,7 @@
 
 <div class="create-container">
     <form method="post" action="@Url.Action("Edit", "Admin")" id="createForm">
-        <input type="hidden" asp-for="Id" value="0" />
+        <input type="hidden" asp-for="ProductId" value="0" />
         
         <div class="back-button-container mb-4 header-actions">
             <a href="@Url.Action("Index", "Admin")" class="back-arrow">
@@ -88,11 +88,11 @@
         </div>
 
         <!-- Stock Quantity -->
-        <div class="form-group">
+        @*<div class="form-group">
             <label class="form-label">Stock Quantity:</label>
             <input asp-for="StockCount" type="number" min="0" class="form-input stock-input" placeholder="0" required />
             <span asp-validation-for="StockCount" class="text-danger"></span>
-        </div>
+        </div>*@
 
         <!-- Product Image -->
         <div class="form-group">
