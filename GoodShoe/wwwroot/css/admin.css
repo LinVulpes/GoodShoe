@@ -56,6 +56,17 @@
     font-size: 14px;
 }
 
+.btn-action {
+    background-color: #504f4f;
+    color: #fff;
+    border: none;
+}
+
+.btn-action:hover {
+    background-color: #333; /* slightly lighter on hover */
+    color: #fff;
+}
+
 .btn-primary {
     background: #3498db;
     color: white;

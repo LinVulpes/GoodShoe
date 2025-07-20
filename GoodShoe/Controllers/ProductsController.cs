@@ -17,7 +17,7 @@ namespace GoodShoe.Controllers
         // GET: Products
         public async Task<IActionResult> Index(string Category = "")
         {
-            var products = _context.Product.AsQueryable();
+            var products = _context.Product.Include(p => p.ProductVariants).AsQueryable();
 
             if (!string.IsNullOrEmpty(Category))
             {
@@ -36,34 +36,36 @@ namespace GoodShoe.Controllers
             }
 
             var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
-            
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
+
             if (product == null)
             {
                 return NotFound();
             }
+
+            // Debug: Check if variants are loaded
+            Console.WriteLine($"Product {product.Name} has {product.ProductVariants?.Count ?? 0} variants");
 
             return View(product);
         }
         
         // Method to check size availability
         [HttpGet]
-        public async Task<IActionResult> CheckSizeAvailability(int productId, string size)
+        public async Task<IActionResult> CheckSizeAvailability(int productId, int size)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == productId);
-            if (product == null)
+            var productVariant = await _context.ProductVariant
+                .FirstOrDefaultAsync(pv => pv.ProductId == productId && pv.Size == size);
+            
+            if (productVariant == null)
             {
                 return Json(new { available = false, stock = 0 });
             }
-            
-            // Removing US size when checking
-            var sizeToCheck = size.Replace("US ", "").Trim();
-            var isAvailable = product.IsSizeAvailable(sizeToCheck) && product.IsInStock;
 
             return Json(new
             {
-                available = isAvailable,
-                stock = product.StockCount
+                available = productVariant.StockCount > 0,
+                stock = productVariant.StockCount
             });
         }
         
@@ -71,18 +73,23 @@ namespace GoodShoe.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAvailableSizes(int productId)
         {
-            var product = await _context.Product.FirstOrDefaultAsync(p => p.Id == productId);
-            if (product == null)
+            var productVariants = await _context.ProductVariant
+                .Where(pv => pv.ProductId == productId)
+                .OrderBy(pv => pv.Size)
+                .ToListAsync();
+
+            if (!productVariants.Any())
             {
                 return Json(new List<object>());
             }
 
-            var availableSizes = product.GetSizesList()
-                .Select(size => new
+            var availableSizes = productVariants
+                .Select(pv => new
                 {
-                    size = $"US {size}",
-                    stock = product.StockCount,
-                    available = product.IsInStock
+                    size = $"US {pv.Size}",
+                    sizeValue = pv.Size,
+                    stock = pv.StockCount,
+                    available = pv.StockCount > 0
                 })
                 .ToList();
             
@@ -92,22 +99,30 @@ namespace GoodShoe.Controllers
         // Getting Category-specific pages
         public async Task<IActionResult> Men()
         {
-            var menProducts = await _context.Product.Where(p => p.Category == "Men").ToListAsync();
+            var menProducts = await _context.Product
+                .Include(p => p.ProductVariants)
+                .Where(p => p.Category == "Men")
+                .ToListAsync();
             return View("Index", menProducts);
         }
         
         public async Task<IActionResult> Women()
         {
-            var womenProducts = await _context.Product.Where(p => p.Category == "Women").ToListAsync();
+            var womenProducts = await _context.Product
+                .Include(p => p.ProductVariants)
+                .Where(p => p.Category == "Women")
+                .ToListAsync();
             return View("Index", womenProducts);
         }
         
         public async Task<IActionResult> Unisex()
         {
-            var unisexProducts = await _context.Product.Where(p => p.Category == "Unisex").ToListAsync();
+            var unisexProducts = await _context.Product
+                .Include(p => p.ProductVariants)
+                .Where(p => p.Category == "Unisex")
+                .ToListAsync();
             return View("Index", unisexProducts);
         }
-        
 
         // GET: Products/Create
         public IActionResult Create()
@@ -116,14 +131,32 @@ namespace GoodShoe.Controllers
         }
 
         // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Brand,Price,Description,StockCount,Color,Category,AvailableSizes,ImageUrl")] Product product)
+        public async Task<IActionResult> Create([Bind("Name,Brand,Price,Description,Color,Category,ImageUrl")] Product product)
         {
             if (ModelState.IsValid)
             {
+                // Set timestamps
+                product.CreatedAt = DateTime.UtcNow;
+                product.UpdatedAt = DateTime.UtcNow;
+                
                 _context.Add(product);
+                await _context.SaveChangesAsync();
+                
+                // Create ProductVariants for sizes 8-16 with 0 stock initially
+                var sizes = new int[] { 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+                foreach (var size in sizes)
+                {
+                    var variant = new ProductVariant
+                    {
+                        ProductId = product.ProductId,
+                        Size = size,
+                        StockCount = 0
+                    };
+                    _context.ProductVariant.Add(variant);
+                }
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -138,7 +171,10 @@ namespace GoodShoe.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+            
             if (product == null)
             {
                 return NotFound();
@@ -147,13 +183,11 @@ namespace GoodShoe.Controllers
         }
 
         // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Description,StockCount,Color,Category,AvailableSizes,ImageUrl")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Description,Color,Category,ImageUrl,CreatedAt")] Product product)
         {
-            if (id != product.Id)
+            if (id != product.ProductId)
             {
                 return NotFound();
             }
@@ -162,12 +196,15 @@ namespace GoodShoe.Controllers
             {
                 try
                 {
+                    // Update timestamp
+                    product.UpdatedAt = DateTime.UtcNow;
+                    
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
+                    if (!ProductExists(product.ProductId))
                     {
                         return NotFound();
                     }
@@ -181,6 +218,68 @@ namespace GoodShoe.Controllers
             return View(product);
         }
 
+        // GET: Products/EditStock/5 - New method for managing stock
+        public async Task<IActionResult> EditStock(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+            
+            if (product == null)
+            {
+                return NotFound();
+            }
+            
+            return View(product);
+        }
+
+        // POST: Products/EditStock/5 - Update stock for variants
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditStock(int id, Dictionary<int, int> stockCounts)
+        {
+            var product = await _context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+                
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                foreach (var variant in product.ProductVariants)
+                {
+                    if (stockCounts.ContainsKey(variant.Size))
+                    {
+                        variant.StockCount = stockCounts[variant.Size];
+                    }
+                }
+
+                product.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(product.ProductId))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -190,7 +289,9 @@ namespace GoodShoe.Controllers
             }
 
             var product = await _context.Product
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(m => m.ProductId == id);
+            
             if (product == null)
             {
                 return NotFound();
@@ -204,19 +305,42 @@ namespace GoodShoe.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
+            var product = await _context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+                
             if (product != null)
             {
+                // ProductVariants will be deleted automatically due to cascade delete
                 _context.Product.Remove(product);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-            return _context.Product.Any(e => e.Id == id);
+            return _context.Product.Any(e => e.ProductId== id);
+        }
+
+        // Helper method to get total stock for a product
+        [HttpGet]
+        public async Task<IActionResult> GetProductStock(int productId)
+        {
+            var totalStock = await _context.ProductVariant
+                .Where(pv => pv.ProductId == productId)
+                .SumAsync(pv => pv.StockCount);
+
+            var availableSizes = await _context.ProductVariant
+                .Where(pv => pv.ProductId == productId && pv.StockCount > 0)
+                .CountAsync();
+
+            return Json(new 
+            { 
+                totalStock = totalStock,
+                availableSizes = availableSizes
+            });
         }
     }
 }

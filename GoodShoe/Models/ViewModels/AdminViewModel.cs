@@ -16,7 +16,7 @@ namespace GoodShoe.ViewModels
 
     public class RecentOrderViewModel
     {
-        public int OrderID { get; set; }
+        public int OrderId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public int Items { get; set; }
         public decimal TotalAmount { get; set; }
@@ -38,7 +38,7 @@ namespace GoodShoe.ViewModels
 
     public class ProductListItemViewModel
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Brand { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
@@ -51,7 +51,7 @@ namespace GoodShoe.ViewModels
 
     public class ProductFormViewModel
     {
-        public int Id { get; set; }
+        public int ProductId { get; set; }
 
         [Required(ErrorMessage = "Product name is required")]
         [StringLength(100, ErrorMessage = "Product name cannot exceed 100 characters")]
@@ -62,15 +62,13 @@ namespace GoodShoe.ViewModels
         public string Brand { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Price is required")]
-        [Range(0.01, 9999.99, ErrorMessage = "Price must be between $0.01 and $9999.99")]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Description is required")]
-        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
+        [StringLength(200, ErrorMessage = "Description cannot exceed 200 characters")]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Stock count is required")]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock count must be 0 or greater")]
         public int StockCount { get; set; }
 
         [Required(ErrorMessage = "Color is required")]
@@ -86,9 +84,9 @@ namespace GoodShoe.ViewModels
 
         // For form display
         public List<string> AvailableCategories { get; set; } = new() { "Men", "Women", "Unisex" };
-        public List<string> AvailableSizes { get; set; } = ShoeSizes.Available.ToList();
+        public List<string> AvailableSizes { get; set; } = new() { "8", "9", "10", "11", "12", "13", "14", "15", "16" };
 
-        public bool IsEditMode => Id > 0;
+        public bool IsEditMode => ProductId > 0;
         public string PageTitle => IsEditMode ? "Edit Product" : "Add New Product";
         public string SubmitButtonText => IsEditMode ? "Update Product" : "Create Product";
 
@@ -97,7 +95,7 @@ namespace GoodShoe.ViewModels
         {
             return new ProductFormViewModel
             {
-                Id = product.Id,
+                ProductId = product.ProductId,
                 Name = product.Name,
                 Brand = product.Brand,
                 Price = product.Price,
@@ -115,16 +113,15 @@ namespace GoodShoe.ViewModels
         {
             return new Product
             {
-                Id = Id,
+                ProductId = ProductId,
                 Name = Name,
                 Brand = Brand,
                 Price = Price,
                 Description = Description,
-                StockCount = StockCount,
                 Color = Color,
                 Category = Category,
                 ImageUrl = ImageUrl,
-                AvailableSizes = string.Join(",", SelectedSizes)
+                // Note: StockCount and AvailableSizes are now handled via ProductVariants - I have removed it.
             };
         }
     }
@@ -132,7 +129,7 @@ namespace GoodShoe.ViewModels
     // Admin Settings
     public class AdminSettingsViewModel
     {
-        public int AdminID { get; set; }
+        public int AdminId { get; set; }
 
         [Required]
         [StringLength(50)]

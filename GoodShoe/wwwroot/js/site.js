@@ -3,96 +3,163 @@
 }
 
 // Remove focus from dropdown buttons after click
- document.addEventListener('DOMContentLoaded', function() {
-     const dropdownButtons = document.querySelectorAll('.dropdown-toggle');
-     dropdownButtons.forEach(button => {
-         button.addEventListener('click', function() {
-             // Remove focus after a short delay
-             setTimeout(() => {
-                 this.blur();
-             }, 150);
-         });
-     });
-
-     // Remove focus when dropdown closes
-     const dropdowns = document.querySelectorAll('.dropdown');
-     dropdowns.forEach(dropdown => {
-         dropdown.addEventListener('hidden.bs.dropdown', function() {
-             const button = this.querySelector('.dropdown-toggle');
-             if (button) {
-                 button.blur();
-             }
-         });
-     });
- });
-
-//** JS for Product details **//
-
-let selectedSize = null;
-let selectedSizeLabel = null;
-
-// Enhanced selectSize function with debugging
-function selectSize(button, size, sizeLabel) {
-    console.log(`selectSize called: size=${size}, sizeLabel=${sizeLabel}`);
-    console.log('Button element:', button);
-    console.log('Button classes:', button.className);
-
-    if (button.classList.contains('disabled') || button.classList.contains('loading')) {
-        console.log('Button is disabled or loading - ignoring click');
-        return;
-    }
-
-    // To unselect the clicked button
-    if (button.classList.contains('selected')) {
-        button.classList.remove('selected');
-        selectedSize = null;
-        selectedSizeLabel = null;
-
-        // Disable the add to cart button
-        const addToCartBtn = document.getElementById('addToCartBtn');
-        if (addToCartBtn) addToCartBtn.disabled = true;
-
-        console.log('Size unselected');
-        return;
-    }
-
-    // Remove selection from all buttons
-    document.querySelectorAll('.size-button').forEach(b => {
-        b.classList.remove('selected');
-        console.log('Removed selected from button:', b.textContent.trim());
+document.addEventListener('DOMContentLoaded', function () {
+    const dropdownButtons = document.querySelectorAll('.dropdown-toggle');
+    dropdownButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove focus after a short delay
+            setTimeout(() => {
+                this.blur();
+            }, 150);
+        });
     });
 
-    // Add selection to clicked button
+    // Remove focus when dropdown closes
+    const dropdowns = document.querySelectorAll('.dropdown');
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('hidden.bs.dropdown', function () {
+            const button = this.querySelector('.dropdown-toggle');
+            if (button) {
+                button.blur();
+            }
+        });
+    });
+});
+
+//** ====== JS for Product details ====== **//
+// Keep track of selected size and variant
+let selectedSizeValue = null;
+let selectedVariantId = null;
+
+document.addEventListener('DOMContentLoaded', function () {
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const addToCartForm = document.getElementById('addToCartForm');
+
+    if (!addToCartBtn || !addToCartForm || !productId) {
+        console.warn('Product Details JS: Required elements not found.');
+        return;
+    }
+
+    // Initialize size availability
+    updateSizeAvailability();
+
+    // Attach click handlers to size buttons
+    document.querySelectorAll('.size-button').forEach(button => {
+        button.addEventListener('click', function () {
+            const sizeValue = parseInt(this.dataset.size);
+            const sizeLabel = this.dataset.sizeLabel;
+            const stockCount = parseInt(this.dataset.stock);
+            const variantId = parseInt(this.dataset.variantId);
+
+            selectSize(this, sizeValue, sizeLabel, stockCount, variantId);
+        });
+    });
+
+    // Attach click handler to Add to Cart button
+    addToCartBtn.addEventListener('click', function () {
+        addToCart();
+    });
+});
+
+function selectSize(button, sizeValue, sizeLabel, stockCount, variantId) {
+    console.log('Selected Size:', sizeLabel, 'Stock:', stockCount, 'VariantId:', variantId);
+
+    // Clear previous selection
+    document.querySelectorAll('.size-button').forEach(btn => btn.classList.remove('selected'));
+
+    // Highlight selected button
     button.classList.add('selected');
-    console.log('Added selected to button:', button.textContent.trim());
 
-    // Store selected size info
-    selectedSize = size;
-    selectedSizeLabel = sizeLabel;
+    // Store selected values
+    selectedSizeValue = sizeValue;
+    selectedVariantId = variantId;
 
-    // Enable add to cart button
+    // Update hidden form fields
+    document.getElementById('selectedSize').value = sizeValue;
+    document.getElementById('selectedVariantId').value = variantId;
+
+    // Enable Add to Cart button
     const addToCartBtn = document.getElementById('addToCartBtn');
     addToCartBtn.disabled = false;
 
-    console.log(`Selected size: ${sizeLabel}`);
+    // Update button text with stock info
+    if (stockCount > 0 && stockCount <= 5) {
+        addToCartBtn.textContent = `Add US ${sizeValue} to cart (${stockCount} left)`;
+    } else {
+        addToCartBtn.textContent = `Add US ${sizeValue} to cart`;
+    }
 }
 
 function addToCart() {
-    console.log('addToCart called');
-    if (!selectedSize || !selectedSizeLabel) {
+    if (!selectedSizeValue || !selectedVariantId) {
         alert('Please select a size first.');
         return;
     }
 
-    // Set the selected size in the hidden input
-    document.getElementById('selectedSize').value = selectedSizeLabel;
-    console.log('Set hidden input value to:', selectedSizeLabel);
-
-    // Submit the form
-    document.getElementById('addToCartForm').submit();
+    // Check stock availability before submitting
+    fetch(`/Products/CheckSizeAvailability?productId=${productId}&size=${selectedSizeValue}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.available && data.stock > 0) {
+                console.log('Stock confirmed, submitting form...');
+                document.getElementById('addToCartForm').submit();
+            } else {
+                alert('Sorry, this size is no longer available.');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error checking availability:', error);
+            // Fallback: Submit the form anyway
+            document.getElementById('addToCartForm').submit();
+        });
 }
 
-//** Just Some animation & transition for Contact Page **//
+function updateSizeAvailability() {
+    fetch(`/Products/GetAvailableSizes?productId=${productId}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(sizes => {
+            console.log('Available sizes:', sizes);
+
+            document.querySelectorAll('.size-button').forEach(button => {
+                const size = parseInt(button.dataset.size);
+                const sizeData = sizes.find(s => s.sizeValue === size);
+
+                if (sizeData && sizeData.available) {
+                    button.disabled = false;
+                    button.classList.remove('disabled');
+                    button.dataset.stock = sizeData.stock;
+
+                    // Update stock indicator
+                    const stockIndicator = button.querySelector('.stock-indicator');
+                    if (stockIndicator) {
+                        stockIndicator.textContent = `(${sizeData.stock} left)`;
+                    } else if (sizeData.stock <= 5) {
+                        button.innerHTML += `<small class="stock-indicator">(${sizeData.stock} left)</small>`;
+                    }
+                } else {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                    button.classList.remove('selected');
+
+                    // Remove stock indicator if exists
+                    const stockIndicator = button.querySelector('.stock-indicator');
+                    if (stockIndicator) stockIndicator.remove();
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error loading size availability:', error);
+        });
+}
+
+//** ====== JS of Animation and transition for Contact page ====== **//
 // Contact Form Submission
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();

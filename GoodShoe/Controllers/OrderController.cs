@@ -107,7 +107,7 @@ namespace GoodShoe.Controllers
                 System.Diagnostics.Debug.WriteLine($"=== ERROR in GetCartItems ===");
                 System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                return new List<CartItemViewModel>(); //return empty list so app dont crash
+                return new List<CartItemViewModel>(); //return empty list so app don't crash
             }
         }
     }

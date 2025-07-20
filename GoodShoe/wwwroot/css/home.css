@@ -177,7 +177,7 @@
 /* Slider Navigation */
 .slider-nav {
     position: absolute;
-    top: 85%;
+    top: 90%;
     transform: translateY(-50%);
     background: rgba(255, 255, 255, 0.9);
     border: none;

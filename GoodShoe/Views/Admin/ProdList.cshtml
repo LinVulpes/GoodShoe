@@ -1,7 +1,8 @@
 ﻿<!-- Product Management -->
-@model List<Product>
+@model List<GoodShoe.Models.Product>
 @{
     ViewData["Title"] = "Product Management";
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 }
 
 <div class="container main-context">
@@ -11,35 +12,49 @@
         </a>
     </div>
     <h1 class="main-title">Product List</h1>
-    <a asp-controller="Admin" asp-action="Create">Add New Product</a>
-    <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.AvailableSizes</td>
-                <td>@product.Price</td>
-                <td>@product.StockCount</td>
-                <td>
-                    <a asp-controller="Admin" asp-action="Edit"
-                       asp-route-id="@product.Id"
-                       asp-route-slug="@product.Name">Edit</a>
-                    <a asp-controller="Admin" asp-action="Delete"
-                       asp-route-id="@product.Id"
-                       asp-route-slug="@product.Name">Delete</a>
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <a asp-controller="Admin" asp-action="Create" class="btn btn-primary mb-3">Add New Product</a>
+    
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Available Sizes</th>
+                    <th>Total Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>@product.Brand</td>
+                        <td>$@product.Price.ToString("F2")</td>
+                        <td>@product.AvailableSizes</td>
+                        <td>
+                            <span class="badge @(product.StockCount == 0 ? "bg-danger" : product.StockCount < 5 ? "bg-warning" : "bg-success")">
+                                @product.StockCount
+                            </span>
+                        </td>
+                        <td>
+                            <a asp-controller="Admin" asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Details</a>
+                            <a asp-controller="Admin" asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Edit</a>
+                            <a asp-controller="Admin" asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h4>No Products Found</h4>
+            <p>There are currently no products in the database. <a asp-controller="Admin" asp-action="Create">Add your first product</a> to get started.</p>
+        </div>
+    }
 </div>

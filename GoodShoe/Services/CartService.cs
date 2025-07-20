@@ -73,7 +73,7 @@ namespace GoodShoe.Services
             {
                 // If new item, look up product info from database
                 var product = _db.Product // Table or DbSet<Product>
-                                 .FirstOrDefault(p => p.Id == productId);
+                                 .FirstOrDefault(p => p.ProductId == productId);
 
                 if (product == null)
                     throw new KeyNotFoundException($"No product with ID {productId}");
@@ -85,7 +85,7 @@ namespace GoodShoe.Services
                     ProductName = product.Name,  // Product name
                     ImageUrl = !string.IsNullOrEmpty(product.ImageUrl)
                                   ? product.ImageUrl
-                                  : $"/images/products/{product.Id}.png",
+                                  : $"/images/products/{product.ProductId}.png",
                     Price = product.Price, // Product price
                     Size = size,           // Selected size (e.g. "US 9")
                     Quantity = quantity    // Start with requested qty
