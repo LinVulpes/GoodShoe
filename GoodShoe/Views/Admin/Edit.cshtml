@@ -31,35 +31,43 @@
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
         
-        @*Vulpes Remove the Size and change them to available size*@
-        @*<div class="form-group">
-            <label asp-for="AvailableSizes" class="control-label"></label>
-            <input asp-for="AvailableSizes" class="form-control" />
-            <span asp-validation-for="AvailableSizes" class="text-danger"></span>
-        </div>*@
+        <!-- Shoe Sizes -->
+        <div class="form-group">
+            <label class="control-label">Available Sizes:</label>
+            <div class="row">
+                @{
+                    var availableSizes = Model.GetSizesList();
+                }
+                @for (int size = 8; size <= 16; size++)
+                {
+                    <div class="col-md-3">
+                        <input type="checkbox" 
+                               name="selectedSizes" 
+                               value="@size" 
+                               id="size@size" 
+                               @(availableSizes.Contains(size.ToString()) ? "checked" : "") />
+                        <label for="size@size">US @size</label>
+                    </div>
+                }
+            </div>
+        </div>
 
         <div class="form-group">
             <label asp-for="Description" class="control-label"></label>
             <input asp-for="Description" class="form-control" />
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-
-        @*<div class="form-group">
-            <label asp-for="StockCount" class="control-label"></label>
-            <input asp-for="StockCount" class="form-control" />
-            <span asp-validation-for="StockCount" class="text-danger"></span>
-        </div>*@
-
+        
         <div class="form-group">
             <label asp-for="Color" class="control-label"></label>
             <input asp-for="Color" class="form-control" />
             <span asp-validation-for="Color" class="text-danger"></span>
         </div>
-
+        
         <div class="form-group">
-            <label asp-for="Category" class="control-label"></label>
-            <input asp-for="Category" class="form-control" />
-            <span asp-validation-for="Category" class="text-danger"></span>
+            <label asp-for="ImageUrl" class="control-label">Image URL:</label>
+            <input asp-for="ImageUrl" class="form-control" />
+            <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
 
         <div class="form-group">
@@ -68,62 +76,6 @@
         </div>
     </form>
 </div>
-
-@* <h1>Edit</h1>
-
-<h4>Product</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Brand" class="control-label"></label>
-                <input asp-for="Brand" class="form-control" />
-                <span asp-validation-for="Brand" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Size" class="control-label"></label>
-                <input asp-for="Size" class="form-control" />
-                <span asp-validation-for="Size" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StockCount" class="control-label"></label>
-                <input asp-for="StockCount" class="form-control" />
-                <span asp-validation-for="StockCount" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Color" class="control-label"></label>
-                <input asp-for="Color" class="form-control" />
-                <span asp-validation-for="Color" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Category" class="control-label"></label>
-                <input asp-for="Category" class="form-control" />
-                <span asp-validation-for="Category" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div> *@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

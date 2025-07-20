@@ -49,5 +49,19 @@ namespace GoodShoe.Models
         
         // Navigation properties for the database
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
+        
+        // Keep these for backward compatibility but calculate from ProductVariants : Not using for now
+        public int StockCount => ProductVariants?.Sum(pv => pv.StockCount) ?? 0;
+        public string AvailableSizes => ProductVariants != null ? 
+            string.Join(",", ProductVariants.Where(pv => pv.StockCount > 0).Select(pv => pv.Size).OrderBy(s => s)) : "";
+        
+        // Helper method for getting sizes as list (if needed elsewhere)
+        public List<string> GetSizesList()
+        {
+            return ProductVariants?.Where(pv => pv.StockCount > 0)
+                .Select(pv => pv.Size.ToString())
+                .OrderBy(s => int.Parse(s))
+                .ToList() ?? new List<string>();
+        }
     }
 }

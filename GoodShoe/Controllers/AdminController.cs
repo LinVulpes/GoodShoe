@@ -1,5 +1,4 @@
-﻿/*
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 using GoodShoe.Data;
@@ -19,18 +18,25 @@ namespace GoodShoe.Controllers
         // Landing page for admin view
         public IActionResult Index()
         {
-            // Admin Dashboard statistics
+            // Admin Dashboard statistics Updated
             var totalProducts = context.Product.Count();
-            var lowStockProducts = context.Product.Where(p => p.StockCount < 5).Count();
-            var outOfStockProducts = context.Product.Where(p => p.StockCount == 0).Count();
-            var totalValue = context.Product.Sum(p => p.Price * p.StockCount);
+
+            var totalStock = context.ProductVariant.Sum(p => p.StockCount);
+            var lowStockProducts = context.ProductVariant.Where(pv => pv.StockCount > 0 && pv.StockCount < 5).Count();
+            var outOfStockProducts = context.ProductVariant.Where(p => p.StockCount == 0).Count();
+            
+            // Calculate total value from variants
+            var totalValue = context.ProductVariant
+                .Include(pv => pv.Product)
+                .Sum(pv => pv.Product.Price * pv.StockCount);
             
             ViewBag.TotalProducts = totalProducts;
+            ViewBag.TotalStock = totalStock;
             ViewBag.LowStockProducts = lowStockProducts;
             ViewBag.OutOfStockProducts = outOfStockProducts;
             ViewBag.TotalValue = totalValue;
             
-            // For Order - to implement later
+            // For Order Management - to implement later : hard-coded for now
             ViewBag.TotalOrders = 15;
             ViewBag.PendingOrders = 3;
             
@@ -41,12 +47,13 @@ namespace GoodShoe.Controllers
         public IActionResult ProdList()
         {
             var prod = context.Product
+                .Include(p => p.ProductVariants)
                 .OrderBy(p => p.Name)
                 .ToList();
             return View(prod);
         }
 
-        // Order List
+        // Order List - to be implemented later
         public IActionResult OrderList()
         {
             return View();
@@ -63,51 +70,102 @@ namespace GoodShoe.Controllers
         }
 
         // Edit product details
-
         [HttpGet]
         public IActionResult Edit(int Id)
         {
             ViewBag.Action = "Edit";
-            var prod = context.Product.Find(Id);
+            var prod = context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefault(p => p.ProductId == Id);
             if (prod == null)
                 return NotFound();
             return View(prod);
         }
-
         [HttpPost]
         public IActionResult Edit(Product prod, string[] selectedSizes)
         {
-            /#1#/ Size Selection
+            // Handles Size Selection
             if (selectedSizes != null && selectedSizes.Length > 0)
             {
-                prod.AvailableSizes = string.Join(",", selectedSizes);
+                // For new Products
+                if (prod.ProductId == 0)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        context.Product.Add(prod);
+                        context.SaveChanges();
+                        
+                        // Create ProductVariatn for selected size
+                        foreach (var sizeStr in selectedSizes)
+                        {
+                            if (int.TryParse(sizeStr, out var size))
+                            {
+                                var variant = new ProductVariant
+                                {
+                                    ProductId = prod.ProductId,
+                                    Size = size,
+                                    StockCount = 0 // Default stock, for admin to update later
+                                };
+                                context.ProductVariant.Add(variant);
+                            }
+                        }
+                        context.SaveChanges();
+                        return RedirectToAction("ProdList", "Admin");
+                    }
+                }
             }
             else
             {
-                prod.AvailableSizes = "";
-            }#1#
-            
-            if(ModelState.IsValid)
-            {
-                if (prod.Id == 0)
-                    context.Product.Add(prod);
-                else
-                    context.Product.Update(prod);
-                context.SaveChanges();
-                return RedirectToAction("ProdList", "Admin");
+                // For Existing Products
+                if (ModelState.IsValid)
+                {
+                    var existingProduct = context.Product
+                        .Include(p => p.ProductVariants)
+                        .FirstOrDefault(p => p.ProductId == prod.ProductId);
+
+                    if (existingProduct != null)
+                    {
+                        // Update product properties
+                        existingProduct.Name = prod.Name;
+                        existingProduct.Brand = prod.Brand;
+                        existingProduct.Price = prod.Price;
+                        existingProduct.Description = prod.Description;
+                        existingProduct.Color = prod.Color;
+                        existingProduct.Category = prod.Category;
+                        existingProduct.ImageUrl = prod.ImageUrl;
+                        
+                        // Simple variant management: remove all and recreate
+                        context.ProductVariant.RemoveRange(existingProduct.ProductVariants);
+                            
+                        foreach (var sizeStr in selectedSizes)
+                        {
+                            if (int.TryParse(sizeStr, out int size))
+                            {
+                                var variant = new ProductVariant
+                                {
+                                    ProductId = existingProduct.ProductId,
+                                    Size = size,
+                                    StockCount = 0
+                                };
+                                context.ProductVariant.Add(variant);
+                            }
+                        }
+                        context.SaveChanges();
+                    }
+                    return RedirectToAction("ProdList", "Admin");
+                }
             }
-            else
-            {
-                ViewBag.Action = (prod.Id == 0) ? "Create" : "Edit";
-                return View(prod);
-            }
+            ViewBag.Action = (prod.ProductId == 0) ? "Create" : "Edit";
+            return View(prod);
         }
 
         // Delete product
         [HttpGet]
         public IActionResult Delete(int Id)
         {
-            var prod = context.Product.Find(Id);
+            var prod = context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefault(p => p.ProductId == Id);
             if (prod == null)
                 return NotFound();
             return View(prod);
@@ -116,20 +174,29 @@ namespace GoodShoe.Controllers
         [HttpPost]
         public IActionResult Delete(Product prod)
         {
-            context.Product.Remove(prod);
-            context.SaveChanges();
+            var existingProduct = context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefault(p => p.ProductId == prod.ProductId);
+
+            if (existingProduct != null)
+            {
+                // Remove variants first to avoid foreign key issues
+                context.ProductVariant.RemoveRange(existingProduct.ProductVariants);
+                context.Product.Remove(existingProduct);
+                context.SaveChanges();
+            }
             return RedirectToAction("ProdList", "Admin");
         }
 
         // Product Details
         public IActionResult Details(int Id)
         {
-            var prod = context.Product.Find(Id);
+            var prod = context.Product
+                .Include(p => p.ProductVariants)
+                .FirstOrDefault(p => p.ProductId == Id);
             if (prod == null)
                 return NotFound();
-            return View();
+            return View(prod);
         }
-
     }
 }
-*/

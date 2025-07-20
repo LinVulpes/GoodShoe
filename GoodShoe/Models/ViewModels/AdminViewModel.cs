@@ -1,4 +1,4 @@
-/*using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using GoodShoe.Models;
 
 namespace GoodShoe.ViewModels
@@ -62,15 +62,13 @@ namespace GoodShoe.ViewModels
         public string Brand { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Price is required")]
-        [Range(0.01, 9999.99, ErrorMessage = "Price must be between $0.01 and $9999.99")]
         public decimal Price { get; set; }
 
         [Required(ErrorMessage = "Description is required")]
-        [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters")]
+        [StringLength(200, ErrorMessage = "Description cannot exceed 200 characters")]
         public string Description { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Stock count is required")]
-        [Range(0, int.MaxValue, ErrorMessage = "Stock count must be 0 or greater")]
         public int StockCount { get; set; }
 
         [Required(ErrorMessage = "Color is required")]
@@ -86,9 +84,9 @@ namespace GoodShoe.ViewModels
 
         // For form display
         public List<string> AvailableCategories { get; set; } = new() { "Men", "Women", "Unisex" };
-        public List<string> AvailableSizes { get; set; } = ShoeSizes.Available.ToList();
+        public List<string> AvailableSizes { get; set; } = new() { "8", "9", "10", "11", "12", "13", "14", "15", "16" };
 
-        public bool IsEditMode => Id > 0;
+        public bool IsEditMode => ProductId > 0;
         public string PageTitle => IsEditMode ? "Edit Product" : "Add New Product";
         public string SubmitButtonText => IsEditMode ? "Update Product" : "Create Product";
 
@@ -115,16 +113,15 @@ namespace GoodShoe.ViewModels
         {
             return new Product
             {
-                Id = Id,
+                ProductId = ProductId,
                 Name = Name,
                 Brand = Brand,
                 Price = Price,
                 Description = Description,
-                StockCount = StockCount,
                 Color = Color,
                 Category = Category,
                 ImageUrl = ImageUrl,
-                AvailableSizes = string.Join(",", SelectedSizes)
+                // Note: StockCount and AvailableSizes are now handled via ProductVariants - I have removed it.
             };
         }
     }
@@ -132,7 +129,7 @@ namespace GoodShoe.ViewModels
     // Admin Settings
     public class AdminSettingsViewModel
     {
-        public int AdminID { get; set; }
+        public int AdminId { get; set; }
 
         [Required]
         [StringLength(50)]
@@ -159,4 +156,4 @@ namespace GoodShoe.ViewModels
 
         public List<string> Currencies { get; set; } = new() { "SGD", "USD"};
     }
-}*/
+}
