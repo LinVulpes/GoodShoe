@@ -22,24 +22,5 @@
             <th></th>
         </tr>
         </thead>
-        @*<tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.AvailableSizes</td>
-                <td>@product.Price</td>
-                <td>@product.StockCount</td>
-                <td>
-                    <a asp-controller="Admin" asp-action="Edit"
-                       asp-route-id="@product.Id"
-                       asp-route-slug="@product.Name">Edit</a>
-                    <a asp-controller="Admin" asp-action="Delete"
-                       asp-route-id="@product.Id"
-                       asp-route-slug="@product.Name">Delete</a>
-                </td>
-            </tr>
-        }
-        </tbody>*@
     </table>
 </div>

@@ -36,12 +36,6 @@ namespace GoodShoe.Models
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
         public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
-
-        // Helper properties
-        /*public int TotalItems => OrderItems.Sum(item => item.Quantity);
-        public bool CanBeCancelled => Status == "Pending";
-        public bool CanBeShipped => Status == "Pending";
-        public bool CanBeDelivered => Status == "Shipped";*/
         
         public string StatusColor => Status.ToLower() switch
         {
@@ -99,9 +93,5 @@ namespace GoodShoe.Models
         
         [ForeignKey("ProductVariantId")]
         public virtual ProductVariant ProductVariant { get; set; }
-
-        /*// Helper properties
-        public decimal TotalPrice => Price * Quantity;
-        public string DisplayName => $"{ProductName}";*/
     }
 }

@@ -31,10 +31,5 @@ namespace GoodShoe.Models
         // Navigation properties
         public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
-
-        // Helper properties
-        /*public string FullName => $"{FirstName} {LastName}";
-        public string DisplayAddress => string.IsNullOrEmpty(Address) ? "No address provided" : Address;
-        public string MemberSince => CreatedAt.ToString("MMMM yyyy");*/
     }
 }

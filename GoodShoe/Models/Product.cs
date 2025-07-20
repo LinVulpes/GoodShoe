@@ -49,56 +49,5 @@ namespace GoodShoe.Models
         
         // Navigation properties for the database
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
-        
-        /*[Required]
-        public string AvailableSizes { get; set; } = string.Empty; // Available Shoe Sizes*/
-        
-        // Helper methods
-        /*public List<string> GetSizesList()
-        {
-            return string.IsNullOrEmpty(AvailableSizes) 
-                ? new List<string>() 
-                : AvailableSizes.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => s.Trim())
-                    .ToList();
-        }
-        
-        // Method to check if a specific size is available
-        public bool IsSizeAvailable(string size)
-        {
-            var availableSizesList = GetSizesList();
-            return availableSizesList.Contains(size.Replace("US ", ""));
-        }
-        
-        // Method to check if US size format is available
-        public bool IsUSSizeAvailable(int size)
-        {
-            return IsSizeAvailable(size.ToString());
-        }
-        
-        public bool IsInStock => StockCount > 0;
-        public bool IsLowStock => StockCount <= 5;
-    }
-    
-    // Class for different 9 shoe sizes
-    public static class ShoeSizes
-    {
-        public static readonly string[] Available = { "8", "9", "10", "11", "12", "13", "14", "15", "16" };
-        
-        public static bool IsValid(string size)
-        {
-            return Available.Contains(size);
-        }
-        
-        public static string GetSizesAsString()
-        {
-            return string.Join(",", Available);
-        }
-        
-        // US size format
-        public static string[] GetUSFormats()
-        {
-            return Available.Select(s => $"US {s}").ToArray();
-        }*/
     }
 }

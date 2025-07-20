@@ -20,12 +20,6 @@ namespace GoodShoe.Models
         [ForeignKey("CustomerId")]
         public virtual Customer Customer { get; set; }
         public virtual ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
-
-        /*// Helper properties
-        public decimal TotalAmount => CartItems.Sum(item => item.Product.Price * item.Quantity);
-        public int TotalItems => CartItems.Sum(item => item.Quantity);
-        public bool IsEmpty => !CartItems.Any();
-        public int UniqueProductCount => CartItems.Count;*/
     }
 
     // CartItem Model - Individual items in the cart (many per cart)
@@ -45,10 +39,6 @@ namespace GoodShoe.Models
         public int Quantity { get; set; }
         
         public DateTime AddedAt { get; set; } = DateTime.Now;
-
-        /*[Required]
-        [StringLength(10)]
-        public string Size { get; set; } = string.Empty;*/
 
         // Navigation properties
         [ForeignKey("CartId")]
