@@ -5,7 +5,12 @@
 }
 
 @section Scripts {
-    <link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
+    <script>
+        // Pass Razor value to JS
+        const productId = '@Model.ProductId';
+    </script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 }
 
 <div class="product-page">
@@ -24,7 +29,7 @@
 
                     <!-- Product Image -->
                     <div class="product-image-container text-center">
-                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.Id}.png")"
+                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.ProductId}.png")"
                              alt="@Model.Name"
                              class="product-main-image"
                              onerror="this.src='/images/products/placeholder.jpg'">
@@ -51,29 +56,28 @@
                             <h3 class="size-heading">Select Size</h3>
 
                             <div class="size-options" id="sizeOptions">
-                                @{
-                                    var availableSizesList = Model.GetSizesList();
-                                }
                                 @for (int size = 8; size <= 16; size++)
                                 {
-                                    var sizeString = size.ToString();
-                                    var isAvailable = availableSizesList.Contains(sizeString) && Model.IsInStock;
+                                    var variant = Model.ProductVariants.FirstOrDefault(pv => pv.Size == size);
+                                    var isAvailable = variant != null && variant.StockCount > 0;
+                                    var stockCount = variant?.StockCount ?? 0;
 
                                     <button type="button"
                                             class="size-button @(!isAvailable ? "disabled" : "")"
                                             data-size="@size"
                                             data-size-label="US @size"
+                                            data-stock="@stockCount"
+                                            data-variant-id="@(variant?.Id ?? 0)"
                                             @(!isAvailable ? "disabled" : "")
-                                            onclick="selectSize(this, @size, 'US @size'); console.log('Button clicked: US @size, Available: @isAvailable');">
+                                            onclick="selectSize(this, @size, 'US @size', @stockCount, @(variant?.Id ?? 0))">
                                         US @size
+                                        @if (stockCount > 0 && stockCount <= 5)
+                                        {
+                                            <small class="stock-indicator">(@stockCount left)</small>
+                                        }
                                     </button>
                                 }
                             </div>
-
-                            @if (!Model.IsInStock)
-                            {
-                                <p class="text-danger"><small>This product is currently out of stock.</small></p>
-                            }
                         </div>
 
                         <div class="cart-section mt-4">
@@ -81,9 +85,11 @@
                                 @Html.AntiForgeryToken()
 
                                 <!-- productId stays the same -->
-                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <input type="hidden" name="productId" value="@Model.ProductId" />
                                 <!-- size will be populated in JS -->
                                 <input type="hidden" name="size" id="selectedSize" />
+                                <!-- productVariantId will be populated in JS -->
+                                <input type="hidden" name="productVariantId" id="selectedVariantId" />
 
                                 <!-- Add to cart button -->
                                 <button type="button"
@@ -101,4 +107,3 @@
         </div>
     </div>
 </div>
-<script src="~/js/site.js"></script>

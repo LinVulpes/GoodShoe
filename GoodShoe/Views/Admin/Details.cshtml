@@ -28,24 +28,28 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Price)
         </dd>
+        
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailableSizes)
+            Available Sizes
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.AvailableSizes)
         </dd>
+        
+        <dt class = "col-sm-2">
+            Total Stock
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StockCount)
+        </dd>
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StockCount)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockCount)
-        </dd>
+        
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Color)
         </dt>
@@ -59,8 +63,30 @@
             @Html.DisplayFor(model => model.Category)
         </dd>
     </dl>
+    
+    @if (Model.ProductVariants.Any())
+    {
+        <h5>Stock by Size:</h5>
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Size</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var variant in Model.ProductVariants.OrderBy(pv => pv.Size))
+                {
+                    <tr>
+                        <td>US @variant.Size</td>
+                        <td>@variant.StockCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
