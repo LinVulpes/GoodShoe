@@ -1,11 +1,22 @@
 using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
 using GoodShoe.ViewModels; //view-model classes
 using GoodShoe.Extensions; // For session extension methods
+using GoodShoe.Data; //to find the GoodShoeDbContext class
+using GoodShoe.Services; //to "see" the ICartService interface
 
 namespace GoodShoe.Controllers
 {
     public class OrderController : Controller
     {
+        private readonly GoodShoeDbContext _db;
+        private readonly ICartService _cartService;
+
+        public OrderController(GoodShoeDbContext db, ICartService cartService)
+        {
+            _db = db;
+            _cartService = cartService;
+        }
+
         //handle GET requests to /Order/Checkout
 
         [HttpGet]
