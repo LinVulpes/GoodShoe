@@ -10,6 +10,10 @@
         // Pass Razor value to JS
         const productId = '@Model.ProductId';
     </script>
+    <script>
+        // share the numeric productId to site.js
+        const productId = @Model.ProductId;
+        </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 }
 
