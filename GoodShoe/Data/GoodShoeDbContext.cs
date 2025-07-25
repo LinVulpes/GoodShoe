@@ -23,12 +23,12 @@ namespace GoodShoe.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
+            
+            // ADDED: ApplicationUser configuration
             modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.Property(e => e.Location).HasMaxLength(255);
             });
-
 
             // Product configuration
             modelBuilder.Entity<Product>(entity =>
