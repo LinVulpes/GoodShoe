@@ -14,7 +14,10 @@ namespace GoodShoe.Models
         [Required]
         public int Size { get; set; } // 8, 9, 10, 11, 12, 13, 14, 15, 16
         
-        public int StockCount { get; set; } = 0;
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int StockCount { get; set; }
+        
 
         // Navigation properties
         [ForeignKey("ProductId")]
