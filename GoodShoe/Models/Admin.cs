@@ -16,10 +16,10 @@ namespace GoodShoe.Models
         [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
-        [StringLength(20)]
-        public string? Phone { get; set; }
+        [StringLength(20)] 
+        public string Phone { get; set; } = string.Empty;
 
-        public DateTime? DOB { get; set; }
+        public DateTime DOB { get; set; }
 
         [StringLength(10)]
         public string Currency { get; set; } = "SGD";
@@ -29,7 +29,5 @@ namespace GoodShoe.Models
 
         // Helper properties
         public string DisplayPhone => string.IsNullOrEmpty(Phone) ? "Not provided" : Phone;
-        public string DisplayDOB => DOB?.ToString("MMM dd, yyyy") ?? "Not provided";
-        public int Age => DOB.HasValue ? DateTime.Now.Year - DOB.Value.Year : 0;
     }
 }

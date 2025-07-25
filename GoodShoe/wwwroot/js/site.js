@@ -91,11 +91,6 @@ function selectSize(button, sizeValue, sizeLabel, stockCount, variantId) {
 }
 
 function addToCart() {
-    if (!selectedSizeValue || !selectedVariantId) {
-        alert('Please select a size first.');
-        return;
-    }
-
     // Check stock availability before submitting
     fetch(`/Products/CheckSizeAvailability?productId=${productId}&size=${selectedSizeValue}`)
         .then(response => {
