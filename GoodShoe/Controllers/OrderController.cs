@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
+Ôªøusing Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
 using GoodShoe.ViewModels; //view-model classes
 using GoodShoe.Extensions; // For session extension methods
 using GoodShoe.Data; //to find the GoodShoeDbContext class
@@ -39,7 +39,7 @@ namespace GoodShoe.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            //Create a new ìcheckoutî object and stick in the list of items from the cart.
+            //Create a new ‚Äúcheckout‚Äù object and stick in the list of items from the cart.
             System.Diagnostics.Debug.WriteLine("OrderController: Creating checkout view model");
             var model = new CheckoutViewModel
             {

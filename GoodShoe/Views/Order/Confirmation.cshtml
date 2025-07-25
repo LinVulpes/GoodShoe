@@ -1,0 +1,51 @@
+﻿@model GoodShoe.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-success text-center">
+        <h2>Thank you! Your order was placed successfully.</h2>
+        <p>Your order is now being processed.</p>
+    </div>
+
+    @if (Model != null)
+    {
+        <h4>Order #@Model.OrderId</h4>
+        <p><strong>Total Amount:</strong> @Model.TotalAmount.ToString("C")</p>
+        <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+        <p><strong>Shipping Address:</strong> @Model.Address</p>
+
+        <h5 class="mt-4">Items</h5>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Size</th>
+                    <th>Qty</th>
+                    <th>Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderItems)
+                {
+                    <tr>
+                        <td>@item.ProductName</td>
+                        <td>@item.Size</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.TotalPrice.ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-danger">We couldn’t find your order details.</p>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn btn-primary mt-4">
+        Back to Home Page
+    </a>
+</div>
