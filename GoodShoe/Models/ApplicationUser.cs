@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace GoodShoe.Models
 {
@@ -7,5 +7,3 @@ namespace GoodShoe.Models
         public string? Location { get; set; }
     }
 }
-
-
