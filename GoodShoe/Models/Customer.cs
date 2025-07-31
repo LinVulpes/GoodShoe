@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace GoodShoe.Models
 {
@@ -20,11 +21,16 @@ namespace GoodShoe.Models
         [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
+        [Required]
+        [StringLength(100)]
+        public string Password { get; set; } = string.Empty;
+
         [StringLength(20)]
         public string? Phone { get; set; }
 
         [StringLength(255)]
         public string? Address { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
@@ -33,3 +39,4 @@ namespace GoodShoe.Models
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
+

@@ -1,6 +1,10 @@
-using Microsoft.EntityFrameworkCore;
 using GoodShoe.Data;
 using GoodShoe.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GoodShoe.Data
 {
@@ -11,18 +15,18 @@ namespace GoodShoe.Data
             // Testing Database with Test Cases
             // Test 1 : Start Database //
             Console.WriteLine("DbInitializer: Starting ....");
-            
+
             // Ensure the database is created
             context.Database.EnsureCreated();
-            
+
             // Look for any products
             if (context.Product.Any())
-            { 
+            {
                 // Test 2 : Test finding of products //
                 Console.WriteLine("DbInitializer: Products already exist.");
                 return;
             }
-            
+
             // Test 3 : Database adding seed data  //
             Console.WriteLine("DbInitializer: Adding seed data/products ...");
             // Add existing seed data
@@ -50,7 +54,7 @@ namespace GoodShoe.Data
                     Category = "Women",
                     ImageUrl = "/images/products/image2.png",
                 },
-                
+
                 // GoodShoe Collection
                 new Product
                 {
@@ -73,7 +77,7 @@ namespace GoodShoe.Data
                     Color = "Brown",
                     Category = "Men",
                     ImageUrl = "/images/products/image4.png",
-                },      
+                },
                 new Product
                 {
                     ProductId = 5,
@@ -105,7 +109,7 @@ namespace GoodShoe.Data
 
             // Add ProductVariants for each product (sizes 8-16)
             Console.WriteLine("DbInitializer: Adding product variants (sizes 8-16) ...");
-            
+
             var productVariants = new List<ProductVariant>();
             var sizes = new int[] { 8, 9, 10, 11, 12, 13, 14, 15, 16 };
 
@@ -130,7 +134,7 @@ namespace GoodShoe.Data
             var variantsSaved = context.SaveChanges();
             Console.WriteLine($"DbInitializer: Saved {variantsSaved} product variants to database");
         }
-        
+
         private static int GetStockForProduct(int productId, int size)
         {
             // Define which sizes are available for each product and their stock
@@ -145,13 +149,60 @@ namespace GoodShoe.Data
                 _ => 0
             };
         }
-        
+
         // Initializing IServiceProvider
         public static void Initialize(IServiceProvider serviceProvider)
         {
             using (var context = serviceProvider.GetRequiredService<GoodShoeDbContext>())
             {
                 Initialize(context);
+            }
+
+            // Seed roles & default admin user
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+                string[] roles = { "Manager", "Member" };
+
+                foreach (var role in roles)
+                {
+                    if (!roleManager.RoleExistsAsync(role).Result)
+                    {
+                        var result = roleManager.CreateAsync(new IdentityRole(role)).Result;
+                        Console.WriteLine($"Created role: {role} = {result.Succeeded}");
+                    }
+                }
+
+                // Add default admin user
+                var adminEmail = "admin@goodshoe.com";
+                var adminUser = userManager.FindByEmailAsync(adminEmail).Result;
+
+                if (adminUser == null)
+                {
+                    adminUser = new ApplicationUser
+                    {
+                        UserName = adminEmail,
+                        Email = adminEmail,
+                        EmailConfirmed = true
+                    };
+
+                    var result = userManager.CreateAsync(adminUser, "Admin123!").Result;
+                    if (result.Succeeded)
+                    {
+                        userManager.AddToRoleAsync(adminUser, "Manager").Wait();
+                        Console.WriteLine("Default admin user created and added to 'Manager' role.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed to create admin user.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Admin user already exists.");
+                }
             }
         }
     }

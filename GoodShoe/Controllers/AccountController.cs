@@ -32,7 +32,7 @@ namespace GoodShoe.Controllers
         // POST: Account/Login // Redirecting to home for now - havent connect with the database yet
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -78,8 +78,10 @@ namespace GoodShoe.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                     await _userManager.AddToRoleAsync(user, "Member");
+
+    await _signInManager.SignInAsync(user, isPersistent: false);
+    return RedirectToAction("Index", "Home");
                 }
 
                 foreach (var error in result.Errors)
@@ -114,7 +116,7 @@ namespace GoodShoe.Controllers
             return View(user);
         }
 
-        private IActionResult RedirectToLocal(string returnUrl)
+        private IActionResult RedirectToLocafgil(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))
             {

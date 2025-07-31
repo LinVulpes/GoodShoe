@@ -1,5 +1,5 @@
 ﻿using GoodShoe.Data;
-using GoodShoe.Services; //so ICartService/CartService are in scope
+using GoodShoe.Services; // so ICartService/CartService are in scope
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 using Microsoft.AspNetCore.Identity;
@@ -91,4 +91,6 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Error initializing database: {ex.Message}");
     }
 }
+
 app.Run();
+
