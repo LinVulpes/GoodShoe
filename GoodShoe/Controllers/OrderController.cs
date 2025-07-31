@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
+﻿using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
 using GoodShoe.ViewModels; //view-model classes
 using GoodShoe.Extensions; // For session extension methods
 using GoodShoe.Data;
@@ -84,17 +84,17 @@ namespace GoodShoe.Controllers
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     };
-                    
+
                     // Add order to database
                     _db.Orders.Add(order);
                     _db.SaveChanges();
-                    
+
                     // Create order items - FIXED: Use 'item' instead of 'cartItems'
                     foreach (var item in cartItems)
                     {
                         // Find the ProductVariant that matches the product and size
                         var productVariant = _db.ProductVariant
-                            .FirstOrDefault(pv => pv.ProductId == item.ProductID && 
+                            .FirstOrDefault(pv => pv.ProductId == item.ProductID &&
                                                   pv.Size == int.Parse(item.Size.Replace("US ", "")));
 
                         if (productVariant == null)
@@ -114,17 +114,17 @@ namespace GoodShoe.Controllers
                         };
                         _db.OrderItems.Add(orderItem); // Use OrderItems (plural) to match your DbContext
                     }
-                    
+
                     _db.SaveChanges();
-                    
+
                     // Clear cart from session after successful order
                     HttpContext.Session.Remove("CartItems");
                     _cartService.ClearCart();
-                    
+
                     // Store order ID for confirmation page
                     TempData["OrderId"] = order.OrderId;
                     TempData["OrderSuccess"] = "Order placed successfully!";
-                    
+
                     System.Diagnostics.Debug.WriteLine($"Order created successfully with ID: {order.OrderId}");
                     return RedirectToAction("Confirmation");
                 }
@@ -132,7 +132,7 @@ namespace GoodShoe.Controllers
                 {
                     System.Diagnostics.Debug.WriteLine($"Error creating order: {ex.Message}");
                     TempData["CartError"] = "Error processing your order. Please try again.";
-                    
+
                     // Re-populate cart items if order creation fails
                     model.CartItems = GetCartItems();
                     return View(model);
