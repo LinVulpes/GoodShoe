@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
+
 // Session configuration - updated with timeout 30 mins
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -66,7 +67,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.MapStaticAssets();
 
 app.UseRouting();
 app.UseSession();
@@ -74,11 +74,9 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
 app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // Initializing database
 using (var scope = app.Services.CreateScope())
@@ -94,4 +92,3 @@ using (var scope = app.Services.CreateScope())
     }
 }
 app.Run();
-

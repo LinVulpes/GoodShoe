@@ -1,0 +1,17 @@
+.order-confirmation-container {
+    margin-top: 2rem;
+}
+
+.order-confirmation-alert {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.order-details-table th,
+.order-details-table td {
+    vertical-align: middle;
+}
+
+.continue-shopping-btn {
+    margin-top: 1.5rem;
+}

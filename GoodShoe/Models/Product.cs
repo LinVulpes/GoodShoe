@@ -26,13 +26,13 @@ namespace GoodShoe.Models
         
         // Description
         [Required]
-        [StringLength(200)]
-        public string? Description { get; set; }
+        [StringLength(500)]
+        public string Description { get; set; } = string.Empty;
         
         // Color
         [Required]
         [StringLength(20)]
-        public string? Color { get; set; }
+        public string Color { get; set; } = string.Empty;
         
         // Category
         [Required]

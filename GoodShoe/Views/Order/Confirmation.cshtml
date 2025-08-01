@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="container-fluid px-4 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="text-center">
+                <!-- Success Icon -->
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                
+                <!-- Success Message -->
+                <h1 class="h2 mb-3 text-success">Order Confirmed!</h1>
+                <p class="lead mb-4">Thank you for your purchase. Your order has been successfully placed.</p>
+                
+                <!-- Order Details -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Order Details</h5>
+                        <p class="card-text">
+                            <strong>Order ID:</strong> #@ViewBag.OrderId<br>
+                            <strong>Status:</strong> <span class="badge bg-warning">Pending</span><br>
+                            <strong>Date:</strong> @DateTime.Now.ToString("MMM dd, yyyy")
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Delivery Information -->
+                <div class="alert alert-info mb-4">
+                    <h6 class="alert-heading">
+                        <i class="bi bi-truck"></i> Delivery Information
+                    </h6>
+                    <p class="mb-0">
+                        Your order will be delivered within 3-5 business days.<br>
+                        You will receive a tracking email once your order is shipped.
+                    </p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="d-grid gap-2 d-md-block">
+                    <a asp-controller="Home" asp-action="Products" class="btn btn-primary">
+                        Continue Shopping
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                        Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bi-check-circle-fill {
+        animation: pulse 2s infinite;
+    }
+</style
