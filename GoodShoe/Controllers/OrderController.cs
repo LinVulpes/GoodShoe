@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc; //Brings in ASP .NET Core MVC types
-using GoodShoe.ViewModels; //view-model classes
+using GoodShoe.ViewModels; //view-model classest
 using GoodShoe.Extensions; // For session extension methods
 using GoodShoe.Data;
 using GoodShoe.Models; //to find the GoodShoeDbContext class

@@ -11,7 +11,7 @@
     </div>
 
     <!-- Next is the form section -->
-    <form asp-action="Edit" method="post">
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
         <div class="form-group">
             <label asp-for="Name" class="control-label">Name:</label>
@@ -63,6 +63,27 @@
             <input asp-for="Color" class="form-control" />
             <span asp-validation-for="Color" class="text-danger"></span>
         </div>
+
+        <!-- Current Image Display (NEW) -->
+        @if (Model.Image != null)
+        {
+            <div class="form-group">
+                <label class="control-label">Current Image:</label><br>
+                <img src="@Url.Action("GetImage", "Products", new { id = Model.ProductId })" 
+                     alt="Current product image" 
+                     style="max-width: 200px; max-height: 150px;" 
+                     class="img-thumbnail" />
+            </div>
+        }
+
+        <!-- Upload New Image (NEW) -->
+        <div class="form-group">
+            <label for="imageFile" class="control-label">Upload New Image:</label>
+            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" onchange="previewImage(this);" />
+            <div class="form-text">Supported formats: JPG, PNG, GIF, BMP</div>
+            <!-- Image Preview -->
+            <img id="imagePreview" style="display: none; max-width: 200px; max-height: 150px; margin-top: 10px;" class="img-thumbnail" />
+        </div>
         
         <div class="form-group">
             <label asp-for="ImageUrl" class="control-label">Image URL:</label>
@@ -76,6 +97,19 @@
         </div>
     </form>
 </div>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
