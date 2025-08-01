@@ -44,13 +44,25 @@ namespace GoodShoe.Controllers
         }
 
         // Product List
-        public IActionResult ProdList()
+        public IActionResult ProdList(string searchString)
         {
-            var prod = context.Product
-                .Include(p => p.ProductVariants)
-                .OrderBy(p => p.Name)
-                .ToList();
-            return View(prod);
+            if (string.IsNullOrEmpty(searchString))
+            {
+                var prod = context.Product
+                    .Include(p => p.ProductVariants)
+                    .OrderBy(p => p.Name)
+                    .ToList();
+                return View(prod);
+            }
+            else
+            {
+                var prod = (
+                    from p in context.Product
+                    where p.Name.Contains(searchString)
+                    select p
+                    ).ToList();
+                return View(prod);
+            }
         }
 
         // Order List - to be implemented later

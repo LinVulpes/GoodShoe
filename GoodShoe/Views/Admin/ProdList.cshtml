@@ -16,9 +16,27 @@
             <i class="bi bi-arrow-left"></i>
         </a>
     </div>
-    <h1 class="main-title">Product List</h1>
-    <a asp-controller="Admin" asp-action="Create" class="btn btn-primary mb-3">Add New Product</a>
-    
+
+    <!-- Controls: Add new product button + Search bar -->
+    <div class="admin-controls">
+        <form asp-controller="Admin" asp-action="ProdList" method="post">
+            <div class="search-container">
+                <input type="text"
+                    id="prodSearch"
+                    name="searchString"
+                    placeholder="Search by name ..."
+                    class="search-input">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search search-icon"></i>
+                </button>
+            </div>
+        </form>
+        <div class="button-container">
+            <a asp-controller="Admin" asp-action="Create" class="btn btn-primary mb-3">Add New Product</a>
+        </div>
+    </div>
+
+    <!-- Table of products -->
     @if (Model != null && Model.Any())
     {
         <table class="table table-bordered table-striped">

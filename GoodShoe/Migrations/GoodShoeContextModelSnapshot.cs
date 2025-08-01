@@ -42,7 +42,7 @@ namespace GoodShoe.Migrations
                         .HasColumnType("nvarchar(10)")
                         .HasDefaultValue("SGD");
 
-                    b.Property<DateTime?>("DOB")
+                    b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -51,6 +51,7 @@ namespace GoodShoe.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Phone")
+                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
