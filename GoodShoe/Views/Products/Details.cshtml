@@ -13,7 +13,7 @@
     <script>
         // share the numeric productId to site.js
         const productId = @Model.ProductId;
-        </script>
+    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
 }
 
@@ -33,10 +33,26 @@
 
                     <!-- Product Image -->
                     <div class="product-image-container text-center">
-                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.ProductId}.png")"
-                             alt="@Model.Name"
-                             class="product-main-image"
-                             onerror="this.src='/images/products/placeholder.jpg'">
+                        @* Updated image handling - prioritize database image over URL *@
+                        @if (Model.Image != null)
+                        {
+                            <img src="@Url.Action("GetImage", "Products", new { id = Model.ProductId })"
+                                 alt="@Model.Name"
+                                 class="product-main-image">
+                        }
+                        else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl"
+                                 alt="@Model.Name"
+                                 class="product-main-image"
+                                 onerror="this.src='/images/products/placeholder.jpg'">
+                        }
+                        else
+                        {
+                            <img src="/images/products/placeholder.jpg"
+                                 alt="@Model.Name"
+                                 class="product-main-image">
+                        }
                     </div>
                 </div>
 

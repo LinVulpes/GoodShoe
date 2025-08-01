@@ -10,6 +10,58 @@ namespace GoodShoe.Data
 {
     public static class DbInitializer // Product Seed
     {
+        private static void MigrateImagesToDatabase(GoodShoeDbContext context)
+        {
+            Console.WriteLine("DbInitializer: Migrating images to database...");
+            
+            var products = context.Product
+                .Where(p => !string.IsNullOrEmpty(p.ImageUrl) && p.Image == null)
+                .ToList();
+            var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+    
+            foreach (var product in products)
+            {
+                if (!string.IsNullOrEmpty(product.ImageUrl) && product.Image == null)
+                {
+                    try
+                    {
+                        // Convert relative URL to file path
+                        var imagePath = product.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                        var fullPath = Path.Combine(wwwrootPath, imagePath);
+
+                        if (File.Exists(fullPath))
+                        {
+                            var imageData = File.ReadAllBytes(fullPath);
+                            product.Image = imageData;
+                            product.ImageFileName = Path.GetFileName(fullPath);
+                
+                            Console.WriteLine($"Migrated image for product {product.ProductId}: {product.Name}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Image file not found for product {product.ProductId}: {fullPath}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error migrating image for product {product.ProductId}: {ex.Message}");
+                    }
+                }
+                if (products.Any())
+                {
+                    context.SaveChanges();
+                    Console.WriteLine($"DbInitializer: Migrated {products.Count(p => p.Image != null)} images to database.");
+                }
+                else
+                {
+                    Console.WriteLine("DbInitializer: No images to migrate.");
+                }
+            }
+    
+            context.SaveChanges();
+            Console.WriteLine("DbInitializer: Image migration completed.");
+        }
+        
         public static void Initialize(GoodShoeDbContext context)
         {
             // Testing Database with Test Cases
@@ -24,6 +76,15 @@ namespace GoodShoe.Data
             {
                 // Test 2 : Test finding of products //
                 Console.WriteLine("DbInitializer: Products already exist.");
+        
+                // Check if we need to migrate images
+                var productsNeedingImageMigration = context.Product
+                    .Any(p => !string.IsNullOrEmpty(p.ImageUrl) && p.Image == null);
+            
+                if (productsNeedingImageMigration)
+                {
+                    MigrateImagesToDatabase(context);
+                }
                 return;
             }
 
@@ -99,8 +160,6 @@ namespace GoodShoe.Data
                     Color = "White",
                     Category = "Men",
                     ImageUrl = "/images/products/image6.png",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
                 }
             };
             context.Product.AddRange(products);

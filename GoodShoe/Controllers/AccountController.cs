@@ -1,55 +1,65 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using GoodShoe.ViewModels;
+using GoodShoe.Data;
 using GoodShoe.Models;
+using GoodShoe.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace GoodShoe.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly GoodShoeDbContext _context;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(GoodShoeDbContext context, ILogger<AccountController> logger)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _context = context;
             _logger = logger;
         }
 
         // GET: Account/Login
-        public async Task<IActionResult> Login(string returnUrl = null)
+        public IActionResult Login(string returnUrl = null)
         {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            
             return View();
         }
-        
-        // POST: Account/Login // Redirecting to home for now - havent connect with the database yet
+
+        // POST: Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                // login as admin
+                var admin = await _context.Admins
+                    .FirstOrDefaultAsync(a => a.Email == model.Email && a.Password == model.Password);
 
-                if (result.Succeeded)
+                if (admin != null)
                 {
-                    _logger.LogInformation("User logged in.");
-                    // Redirectling to Home/Index after login
-                    return RedirectToAction("Index",  "Home");
+                    HttpContext.Session.SetString("UserId", admin.AdminId.ToString());
+                    HttpContext.Session.SetString("UserRole", "Admin");
+                    _logger.LogInformation($"Admin {admin.UserName} logged in.");
+                    return RedirectToAction("Index", "Admin");
                 }
-                else
+
+                // login as customer
+                var customer = await _context.Customers
+                    .FirstOrDefaultAsync(c => c.Email == model.Email && c.Password == model.Password);
+
+                if (customer != null)
                 {
-                    _logger.LogWarning("Invalid login attempt.");
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return RedirectToAction("Index",  "Home"); // Redirecting to home for now
+                    HttpContext.Session.SetString("UserId", customer.CustomerId.ToString());
+                    HttpContext.Session.SetString("UserRole", "Customer");
+
+                    _logger.LogInformation($"Customer {customer.FirstName} {customer.LastName} registered and logged in.");
+                    return RedirectToAction("Index", "Home");
                 }
+
+                // If login fail
+                _logger.LogWarning("Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
 
             return View(model);
@@ -68,26 +78,23 @@ namespace GoodShoe.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser 
-                { 
-                    UserName = model.Email, 
-                    Email = model.Email 
+                // Add as new customer
+                var customer = new Customer
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    Password = model.Password,
+                    Phone = model.Phone,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
                 };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
 
-                if (result.Succeeded)
-                {
-                     await _userManager.AddToRoleAsync(user, "Member");
+                return RedirectToAction("Index", "Home");
 
-    await _signInManager.SignInAsync(user, isPersistent: false);
-    return RedirectToAction("Index", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
             }
 
             return View(model);
@@ -96,36 +103,36 @@ namespace GoodShoe.Controllers
         // POST: Account/Logout
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _signInManager.SignOutAsync();
+            HttpContext.Session.Clear();
             _logger.LogInformation("User logged out.");
             return RedirectToAction("Index", "Home");
         }
 
         // GET: Account/Profile
-        [Authorize]
         public async Task<IActionResult> Profile()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
+            var role = HttpContext.Session.GetString("UserRole");
+            var userIdStr = HttpContext.Session.GetString("UserId");
+
+            if (string.IsNullOrEmpty(role) || string.IsNullOrEmpty(userIdStr))
                 return RedirectToAction("Login");
+
+            int userId = int.Parse(userIdStr);
+
+            if (role == "Admin")
+            {
+                var admin = await _context.Admins.FindAsync(userId);
+                return View(admin);
+            }
+            else if (role == "Customer")
+            {
+                var customer = await _context.Customers.FindAsync(userId);
+                return View(customer);
             }
 
-            return View(user);
-        }
-
-        private IActionResult RedirectToLocafgil(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(HomeController.Index), "Home");
-            }
+            return RedirectToAction("Login");
         }
     }
 }

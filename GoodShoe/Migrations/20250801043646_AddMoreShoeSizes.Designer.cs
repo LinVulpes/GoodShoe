@@ -4,6 +4,7 @@ using GoodShoe.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoodShoe.Migrations
 {
     [DbContext(typeof(GoodShoeDbContext))]
-    partial class GoodShoeContextModelSnapshot : ModelSnapshot
+    [Migration("20250801043646_AddMoreShoeSizes")]
+    partial class AddMoreShoeSizes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "9.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -42,15 +45,10 @@ namespace GoodShoe.Migrations
                         .HasColumnType("nvarchar(10)")
                         .HasDefaultValue("SGD");
 
-                    b.Property<DateTime?>("DOB")
+                    b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Password")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -78,7 +76,7 @@ namespace GoodShoe.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.ToTable("Admins");
+                    b.ToTable("Admin");
 
                     b.HasData(
                         new
@@ -88,7 +86,6 @@ namespace GoodShoe.Migrations
                             Currency = "SGD",
                             DOB = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "admin@goodshoe.com",
-                            Password = "",
                             Phone = "+65 1234 5678",
                             UpdatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             UserName = "Admin User"
@@ -250,11 +247,6 @@ namespace GoodShoe.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -279,7 +271,6 @@ namespace GoodShoe.Migrations
                             Email = "john.doe@email.com",
                             FirstName = "John",
                             LastName = "Doe",
-                            Password = "",
                             Phone = "+65 9876 5432",
                             UpdatedAt = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         },
@@ -291,7 +282,6 @@ namespace GoodShoe.Migrations
                             Email = "jane.smith@email.com",
                             FirstName = "Jane",
                             LastName = "Smith",
-                            Password = "",
                             Phone = "+65 8765 4321",
                             UpdatedAt = new DateTime(2024, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified)
                         });

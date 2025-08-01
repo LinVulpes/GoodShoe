@@ -54,17 +54,17 @@
                         </li>
 
                         @* Show Admin Dashboard link only if user is logged in and has Manager role *@
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            var user = await UserManager.GetUserAsync(User);
-                            var roles = await UserManager.GetRolesAsync(user);
-                            if (roles.Contains("Manager"))
-                            {
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
-                                </li>
-                            }
+                        @{
+                            var role = Context.Session.GetString("UserRole");
                         }
+
+                        @if (role == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Admin" asp-action="Dashboard">Admin Dashboard</a>
+                            </li>
+                        }
+
                     </ul>
 
                     <!-- Right Side: Cart, User Profile, Login/Logout -->
