@@ -113,10 +113,24 @@
             <a asp-controller="Shop" asp-action="Details" asp-route-id="@product.ProductId" class="text-decoration-none">
                 <div class="product-card">
                     <div class="product-image">
-                        <img src="@product.ImageUrl" 
-                             alt="@product.Name" 
-                             onerror="this.src='/images/products/placeholder.jpg';" 
-                             loading="lazy" />
+                        @* Updated image handling *@
+                        @if (product.Image != null)
+                        {
+                            <img src="@Url.Action("GetImage", "Products", new { id = product.ProductId })" 
+                                 alt="@product.Name" />
+                        }
+                        else if (!string.IsNullOrEmpty(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl"
+                                 alt="@product.Name"
+                                 onerror="this.src='/images/products/placeholder.jpg'"/>
+                        }
+                        else
+                        {
+                            <img src="/images/products/placeholder.jpg" 
+                                 alt="@product.Name" />                            
+                        }
+                        
                     </div>                
                     <div class="product-info">
                         <h5 class="product-name">@product.Name</h5>

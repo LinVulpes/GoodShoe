@@ -55,6 +55,7 @@
             </div>
         </div>
         
+        <!-- Pending Orders -->
         <div class="stat-card">
             <div class="stat-icon pending">
                 <i class="fas fa-clock"></i>
@@ -65,6 +66,7 @@
             </div>
         </div>
 
+        <!-- Low Stock Items -->
         <div class="stat-card">
             <div class="stat-icon warning">
                 <i class="fas fa-exclamation-triangle"></i>
@@ -74,6 +76,50 @@
                 <p>Low Stock Items</p>
             </div>
         </div>
+        
+        <!-- Additional Statistics Cards -->
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.ShippingOrders</h3>
+                <p>Shipping Orders</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon products">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.DeliveredOrders</h3>
+                <p>Delivered Orders</p>
+            </div>
+        </div>
+
+        <!-- Revenue Card -->
+        <div class="stat-card">
+            <div class="stat-icon orders">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.TotalRevenue.ToString("C")</h3>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+
+        <!-- Recent Orders (Last 7 days) -->
+        <div class="stat-card">
+            <div class="stat-icon pending">
+                <i class="fas fa-calendar-week"></i>
+            </div>
+            <div class="stat-content">
+                <h3>@ViewBag.RecentOrders</h3>
+                <p>Recent Orders (7 days)</p>
+            </div>
+        </div>
+        
     </div>
     
     <!-- Quick Actions -->
