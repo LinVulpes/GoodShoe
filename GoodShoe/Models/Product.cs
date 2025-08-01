@@ -43,9 +43,12 @@ namespace GoodShoe.Models
         [StringLength(255)] 
         public string? ImageUrl { get; set; }
         
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        // Image stored as binary data
+        public byte[]? Image { get; set; }
         
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        // Store the original file name and content type
+        [StringLength(255)]
+        public string? ImageFileName { get; set; }
         
         // Navigation properties for the database
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();

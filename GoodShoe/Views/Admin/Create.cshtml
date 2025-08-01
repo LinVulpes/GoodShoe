@@ -6,7 +6,7 @@
 
 <link rel="stylesheet" href="~/css/admin.css" />
 <div class="create-container">
-    <form method="post" action="@Url.Action("Edit", "Admin")" id="createForm">
+    <form method="post" action="@Url.Action("Edit", "Admin")" id="createForm" enctype="multipart/form-data">
         <input type="hidden" asp-for="ProductId" value="0" />
         
         <div class="back-button-container mb-4 header-actions">
@@ -34,7 +34,7 @@
             <textarea asp-for="Description" class="form-textarea" placeholder="Enter product description"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-
+        
         <!-- Shoe Sizes -->
         <div class="form-group">
             <label class="form-label">Shoe Sizes:</label>
@@ -97,22 +97,44 @@
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
         
-        <!-- Product Image -->
+        <!-- Product Image Upload (NEW) -->
         <div class="form-group">
-            <label class="form-label">Product Image:</label>
+            <label class="form-label">Upload Product Image:</label>
+            <input type="file" name="imageFile" id="imageFile" class="form-input" accept="image/*" onchange="previewImage(this);" />
+            <div class="form-text">Supported formats: JPG, PNG, GIF, BMP</div>
+            <!-- Image Preview -->
+            <img id="imagePreview" style="display: none; max-width: 200px; max-height: 150px; margin-top: 10px;" class="img-thumbnail" />
+        </div>
+        
+        <!-- Product Image URL (Keep for backward compatibility) -->
+        <div class="form-group">
+            <label class="form-label">Or Image URL:</label>
             <div class="image-upload">
                 <div class="image-upload-area" onclick="document.getElementById('imageUrlInput').focus()">
                     <div class="upload-icon">+</div>
-                    <div class="upload-text">Add Image</div>
+                    <div class="upload-text">Add Image URL</div>
                 </div>
                 <input asp-for="ImageUrl" id="imageUrlInput" class="form-input image-url-input" placeholder="Enter image URL" />
-                <img id="imagePreview" class="image-preview" alt="Preview" />
+                <img id="urlImagePreview" class="image-preview" alt="Preview" />
             </div>
             <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
-
+        
         <!-- Brand field (hidden but required for model) -->
         <input asp-for="Brand" type="hidden" value="Default Brand" />
     </form>
 </div>
+
+<script>
+function previewImage(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imagePreview').src = e.target.result;
+            document.getElementById('imagePreview').style.display = 'block';
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>
 <script src="~/js/admin.js"></script>

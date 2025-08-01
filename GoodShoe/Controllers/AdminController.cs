@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using GoodShoe.Models;
 using GoodShoe.Data;
+using GoodShoe.ViewModels;
 
 namespace GoodShoe.Controllers
 {
@@ -20,26 +21,48 @@ namespace GoodShoe.Controllers
         {
             // Admin Dashboard statistics Updated
             var totalProducts = context.Product.Count();
-
             var totalStock = context.ProductVariant.Sum(p => p.StockCount);
             var lowStockProducts = context.ProductVariant.Where(pv => pv.StockCount > 0 && pv.StockCount < 5).Count();
             var outOfStockProducts = context.ProductVariant.Where(p => p.StockCount == 0).Count();
-            
+
             // Calculate total value from variants
             var totalValue = context.ProductVariant
                 .Include(pv => pv.Product)
                 .Sum(pv => pv.Product.Price * pv.StockCount);
-            
+
+            // NEW: Calculate Order Statistics
+            var totalOrders = context.Orders.Count();
+            var pendingOrders = context.Orders.Where(o => o.Status == "Pending").Count();
+            var shippingOrders = context.Orders.Where(o => o.Status == "Shipping").Count();
+            var deliveredOrders = context.Orders.Where(o => o.Status == "Delivered").Count();
+            var cancelledOrders = context.Orders.Where(o => o.Status == "Cancelled").Count();
+
+            // Recent orders (last 7 days)
+            var recentOrders = context.Orders
+                .Where(o => o.CreatedAt >= DateTime.Now.AddDays(-7))
+                .Count();
+
+            // Total revenue from completed orders
+            var totalRevenue = context.Orders
+                .Where(o => o.Status == "Delivered" && o.PaymentStatus == "Completed")
+                .Sum(o => o.TotalAmount);
+
+            // Pass all statistics to the view
             ViewBag.TotalProducts = totalProducts;
             ViewBag.TotalStock = totalStock;
             ViewBag.LowStockProducts = lowStockProducts;
             ViewBag.OutOfStockProducts = outOfStockProducts;
             ViewBag.TotalValue = totalValue;
-            
-            // For Order Management - to implement later : hard-coded for now
-            ViewBag.TotalOrders = 15;
-            ViewBag.PendingOrders = 3;
-            
+
+            // Order statistics
+            ViewBag.TotalOrders = totalOrders;
+            ViewBag.PendingOrders = pendingOrders;
+            ViewBag.ShippingOrders = shippingOrders;
+            ViewBag.DeliveredOrders = deliveredOrders;
+            ViewBag.CancelledOrders = cancelledOrders;
+            ViewBag.RecentOrders = recentOrders;
+            ViewBag.TotalRevenue = totalRevenue;
+
             return View();
         }
 
@@ -65,15 +88,220 @@ namespace GoodShoe.Controllers
             }
         }
 
-        // Order List - to be implemented later
-        public IActionResult OrderList()
+        // Order List
+        public IActionResult OrderList(int page = 1, int pageSize = 10)
         {
-            return View();
+            var orders = context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)  // ADD this line to include OrderItems
+                .OrderByDescending(o => o.CreatedAt)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(o => new OrderListViewModel
+                {
+                    OrderID = o.OrderId,
+                    CustomerEmail = o.Customer != null ? o.Customer.Email : "guest@example.com",
+                    Date = o.CreatedAt,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status,
+                    Items = o.OrderItems.Sum(oi => oi.Quantity), // ADD this line
+                    CanEdit = o.Status != "Delivered" && o.Status != "Cancelled"
+                })
+                .ToList();
+
+            var totalOrders = context.Orders.Count();
+            var totalPages = (int)Math.Ceiling((double)totalOrders / pageSize);
+
+            var viewModel = new OrderManagementViewModel
+            {
+                Orders = orders,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalOrders = totalOrders
+            };
+
+            return View(viewModel);
         }
 
+        // GET: Create Order
+        [HttpGet]
+        public IActionResult CreateOrder()
+        {
+            var viewModel = new CreateOrderViewModel
+            {
+                // FIXED: Using Customer instead of anonymous type
+                Customers = context.Customers.Select(c => new Customer 
+                { 
+                    CustomerId = c.CustomerId, 
+                    Email = c.Email 
+                }).ToList(),
+        
+                // Get products for selection
+                Products = context.Product
+                    .Include(p => p.ProductVariants)
+                    .Where(p => p.ProductVariants.Any(pv => pv.StockCount > 0))
+                    .ToList(),
+            
+                CreatedAt = DateTime.Now,
+                Status = "Pending",
+                PaymentMethod = "Credit / Debit Card",
+                PaymentStatus = "Completed"
+            };
+    
+            return View(viewModel);
+        }
+
+        // POST: Create Order
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateOrder(CreateOrderViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Get customer info
+                    var customer = context.Customers.FirstOrDefault(c => c.CustomerId == model.CustomerId);
+                    
+                    // Create new order
+                    var order = new Order
+                    {
+                        CustomerId = model.CustomerId,
+                        TotalAmount = model.TotalAmount,
+                        Status = model.Status,
+                        Address = model.Address ?? $"{customer?.Email}, {customer?.Address}",
+                        PaymentMethod = model.PaymentMethod,
+                        PaymentStatus = model.PaymentStatus,
+                        CreatedAt = model.CreatedAt,
+                        UpdatedAt = DateTime.Now
+                    };
+
+                    context.Orders.Add(order);
+                    context.SaveChanges();
+
+                    // Create order items if provided
+                    if (!string.IsNullOrEmpty(model.ProductIds))
+                    {
+                        var productIds = model.ProductIds.Split(',').Select(int.Parse).ToList();
+                        var quantities = model.Quantities?.Split(',').Select(int.Parse).ToList() ?? new List<int>();
+                        var sizes = model.Sizes?.Split(',').ToList() ?? new List<string>();
+
+                        for (int i = 0; i < productIds.Count; i++)
+                        {
+                            var productId = productIds[i];
+                            var quantity = i < quantities.Count ? quantities[i] : 1;
+                            var size = i < sizes.Count ? sizes[i] : "10";
+
+                            var product = context.Product.FirstOrDefault(p => p.ProductId == productId);
+                            var productVariant = context.ProductVariant
+                                .FirstOrDefault(pv => pv.ProductId == productId && pv.Size == int.Parse(size));
+
+                            if (product != null && productVariant != null)
+                            {
+                                var orderItem = new OrderItem
+                                {
+                                    OrderId = order.OrderId,
+                                    ProductVariantId = productVariant.Id,
+                                    ProductName = product.Name,
+                                    Size = int.Parse(size),
+                                    Quantity = quantity,
+                                    UnitPrice = product.Price,
+                                    TotalPrice = product.Price * quantity
+                                };
+
+                                context.OrderItems.Add(orderItem);
+                            }
+                        }
+                        
+                        context.SaveChanges();
+                    }
+
+                    TempData["SuccessMessage"] = "Order created successfully!";
+                    return RedirectToAction("OrderList");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "Error creating order: " + ex.Message;
+                }
+            }
+
+            // FIXED: Reload data if validation fails
+            model.Customers = context.Customers.Select(c => new Customer
+            { 
+                CustomerId = c.CustomerId, 
+                Email = c.Email 
+            }).ToList();
+            
+            model.Products = context.Product
+                .Include(p => p.ProductVariants)
+                .Where(p => p.ProductVariants.Any(pv => pv.StockCount > 0))
+                .ToList();
+                
+            return View(model);
+        }     
+
+
+        [HttpPost]
+        public IActionResult UpdateOrderStatus(int orderId, string newStatus)
+        {
+            try
+            {
+                var order = context.Orders.FirstOrDefault(o => o.OrderId == orderId);
+                if (order != null)
+                {
+                    order.Status = newStatus;
+                    order.UpdatedAt = DateTime.Now;
+                    context.SaveChanges();
+
+                    TempData["SuccessMessage"] = "Order status updated successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Order not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error updating order status: " + ex.Message;
+            }
+            return RedirectToAction("OrderList");
+        }
+        
+        
+        // Method for deleting orders
+        [HttpPost]
+        public IActionResult DeleteOrder(int orderId)
+        {
+            try
+            {
+                var order = context.Orders
+                    .Include(o => o.OrderItems)
+                    .FirstOrDefault(o => o.OrderId == orderId);
+            
+                if (order != null)
+                {
+                    // Remove order items first
+                    context.OrderItems.RemoveRange(order.OrderItems);
+                    // Remove the order
+                    context.Orders.Remove(order);
+                    context.SaveChanges();
+            
+                    TempData["SuccessMessage"] = "Order deleted successfully!";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Order not found.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error deleting order: " + ex.Message;
+            }
+    
+            return RedirectToAction("OrderList");
+        }
 
         // Add new product. Opens the edit view but with a new product
-
         [HttpGet]
         public IActionResult Create()
         {

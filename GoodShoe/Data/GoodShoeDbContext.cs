@@ -41,6 +41,10 @@ namespace GoodShoe.Data
                 entity.Property(e => e.Color).HasMaxLength(50);
                 entity.Property(e => e.Category).HasMaxLength(50);
                 entity.Property(e => e.ImageUrl).HasMaxLength(200);
+                
+                // Added image properties
+                entity.Property(e => e.Image).HasColumnType("varbinary(max)");
+                entity.Property(e => e.ImageFileName).HasMaxLength(255);
             });
             
             // ProductVariant configuration - Added for Shoe Sizes
@@ -169,12 +173,12 @@ namespace GoodShoe.Data
         {
             // Update existing products with new structure
             modelBuilder.Entity<Product>().HasData(
-                new Product { ProductId = 1, Name = "Cloudsurfer Next", Brand = "Puma", Price = 259.00m, Description = "Lace up in Swiss-engineered runners with these Cloudsurfer Next trainers from On Running.", Color = "White", Category = "Unisex", ImageUrl = "/images/products/image1.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) },
-                new Product { ProductId = 2, Name = "Aero Burst", Brand = "Sketchers", Price = 150.00m, Description = "Hit every mile marker in long-distance confidence and premium cushioned comfort with Skechers Aero Burst™.", Color = "Periwinkle", Category = "Women", ImageUrl = "/images/products/image2.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) },
-                new Product { ProductId = 3, Name = "GoodShoe 0.1", Brand = "GoodShoe", Price = 100.00m, Description = "Men's Shoes", Color = "Brown", Category = "Men", ImageUrl = "/images/products/image3.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) },
-                new Product { ProductId = 4, Name = "GoodShoe 0.2", Brand = "GoodShoe", Price = 120.00m, Description = "Updated Women's Shoes", Color = "Brown", Category = "Women", ImageUrl = "/images/products/image4.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) },
-                new Product { ProductId = 5, Name = "GoodShoe 0.3", Brand = "GoodShoe", Price = 110.00m, Description = "New Unisex Shoes", Color = "Blue", Category = "Unisex", ImageUrl = "/images/products/image5.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) },
-                new Product { ProductId = 6, Name = "Nike Max 260", Brand = "Nike", Price = 149.99m, Description = "The Nike Air Max 270 delivers visible cushioning under every step.", Color = "White", Category = "Men", ImageUrl = "/images/products/image6.png", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) }
+                new Product { ProductId = 1, Name = "Cloudsurfer Next", Brand = "Puma", Price = 259.00m, Description = "Lace up in Swiss-engineered runners with these Cloudsurfer Next trainers from On Running.", Color = "White", Category = "Unisex", ImageUrl = "/images/products/image1.png"},
+                new Product { ProductId = 2, Name = "Aero Burst", Brand = "Sketchers", Price = 150.00m, Description = "Hit every mile marker in long-distance confidence and premium cushioned comfort with Skechers Aero Burst™.", Color = "Periwinkle", Category = "Women", ImageUrl = "/images/products/image2.png"},
+                new Product { ProductId = 3, Name = "GoodShoe 0.1", Brand = "GoodShoe", Price = 100.00m, Description = "Men's Shoes", Color = "Brown", Category = "Men", ImageUrl = "/images/products/image3.png"},
+                new Product { ProductId = 4, Name = "GoodShoe 0.2", Brand = "GoodShoe", Price = 120.00m, Description = "Updated Women's Shoes", Color = "Brown", Category = "Women", ImageUrl = "/images/products/image4.png"},
+                new Product { ProductId = 5, Name = "GoodShoe 0.3", Brand = "GoodShoe", Price = 110.00m, Description = "New Unisex Shoes", Color = "Blue", Category = "Unisex", ImageUrl = "/images/products/image5.png"},
+                new Product { ProductId = 6, Name = "Nike Max 260", Brand = "Nike", Price = 149.99m, Description = "The Nike Air Max 270 delivers visible cushioning under every step.", Color = "White", Category = "Men", ImageUrl = "/images/products/image6.png"}
             );
             
             // Seed ProductVariants for sizes 8-16

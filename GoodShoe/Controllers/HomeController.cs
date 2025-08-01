@@ -34,7 +34,7 @@ public class HomeController : Controller
             return Problem("No product found!");
         }
 
-        var products = from p in _context.Product
+        var products = from p in _context.Product.Include(p => p.ProductVariants)
             select p;
 
         // Apply search filter

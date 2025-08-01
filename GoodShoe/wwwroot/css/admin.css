@@ -547,9 +547,78 @@
     cursor: pointer;
 }
 
+.order-items {
+    text-align: center;
+}
+
+.items-count {
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    color: #495057;
+    border: 1px solid #e9ecef;
+    display: inline-block;
+    min-width: 30px;
+}
+
 .status-select:focus {
     outline: none;
     border-color: #3498db;
+}
+
+/*Updated Order Management*/
+.pagination .page-link {
+    color: #454545;
+    border-color: #e8e8e8;
+}
+
+.pagination .page-item.active .page-link {
+    color: #ffffff;
+    background-color: #a6a4a4;
+    border-color: #939292;
+}
+
+.pagination .page-link:hover {
+    color: #333;
+    background-color: #f8f9fa;
+    border-color: #e8e8e8;
+}
+
+.pagination .page-link:focus {
+    outline: none;
+    box-shadow: none;
+    border-color: #e8e8e8;
+    color: #454545;
+    background-color: transparent;
+}
+
+.alert {
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #e8f5e8;
+    color: #27ae60;
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #e74c3c;
+}
+
+.modal-content {
+    border-radius: 12px;
+}
+
+.modal-header {
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-footer {
+    border-top: 2px solid #f0f0f0;
 }
 
 /* Form Styles */
