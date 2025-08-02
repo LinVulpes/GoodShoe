@@ -74,17 +74,20 @@
                         
                         <div class="mb-3">
                             <label asp-for="CardNumber" class="form-label">Card Number</label>
-                            <input asp-for="CardNumber" class="form-control" />
+                            <input asp-for="CardNumber" class="form-control"
+                                   maxlength="12" pattern="\d{12}" inputmode="numeric" />
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ExpiryDate" class="form-label">MM/YY</label>
-                                <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
+                                <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY"
+                                       pattern="(0[1-9]|1[0-2])\/\d{2}" />
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="CVV" class="form-label">CVV</label>
-                                <input asp-for="CVV" class="form-control" />
+                                <input asp-for="CVV" class="form-control"
+                                       maxlength="3" pattern="\d{3}" inputmode="numeric" />
                             </div>
                         </div>
                     </div>
@@ -160,4 +163,35 @@
             document.querySelector('input[name="PaymentMethod"]').value = selectedMethod;
         });
     });
+
+    // only numeric input for Card Number (max 12 digits)
+    const cardNumberInput = document.querySelector('input[name="CardNumber"]');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+        });
+    }
+
+    // only numeric input for CVV (max 3 digits)
+    const cvvInput = document.querySelector('input[name="CVV"]');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 3);
+        });
+    }
+
+        // card expiry date MM/YY and auto show slash '/'
+    const expiryInput = document.querySelector('input[name="ExpiryDate"]');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', function () {
+            let value = this.value.replace(/\D/g, '');
+
+            if (value.length > 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+
+            this.value = value.slice(0, 5); // Max length "MM/YY"
+        });
+    }
+
 </script>
