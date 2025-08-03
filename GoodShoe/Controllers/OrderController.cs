@@ -11,6 +11,7 @@ namespace GoodShoe.Controllers
     {
         private readonly GoodShoeDbContext _db;
         private readonly ICartService _cartService;
+        private const decimal DELIVERY_FEE = 20.00m;
 
         public OrderController(GoodShoeDbContext db, ICartService cartService)
         {
@@ -39,14 +40,15 @@ namespace GoodShoe.Controllers
                 return RedirectToAction("Index", "Cart");
             }
 
-            //Create a new ?checkout? object and stick in the list of items from the cart.
-            System.Diagnostics.Debug.WriteLine("OrderController: Creating checkout view model");
             var model = new CheckoutViewModel
             {
                 CartItems = cartItems
             };
 
-            // Debug: Print cart items in the model
+            // Log the calculated totals (properties calculate automatically)
+            System.Diagnostics.Debug.WriteLine($"OrderController: Calculated subtotal: ${model.Subtotal:F2}");
+            System.Diagnostics.Debug.WriteLine($"OrderController: Calculated total (with delivery): ${model.Total:F2}");
+
             foreach (var item in model.CartItems)
             {
                 System.Diagnostics.Debug.WriteLine($"Model Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: {item.Price}");
@@ -65,6 +67,9 @@ namespace GoodShoe.Controllers
                 {
                     // Get Cart Items from session
                     var cartItems = GetCartItems();
+                    
+                    decimal calculatedSubtotal = cartItems.Sum(item => item.Price * item.Quantity);
+                    decimal calculatedTotal = calculatedSubtotal + DELIVERY_FEE;
 
                     if (!cartItems.Any())
                     {
@@ -75,16 +80,16 @@ namespace GoodShoe.Controllers
                     // Create new order
                     var order = new Order()
                     {
-                        CustomerId = 1, // For now, use a default customer ID. In real app, get from authentication
-                        TotalAmount = model.Total,
+                        CustomerId = 1,
+                        TotalAmount = calculatedTotal, // Use calculated total, not model.Total
                         Status = "Pending",
                         Address = $"{model.FirstName} {model.LastName}, {model.Address}",
                         PaymentMethod = model.PaymentMethod,
-                        PaymentStatus = "Completed", // Mock payment as completed
+                        PaymentStatus = "Completed",
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     };
-
+                    
                     // Add order to database
                     _db.Orders.Add(order);
                     _db.SaveChanges();
@@ -105,12 +110,12 @@ namespace GoodShoe.Controllers
                         var orderItem = new OrderItem
                         {
                             OrderId = order.OrderId,
-                            ProductVariantId = productVariant.Id, // Use the correct ProductVariant ID
-                            ProductName = item.ProductName,        // Use 'item' not 'cartItems'
-                            Size = int.Parse(item.Size.Replace("US ", "")), // Use 'item' not 'cartItems'
-                            Quantity = item.Quantity,              // Use 'item' not 'cartItems'
-                            UnitPrice = item.Price,                // Use 'item' not 'cartItems'
-                            TotalPrice = item.Price * item.Quantity // Use 'item' not 'cartItems'
+                            ProductVariantId = productVariant.Id,
+                            ProductName = item.ProductName,
+                            Size = int.Parse(item.Size.Replace("US ", "")),
+                            Quantity = item.Quantity,
+                            UnitPrice = item.Price,
+                            TotalPrice = item.Price * item.Quantity
                         };
                         _db.OrderItems.Add(orderItem); // Use OrderItems (plural) to match your DbContext
                     }
@@ -138,6 +143,7 @@ namespace GoodShoe.Controllers
                     return View(model);
                 }
             }
+            
             // Re-populate cart items if validation fails
             model.CartItems = GetCartItems();
             return View(model);
@@ -160,18 +166,15 @@ namespace GoodShoe.Controllers
             {
                 System.Diagnostics.Debug.WriteLine("=== GetCartItems called ===");
 
-                // Check if session exists
                 if (HttpContext.Session == null)
                 {
                     System.Diagnostics.Debug.WriteLine("Session is null!");
                     return new List<CartItemViewModel>();
                 }
 
-                // Try to get the raw session value first
                 var rawSessionValue = HttpContext.Session.GetString("CartItems");
                 System.Diagnostics.Debug.WriteLine($"Raw session value: {rawSessionValue ?? "NULL"}");
 
-                // Get cart items from session (set by CartController.PrepareCheckout)
                 var cartItems = HttpContext.Session.Get<List<CartItemViewModel>>("CartItems");
 
                 if (cartItems != null && cartItems.Any())
@@ -179,7 +182,7 @@ namespace GoodShoe.Controllers
                     System.Diagnostics.Debug.WriteLine($"Successfully retrieved {cartItems.Count} items from session");
                     foreach (var item in cartItems)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Session Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}");
+                        System.Diagnostics.Debug.WriteLine($"Session Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: ${item.Price:F2}");
                     }
                     return cartItems;
                 }
@@ -189,13 +192,12 @@ namespace GoodShoe.Controllers
                     return new List<CartItemViewModel>();
                 }
             }
-            //error handling
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"=== ERROR in GetCartItems ===");
                 System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                return new List<CartItemViewModel>(); //return empty list so app don't crash
+                return new List<CartItemViewModel>();
             }
         }
     }

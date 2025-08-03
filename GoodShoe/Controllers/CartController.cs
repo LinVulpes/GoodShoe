@@ -1,7 +1,6 @@
 using GoodShoe.ViewModels;
 using GoodShoe.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using GoodShoe.Extensions;
 
 namespace GoodShoe.Controllers
@@ -9,15 +8,29 @@ namespace GoodShoe.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly IAuthService _authService;
 
         // Constructor comes first
-        public CartController(ICartService cartService)
+        public CartController(ICartService cartService, IAuthService authService)
         {
             _cartService = cartService;
+            _authService = authService;
         }
+        // Latest Index for Cart Controller
+        public IActionResult Index()
+        {
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Your existing cart logic here
+            return View();
+        }        
 
         // Index method to display cart
-        public IActionResult Index()
+        /*public IActionResult Index()
         {
             try
             {
@@ -40,7 +53,7 @@ namespace GoodShoe.Controllers
                 TempData["CartError"] = "Error loading cart. Please try again.";
                 return View(new List<CartItemViewModel>());
             }
-        }
+        }*/
 
         [HttpPost]
         public IActionResult AddToCart(int productId, string size, int quantity = 1)

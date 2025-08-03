@@ -1,74 +1,88 @@
 ﻿// Controllers/ProfileController.cs
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using GoodShoe.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using GoodShoe.Data;
 using GoodShoe.ViewModels;
-using GoodShoe.Models;
+using GoodShoe.Services;
 
 namespace GoodShoe.Controllers
 {
     // [Authorize] // Disabled for testing - re-enable later
     public class ProfileController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly GoodShoeDbContext _context;
+        private readonly IAuthService _authService;
 
-        public ProfileController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public ProfileController(GoodShoeDbContext context, IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
+            _context = context;
+            _authService = authService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // For debugging - this should show in browser
-            ViewBag.Debug = "ProfileController Index action reached!";
-            
-            var user = await _userManager.GetUserAsync(User);
-            
-            // If no user is logged in, use test data for development
-            var model = new ProfileViewModel
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
             {
-                Email = user?.Email ?? "queenara@gmail.com", // Use real user data after connecting with the database
-                PhoneNumber = user?.PhoneNumber ?? "+65 9123 4567",
-                Location = user?.Location ?? "Singapore",
-                PurchaseHistory = GetMockPurchaseHistory()
-            };
-
-            return View(model);
-        }
-        
-
-        // GET: Profile/Edit
-        public async Task<IActionResult> Edit()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                // For testing purposes, return a model with default values
-                var testModel = new EditProfileViewModel
-                {
-                    Email = "queenara@gmail.com",
-                    PhoneNumber = "+65 9123 4567",
-                    Location = "Singapore"
-                };
-                return View(testModel);
+                return RedirectToAction("Login", "Account");
             }
 
-            var model = new EditProfileViewModel
+            // Get purchase history
+            var purchaseHistory = await _context.Orders
+                .Where(o => o.CustomerId == currentCustomer.CustomerId)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.ProductVariant)
+                .ThenInclude(pv => pv.Product)
+                .OrderByDescending(o => o.CreatedAt)
+                .SelectMany(o => o.OrderItems.Select(oi => new PurchaseHistoryItem
+                {
+                    ProductName = oi.ProductName,
+                    Description = oi.ProductVariant.Product.Description ?? "",
+                    Size = oi.Size.ToString(),
+                    Price = oi.UnitPrice,
+                    ImageUrl = oi.ProductVariant.Product.ImageUrl ?? "",
+                    PurchaseDate = o.CreatedAt
+                }))
+                .ToListAsync();
+
+            var viewModel = new ProfileViewModel
             {
-                Email = user.Email ?? string.Empty,
-                PhoneNumber = user.PhoneNumber,
-                Location = user.Location
+                CustomerId = currentCustomer.CustomerId,
+                FullName = currentCustomer.FullName,
+                Email = currentCustomer.Email,
+                PhoneNumber = currentCustomer.Phone,
+                Location = currentCustomer.Address,
+                PurchaseHistory = purchaseHistory
             };
 
-            return View(model);
+            return View(viewModel);
+        }
+        
+        [HttpGet]
+        public IActionResult Edit()
+        {
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var viewModel = new EditProfileViewModel
+            {
+                CustomerId = currentCustomer.CustomerId,
+                FirstName = currentCustomer.FirstName,
+                LastName = currentCustomer.LastName,
+                Email = currentCustomer.Email,
+                PhoneNumber = currentCustomer.Phone,
+                Address = currentCustomer.Address
+            };
+
+            return View(viewModel);
         }
 
         // POST: Profile/Edit
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditProfileViewModel model)
         {
             if (!ModelState.IsValid)
@@ -76,72 +90,82 @@ namespace GoodShoe.Controllers
                 return View(model);
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
             {
-                // For testing purposes, just show success message
-                TempData["Success"] = "Profile updated successfully! (Test mode)";
-                return RedirectToAction("Index");
+                return RedirectToAction("Login", "Account");
             }
 
-            // Update user properties
-            user.Email = model.Email;
-            user.UserName = model.Email; // Keep username in sync with email
-            user.PhoneNumber = model.PhoneNumber;
-            user.Location = model.Location;
-
-            var result = await _userManager.UpdateAsync(user);
-
-            if (result.Succeeded)
+            // Check if email is taken by another user
+            if (model.Email != currentCustomer.Email && await _authService.IsEmailTakenAsync(model.Email))
             {
+                ModelState.AddModelError("Email", "Email is already registered.");
+                return View(model);
+            }
+
+            // Update customer
+            currentCustomer.FirstName = model.FirstName;
+            currentCustomer.LastName = model.LastName;
+            currentCustomer.Email = model.Email;
+            currentCustomer.Phone = model.PhoneNumber;
+            currentCustomer.Address = model.Address;
+            currentCustomer.UpdatedAt = DateTime.Now;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                
+                // Update session with new data
+                _authService.SetCurrentCustomer(currentCustomer);
+                
                 TempData["Success"] = "Profile updated successfully!";
                 return RedirectToAction("Index");
             }
-
-            foreach (var error in result.Errors)
+            catch (Exception)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                TempData["Error"] = "Failed to update profile. Please try again.";
+                return View(model);
             }
-
-            return View(model);
         }
 
         // POST: Profile/ChangePassword
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                TempData["Error"] = "Please fill in all password fields correctly.";
+                TempData["Error"] = "Please check your password entries.";
                 return RedirectToAction("Edit");
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
             {
-                // For testing purposes, just show success message
-                TempData["Success"] = "Password changed successfully! (Test mode)";
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Verify current password
+            if (currentCustomer.Password != model.CurrentPassword)
+            {
+                TempData["Error"] = "Current password is incorrect.";
                 return RedirectToAction("Edit");
             }
 
-            var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            // Update password
+            currentCustomer.Password = model.NewPassword;
+            currentCustomer.UpdatedAt = DateTime.Now;
 
-            if (result.Succeeded)
+            try
             {
-                await _signInManager.RefreshSignInAsync(user);
+                await _context.SaveChangesAsync();
                 TempData["Success"] = "Password changed successfully!";
+                return RedirectToAction("Index");
             }
-            else
+            catch (Exception)
             {
-                foreach (var error in result.Errors)
-                {
-                    TempData["Error"] = error.Description;
-                    break; // Show only the first error
-                }
+                TempData["Error"] = "Failed to change password. Please try again.";
+                return RedirectToAction("Edit");
             }
-
-            return RedirectToAction("Edit");
         }
         
         // Temporary method to provide mock purchase history
