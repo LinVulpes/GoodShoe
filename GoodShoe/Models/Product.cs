@@ -50,10 +50,13 @@ namespace GoodShoe.Models
         [StringLength(255)]
         public string? ImageFileName { get; set; }
         
+        // Timestamps for products
+        [Display(Name = "Created Date")]
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
         // Navigation properties for the database
         public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
         
-        // Keep these for backward compatibility but calculate from ProductVariants : Not using for now
         public int StockCount => ProductVariants?.Sum(pv => pv.StockCount) ?? 0;
         public string AvailableSizes => ProductVariants != null ? 
             string.Join(",", ProductVariants.Where(pv => pv.StockCount > 0).Select(pv => pv.Size).OrderBy(s => s)) : "";
@@ -65,6 +68,30 @@ namespace GoodShoe.Models
                 .Select(pv => pv.Size.ToString())
                 .OrderBy(s => int.Parse(s))
                 .ToList() ?? new List<string>();
+        }
+        
+        [NotMapped]
+        public string StockStatusClass
+        {
+            get
+            {
+                var totalStock = ProductVariants?.Sum(pv => pv.StockCount) ?? 0;
+                if (totalStock == 0) return "stock-out";
+                if (totalStock < 10) return "stock-low";
+                return "stock-high";
+            }
+        }
+        
+        [NotMapped]
+        public string StockStatus
+        {
+            get
+            {
+                var totalStock = ProductVariants?.Sum(pv => pv.StockCount) ?? 0;
+                if (totalStock == 0) return "Out of Stock";
+                if (totalStock < 10) return "Low Stock";
+                return "In Stock";
+            }
         }
     }
 }

@@ -3,70 +3,625 @@
 @{
     ViewData["Title"] = "Delete";
 }
-<h1>Delete</h1>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Brand)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Brand)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        
-        <dt class = "col-sm-2">
-            Available Sizes
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailableSizes)
-        </dd>
-        
-        <dt class = "col-sm-2">
-            Total Stock
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StockCount)
-        </dd>
-        
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="ProductId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
-</div>
+<style>
+    /* Container */
+    .delete-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 0;
+    }
+
+    /* Back Button */
+    .back-button-container {
+        margin-bottom: 20px;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+    }
+
+    /* Warning Section */
+    .delete-warning {
+        background: #fff5f5;
+        border: 2px solid #fed7d7;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .warning-icon {
+        font-size: 4rem;
+        color: #e74c3c;
+        margin-bottom: 20px;
+    }
+
+    .delete-warning h2 {
+        color: #e74c3c;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .delete-warning p {
+        color: #6c757d;
+        font-size: 1.1rem;
+        margin-bottom: 0;
+    }
+
+    /* Product Preview */
+    .product-preview {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .product-card {
+        display: flex;
+        gap: 25px;
+        align-items: flex-start;
+    }
+
+    /* Product Image */
+    .product-image-container {
+        width: 300px;
+        height: 300px;
+        border-radius: 12px;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .product-image-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* Product Details */
+    .product-details {
+        flex: 1;
+    }
+
+    .product-details h3 {
+        margin: 0 0 10px 0;
+        color: #333;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .product-brand {
+        font-size: 1.2rem;
+        color: #6c757d;
+        margin-bottom: 25px;
+    }
+
+    /* Product Meta Grid */
+    .product-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .meta-item {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border-left: 4px solid #454545;
+    }
+
+    .meta-label {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .meta-value {
+        color: #6c757d;
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .price-value {
+        color: #27ae60;
+        font-weight: 600;
+        font-size: 1.3rem;
+    }
+
+    /* Stock Values */
+    .stock-value {
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 500;
+        display: inline-block;
+    }
+
+    .stock-high {
+        background: #e8f5e8;
+        color: #27ae60;
+    }
+
+    .stock-low {
+        background: #fff3e0;
+        color: #f39c12;
+    }
+
+    .stock-out {
+        background: #ffebee;
+        color: #e74c3c;
+    }
+
+    /* Sizes Section */
+    .sizes-section {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .sizes-list {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: 5px;
+    }
+
+    /* Table Styles */
+    .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-sm th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table-sm td {
+        vertical-align: middle;
+    }
+
+    .table-sm tfoot tr {
+        background-color: #f8f9fa !important;
+        font-weight: 600;
+    }
+
+    /* Badges */
+    .badge.bg-dark {
+        background-color: #454545 !important;
+    }
+
+    /* Alerts */
+    .alert-warning {
+        background-color: #fff3e0;
+        color: #e67e22;
+        border: 1px solid #f39c12;
+        border-radius: 8px;
+    }
+
+    /* Delete Actions */
+    .delete-actions {
+        text-align: center;
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .delete-form {
+        display: inline-flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    /* Buttons */
+    .btn-danger {
+        background: #e74c3c;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 500;
+        margin: 0 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #c0392b;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        color: #6c757d;
+        border: 2px solid #6c757d;
+        padding: 12px 30px;
+        border-radius: 8px;
+        font-weight: 500;
+        margin: 0 10px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Button Hover Effects */
+    .btn-danger:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-outline-secondary:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    }
+
+    /* Information List */
+    .delete-actions ul {
+        color: #6c757d;
+        text-align: left;
+        display: inline-block;
+        margin-bottom: 20px;
+        padding-left: 20px;
+    }
+
+    .delete-actions ul li {
+        margin-bottom: 5px;
+    }
+
+    .delete-actions ul li strong {
+        color: #e74c3c;
+    }
+
+    /* Additional Info */
+    .delete-actions > div:last-child {
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+</style>
+
+<body>
+    <div class="delete-container">
+        <!-- Back Button -->
+        <div class="back-button-container">
+            <a asp-controller="Admin" asp-action="ProdList" class="btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Product List
+            </a>
+        </div>
+
+        <!-- Warning Message -->
+        <div class="delete-warning">
+            <i class="bi bi-exclamation-triangle warning-icon"></i>
+            <h2>Confirm Product Deletion</h2>
+            <p>Are you sure you want to delete this product? This action cannot be undone and will remove all associated size variants and stock information.</p>
+        </div>
+
+        <!-- Product Preview -->
+        <div class="product-preview">
+            <h4 style="margin-bottom: 20px; color: #333; font-weight: 600;">
+                <i class="bi bi-box"></i> Product to be deleted:
+            </h4>
+            
+            <div class="product-card">
+                <!-- Product Image -->
+                <div class="product-image-container">
+                    @if (Model.Image != null && Model.Image.Length > 0)
+                    {
+                        <img src="@Url.Action("GetImage", "Products", new { id = Model.ProductId })"
+                             alt="@Model.Name" />
+                    }
+                    else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" 
+                             alt="@Model.Name" 
+                             onerror="this.src='/images/products/placeholder.jpg'" />
+                    }
+                    else
+                    {
+                        <div style="text-align: center;">
+                            <i class="bi bi-image" style="font-size: 2rem; color: #dee2e6;"></i>
+                            <p style="margin-top: 10px; color: #6c757d; font-size: 0.9rem;">No Image</p>
+                        </div>
+                    }
+                </div>
+
+                <!-- Product Details -->
+                <div class="product-details">
+                    <h3>@Model.Name</h3>
+                    <p class="product-brand">
+                        <i class="bi bi-tag"></i> @Model.Brand
+                    </p>
+
+                    <!-- Product Meta Information -->
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                <i class="bi bi-currency-dollar"></i> Price
+                            </span>
+                            <span class="meta-value price-value">$@Model.Price.ToString("F2")</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                <i class="bi bi-grid-3x3-gap"></i> Category
+                            </span>
+                            <span class="meta-value">@Model.Category</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                <i class="bi bi-palette"></i> Color
+                            </span>
+                            <span class="meta-value">
+                                @if (string.IsNullOrEmpty(Model.Color))
+                                {
+                                    <em class="text-muted">Not specified</em>
+                                }
+                                else
+                                {
+                                    @Model.Color
+                                }
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">
+                                <i class="bi bi-boxes"></i> Total Stock
+                            </span>
+                            <span class="meta-value stock-value @(Model.StockCount == 0 ? "stock-out" : Model.StockCount < 10 ? "stock-low" : "stock-high")">
+                                @Model.StockCount units
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Available Sizes -->
+                    <div class="sizes-section">
+                        <span class="meta-label">
+                            <i class="bi bi-rulers"></i> Available Sizes:
+                        </span>
+                        <div class="sizes-list">
+                            @if (Model.ProductVariants == null || !Model.ProductVariants.Any())
+                            {
+                                <em class="text-muted">No sizes available</em>
+                            }
+                            else
+                            {
+                                var availableSizes = Model.ProductVariants
+                                    .Where(pv => pv.StockCount > 0)
+                                    .Select(pv => $"US {pv.Size}")
+                                    .OrderBy(s => int.Parse(s.Replace("US ", "")));
+                                
+                                if (availableSizes.Any())
+                                {
+                                    @string.Join(", ", availableSizes)
+                                }
+                                else
+                                {
+                                    <em class="text-muted">No sizes in stock</em>
+                                }
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <div style="margin-top: 15px;">
+                            <span class="meta-label">
+                                <i class="bi bi-file-text"></i> Description:
+                            </span>
+                            <p class="meta-value" style="margin-top: 5px; line-height: 1.5;">
+                                @Model.Description
+                            </p>
+                        </div>
+                    }
+
+                    <!-- Creation Date -->
+                    @if (Model.CreatedAt != default(DateTime))
+                    {
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e9ecef;">
+                            <span class="meta-label">
+                                <i class="bi bi-calendar"></i> Created:
+                            </span>
+                            <span class="meta-value" style="font-size: 0.9rem;">
+                                @Model.CreatedAt.ToString("MMM dd, yyyy 'at' HH:mm")
+                            </span>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Details Table -->
+        @if (Model.ProductVariants != null && Model.ProductVariants.Any())
+        {
+            <div class="product-preview">
+                <h5 style="margin-bottom: 15px; color: #333; font-weight: 600;">
+                    <i class="bi bi-table"></i> Stock Details by Size:
+                </h5>
+                
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Size</th>
+                                <th>Stock Count</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var variant in Model.ProductVariants.OrderBy(pv => pv.Size))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-dark">US @variant.Size</span>
+                                    </td>
+                                    <td>@variant.StockCount</td>
+                                    <td>
+                                        @if (variant.StockCount == 0)
+                                        {
+                                            <span class="badge bg-danger">Out of Stock</span>
+                                        }
+                                        else if (variant.StockCount < 5)
+                                        {
+                                            <span class="badge bg-warning text-dark">Low Stock</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">In Stock</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td><strong>Total:</strong></td>
+                                <td><strong>@Model.StockCount units</strong></td>
+                                <td>
+                                    <strong class="@(Model.StockCount == 0 ? "stock-out" : Model.StockCount < 10 ? "stock-low" : "stock-high")">
+                                        @(Model.StockCount == 0 ? "Out of Stock" : Model.StockCount < 10 ? "Low Stock" : "In Stock")
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        }
+
+        <!-- High Stock Warning -->
+        @if (Model.StockCount > 50)
+        {
+            <div class="alert alert-warning" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>High Stock Warning:</strong> 
+                This product has @Model.StockCount units in stock. Deleting it will remove significant inventory value of approximately <strong>
+                    @((Model.StockCount * Model.Price).ToString("C"))
+                </strong>.
+            </div>
+        }
+
+        <!-- Delete Actions -->
+        <div class="delete-actions">
+            <div style="margin-bottom: 20px;">
+                <p style="color: #6c757d; margin-bottom: 10px;">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>What will be deleted:</strong>
+                </p>
+                <ul>
+                    <li>Product information and details</li>
+                    <li>All size variants (@(Model.ProductVariants?.Count ?? 0) variants)</li>
+                    <li>Stock information (@Model.StockCount total units)</li>
+                    <li>Product images and media</li>
+                    <li><strong>This action cannot be undone</strong></li>
+                </ul>
+            </div>
+            
+            <form method="post" asp-action="Delete" class="delete-form" id="deleteForm">
+                <input asp-for="ProductId" type="hidden" />
+                
+                <!-- Cancel Button -->
+                <a asp-controller="Admin" asp-action="ProdList" class="btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> No, Keep Product
+                </a>
+                
+                <!-- Delete Button -->
+                <button type="submit" class="btn-danger" id="confirmDeleteBtn">
+                    <i class="bi bi-trash"></i> Yes, Delete Product
+                </button>
+            </form>
+
+            <!-- Additional Info -->
+            <div style="margin-top: 20px; font-size: 0.9rem; color: #6c757d;">
+                <i class="bi bi-shield-check"></i> 
+                You will be asked to confirm once more before final deletion
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteForm = document.getElementById('deleteForm');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+        const productName = '@Html.Raw(Html.Encode(Model.Name))';
+        const stockCount = @Model.StockCount;
+
+        // Double confirmation for deletion
+        deleteForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            let confirmMessage = `Are you absolutely sure you want to delete "${productName}"?\n\n`;
+            confirmMessage += `This will permanently remove:\n`;
+            confirmMessage += `• Product: ${productName}\n`;
+            confirmMessage += `• Stock: ${stockCount} units\n`;
+            confirmMessage += `• All size variants\n\n`;
+            confirmMessage += `This action CANNOT be undone!\n\n`;
+            confirmMessage += `Type "DELETE" to confirm:`;
+
+            const userInput = prompt(confirmMessage);
+
+            if (userInput === "DELETE") {
+                // Show loading state
+                confirmBtn.disabled = true;
+                confirmBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Deleting...';
+
+                // Submit the form
+                deleteForm.submit();
+            } else if (userInput !== null) {
+                alert('Deletion cancelled. You must type "DELETE" exactly to confirm.');
+            }
+            // If user cancels (userInput === null), do nothing
+        });
+
+        // Add keyboard shortcut warnings
+        document.addEventListener('keydown', function (e) {
+            // Prevent accidental deletion with Enter key
+            if (e.key === 'Enter' && e.target.type !== 'submit') {
+                e.preventDefault();
+            }
+
+            // Escape key to go back
+            if (e.key === 'Escape') {
+                window.location.href = '@Url.Action("ProdList", "Admin")';
+            }
+        });
+
+        // Highlight dangerous actions
+        confirmBtn.addEventListener('mouseenter', function () {
+            this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 4px 15px rgba(231, 76, 60, 0.3)';
+        });
+
+        confirmBtn.addEventListener('mouseleave', function () {
+            this.style.transform = 'scale(1)';
+            this.style.boxShadow = 'none';
+        });
+    });
+</script>
