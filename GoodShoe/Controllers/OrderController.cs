@@ -3,7 +3,8 @@ using GoodShoe.ViewModels; //view-model classest
 using GoodShoe.Extensions; // For session extension methods
 using GoodShoe.Data;
 using GoodShoe.Models; //to find the GoodShoeDbContext class
-using GoodShoe.Services; //to "see" the ICartService interface
+using GoodShoe.Services;
+using Microsoft.EntityFrameworkCore; //to "see" the ICartService interface
 
 namespace GoodShoe.Controllers
 {
@@ -51,7 +52,8 @@ namespace GoodShoe.Controllers
 
             foreach (var item in model.CartItems)
             {
-                System.Diagnostics.Debug.WriteLine($"Model Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: {item.Price}");
+                System.Diagnostics.Debug.WriteLine(
+                    $"Model Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: {item.Price}");
             }
 
             System.Diagnostics.Debug.WriteLine("OrderController: Returning checkout view");
@@ -67,7 +69,7 @@ namespace GoodShoe.Controllers
                 {
                     // Get Cart Items from session
                     var cartItems = GetCartItems();
-                    
+
                     decimal calculatedSubtotal = cartItems.Sum(item => item.Price * item.Quantity);
                     decimal calculatedTotal = calculatedSubtotal + DELIVERY_FEE;
 
@@ -89,7 +91,7 @@ namespace GoodShoe.Controllers
                         CreatedAt = DateTime.Now,
                         UpdatedAt = DateTime.Now
                     };
-                    
+
                     // Add order to database
                     _db.Orders.Add(order);
                     _db.SaveChanges();
@@ -104,7 +106,8 @@ namespace GoodShoe.Controllers
 
                         if (productVariant == null)
                         {
-                            throw new Exception($"Product variant not found for Product ID {item.ProductID} and size {item.Size}");
+                            throw new Exception(
+                                $"Product variant not found for Product ID {item.ProductID} and size {item.Size}");
                         }
 
                         var orderItem = new OrderItem
@@ -143,7 +146,7 @@ namespace GoodShoe.Controllers
                     return View(model);
                 }
             }
-            
+
             // Re-populate cart items if validation fails
             model.CartItems = GetCartItems();
             return View(model);
@@ -156,6 +159,7 @@ namespace GoodShoe.Controllers
             {
                 return RedirectToAction("Index", "Cart");
             }
+
             ViewBag.OrderId = orderId;
             return View();
         }
@@ -182,8 +186,10 @@ namespace GoodShoe.Controllers
                     System.Diagnostics.Debug.WriteLine($"Successfully retrieved {cartItems.Count} items from session");
                     foreach (var item in cartItems)
                     {
-                        System.Diagnostics.Debug.WriteLine($"Session Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: ${item.Price:F2}");
+                        System.Diagnostics.Debug.WriteLine(
+                            $"Session Item: {item.ProductName}, Qty: {item.Quantity}, Size: {item.Size}, Price: ${item.Price:F2}");
                     }
+
                     return cartItems;
                 }
                 else
@@ -198,6 +204,122 @@ namespace GoodShoe.Controllers
                 System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 return new List<CartItemViewModel>();
+            }
+        }
+
+        [HttpGet]
+        public IActionResult OrderDetails(int id)
+        {
+            try
+            {
+                // First, check if the order exists at all
+                var orderExists = _db.Orders.Any(o => o.OrderId == id);
+                System.Diagnostics.Debug.WriteLine($"Order exists: {orderExists}");
+
+                if (!orderExists)
+                {
+                    TempData["ErrorMessage"] = $"Order #{id} not found.";
+                    return RedirectToAction("OrderList", "Admin");
+                }
+
+                // Get the order with basic info first
+                var order = _db.Orders.FirstOrDefault(o => o.OrderId == id);
+                System.Diagnostics.Debug.WriteLine($"Order found: ID={order.OrderId}, Status={order.Status}, Total={order.TotalAmount}");
+
+                // Try to get customer info
+                var customer = _db.Customers.FirstOrDefault(c => c.CustomerId == order.CustomerId);
+                if (customer == null)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Customer not found for CustomerId: {order.CustomerId}");
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"Customer found: {customer.FirstName} {customer.LastName}");
+                }
+
+                // Try to get order items
+                var orderItems = _db.OrderItems.Where(oi => oi.OrderId == id).ToList();
+                System.Diagnostics.Debug.WriteLine($"Order items found: {orderItems.Count}");
+
+                // Create a simplified model for testing
+                var model = new OrderDetailsViewModel
+                {
+                    OrderID = order.OrderId,
+                    CustomerName = customer != null ? $"{customer.FirstName} {customer.LastName}" : "Customer not found",
+                    CustomerEmail = customer?.Email ?? "Email not found",
+                    CustomerPhone = customer?.Phone ?? "Phone not found",
+                    Address = order.Address ?? "Address not provided",
+                    PaymentMethod = order.PaymentMethod ?? "Payment method not found",
+                    Status = order.Status,
+                    StatusColor = order.StatusColor,
+                    TotalAmount = order.TotalAmount,
+                    Date = order.CreatedAt,
+                    Items = new List<OrderItemDetailViewModel>()
+                };
+
+                // Add order items one by one with error handling
+                foreach (var item in orderItems)
+                {
+                    try
+                    {
+                        // Try to get product variant
+                        var productVariant = _db.ProductVariant
+                            .Include(pv => pv.Product)
+                            .FirstOrDefault(pv => pv.Id == item.ProductVariantId);
+
+                        if (productVariant == null)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"ProductVariant not found for ID: {item.ProductVariantId}");
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine($"ProductVariant found: ID={productVariant.Id}, ProductId={productVariant.ProductId}");
+                    
+                            if (productVariant.Product == null)
+                            {
+                                System.Diagnostics.Debug.WriteLine("Product is null in ProductVariant");
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Product found: ID={productVariant.Product.ProductId}, Name={productVariant.Product.Name}, ImageUrl={productVariant.Product.ImageUrl}");
+                            }
+                        }                        
+                        
+                        var imageUrl = productVariant?.Product?.ImageUrl ?? "/images/no-image.png";
+                        System.Diagnostics.Debug.WriteLine($"Final ImageUrl for item: {imageUrl}");
+
+                        var orderItemDetail = new OrderItemDetailViewModel
+                        {
+                            ProductId = productVariant?.ProductId ?? 0,
+                            ProductName = item.ProductName,
+                            ProductBrand = productVariant?.Product?.Brand ?? "Unknown Brand",
+                            Size = item.Size.ToString(),
+                            Quantity = item.Quantity,
+                            Price = item.UnitPrice,
+                            ImageUrl = imageUrl
+                        };
+
+                        model.Items.Add(orderItemDetail);
+                        System.Diagnostics.Debug.WriteLine($"Added item: {item.ProductName}, Qty: {item.Quantity}, ImageUrl: {orderItemDetail.ImageUrl}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Error processing order item {item.Id}: {ex.Message}");
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine(
+                    $"Final model: Items={model.Items.Count}, Customer={model.CustomerName}");
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"=== ERROR in OrderController.Details ===");
+                System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+
+                TempData["ErrorMessage"] = $"Error loading order details: {ex.Message}";
+                return RedirectToAction("OrderList", "Admin");
             }
         }
     }

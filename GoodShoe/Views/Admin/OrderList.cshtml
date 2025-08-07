@@ -96,18 +96,20 @@
                         </td>
                         <td class="order-actions">
                             <div class="action-buttons">
-                                @if (order.CanEdit)
-                                {
-                                    <!-- Edit Status Button -->
-                                    <button type="button" class="btn btn-sm btn-primary"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editStatusModal"
-                                            data-order-id="@order.OrderID"
-                                            data-current-status="@order.Status"
-                                            data-order-number="@order.FormattedOrderId">
-                                        <i class="fas fa-edit"></i> Edit
-                                    </button>
-                                }
+                                <!-- View Order Details Button -->
+                                <a href="@Url.Action("OrderDetails", "Order", new { id = order.OrderID })" 
+                                   class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i> View
+                                </a>                                
+                                <!--  Edit Status Button -->
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editStatusModal"
+                                        data-order-id="@order.OrderID"
+                                        data-current-status="@order.Status"
+                                        data-order-number="@order.FormattedOrderId">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
 
                                 <!-- Delete Button -->
                                 <button type="button" class="btn btn-sm btn-danger"

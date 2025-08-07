@@ -81,19 +81,19 @@ namespace GoodShoe.Controllers
         {
             var orders = context.Orders
                 .Include(o => o.Customer)
-                .Include(o => o.OrderItems)  // ADD this line to include OrderItems
+                .Include(o => o.OrderItems)
                 .OrderByDescending(o => o.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .Select(o => new OrderListViewModel
                 {
                     OrderID = o.OrderId,
-                    CustomerEmail = o.Customer != null ? o.Customer.Email : "guest@example.com",
-                    Date = o.CreatedAt,
+                    CustomerEmail = o.Customer.Email,
                     TotalAmount = o.TotalAmount,
+                    Date = o.CreatedAt,
                     Status = o.Status,
-                    Items = o.OrderItems.Sum(oi => oi.Quantity), // ADD this line
-                    CanEdit = o.Status != "Delivered" && o.Status != "Cancelled"
+                    Items = o.OrderItems.Sum(oi => oi.Quantity),
+                    CanEdit = true
                 })
                 .ToList();
 

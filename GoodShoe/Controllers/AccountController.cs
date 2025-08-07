@@ -25,7 +25,7 @@ namespace GoodShoe.Controllers
             return View();
         }
         
-        // POST: Account/Login // Redirecting to home for now - havent connect with the database yet
+        // POST: Account/Login // Redirecting to home for now - haven't been connected with the database yet
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
@@ -33,24 +33,21 @@ namespace GoodShoe.Controllers
             {
                 return View(model);
             }
-
-            if (model.IsAdmin)
+            
+            // Login for the admin
+            var admin = await _authService.AuthenticateAdminAsync(model.Email, model.Password);
+            if (admin != null)
             {
-                var admin = await _authService.AuthenticateAdminAsync(model.Email, model.Password);
-                if (admin != null)
-                {
-                    _authService.SetCurrentAdmin(admin);
-                    return RedirectToAction("Index", "Admin");
-                }
+                _authService.SetCurrentAdmin(admin);
+                return RedirectToAction("Index", "Admin");
             }
-            else
+            
+            // Login for the customer
+            var customer = await _authService.AuthenticateCustomerAsync(model.Email, model.Password);
+            if (customer != null)
             {
-                var customer = await _authService.AuthenticateCustomerAsync(model.Email, model.Password);
-                if (customer != null)
-                {
-                    _authService.SetCurrentCustomer(customer);
-                    return RedirectToAction("Index", "Home");
-                }
+                _authService.SetCurrentCustomer(customer);
+                return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Invalid email or password.");

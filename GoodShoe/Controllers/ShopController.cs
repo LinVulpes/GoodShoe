@@ -1,3 +1,5 @@
+/*using GoodShoe.Data;
+using GoodShoe.Data;
 using GoodShoe.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,4 +34,4 @@ public class ShopController : Controller
         return View("~/Views/Products/Details.cshtml", product);
 
     }
-}
+}*/
