@@ -20,6 +20,10 @@ namespace GoodShoe.Models
         [StringLength(100)]
         public string Email { get; set; } = string.Empty;
 
+        [Required]
+        [StringLength(100)]
+        public string Password { get; set; } = string.Empty;
+        
         [StringLength(20)]
         public string? Phone { get; set; }
 
@@ -31,5 +35,8 @@ namespace GoodShoe.Models
         // Navigation properties
         public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
         public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        
+        // Helper property
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

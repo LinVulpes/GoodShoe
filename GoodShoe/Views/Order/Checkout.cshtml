@@ -75,7 +75,7 @@
                         <div class="mb-3">
                             <label asp-for="CardNumber" class="form-label">Card Number</label>
                             <input asp-for="CardNumber" class="form-control"
-                                   maxlength="12" pattern="\d{12}" inputmode="numeric" />
+                                   maxlength="19" pattern="(\d{4}\s){3}\d{4}" inputmode="numeric" />
                         </div>
                         
                         <div class="row">
@@ -146,14 +146,20 @@
                 <div class="delivery-info mt-3">
                     <p><strong>Estimate Delivery @Model.DeliveryDateRange</strong></p>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    // only numeric input for Contact Number
+    const contactInput = document.querySelector('input[name="ContactNumber"]');
+    if (contactInput) {
+        contactInput.addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, 11);
+        });
+    }
+    
     // Payment method selection
     document.querySelectorAll('.payment-btn').forEach(button => {
         button.addEventListener('click', function () {
@@ -168,7 +174,8 @@
     const cardNumberInput = document.querySelector('input[name="CardNumber"]');
     if (cardNumberInput) {
         cardNumberInput.addEventListener('input', function () {
-            this.value = this.value.replace(/\D/g, '').slice(0, 12);
+            let digits = this.value.replace(/\D/g, '').slice(0, 16); // Max 16 digits
+            this.value = digits.replace(/(.{4})/g, '$1 ').trim(); // Format: 1234 5678 9012 3456
         });
     }
 
@@ -180,7 +187,7 @@
         });
     }
 
-        // card expiry date MM/YY and auto show slash '/'
+    // card expiry date MM/YY and auto show slash '/'
     const expiryInput = document.querySelector('input[name="ExpiryDate"]');
     if (expiryInput) {
         expiryInput.addEventListener('input', function () {
@@ -193,5 +200,4 @@
             this.value = value.slice(0, 5); // Max length "MM/YY"
         });
     }
-
 </script>

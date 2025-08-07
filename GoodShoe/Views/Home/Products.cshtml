@@ -110,7 +110,7 @@
     <div class="products-grid">
         @foreach (var product in Model.Products)
         {
-            <a asp-controller="Shop" asp-action="Details" asp-route-id="@product.ProductId" class="text-decoration-none">
+            <a asp-controller="Products" asp-action="Details" asp-route-id="@product.ProductId" class="text-decoration-none">
                 <div class="product-card">
                     <div class="product-image">
                         @* Updated image handling *@
@@ -130,7 +130,6 @@
                             <img src="/images/products/placeholder.jpg" 
                                  alt="@product.Name" />                            
                         }
-                        
                     </div>                
                     <div class="product-info">
                         <h5 class="product-name">@product.Name</h5>

@@ -1,10 +1,9 @@
 ﻿using GoodShoe.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace GoodShoe.Data
 {
-    public class GoodShoeDbContext : IdentityDbContext<ApplicationUser>
+    public class GoodShoeDbContext : DbContext
     {
         public GoodShoeDbContext(DbContextOptions<GoodShoeDbContext> options) : base(options)
         {
@@ -25,11 +24,43 @@ namespace GoodShoe.Data
             base.OnModelCreating(modelBuilder);
             
             // ADDED: ApplicationUser configuration
-            modelBuilder.Entity<ApplicationUser>(entity =>
+            /*modelBuilder.Entity<ApplicationUser>(entity =>
             {
                 entity.Property(e => e.Location).HasMaxLength(255);
-            });
+            });*/
+            
+            // Customer configuration (multiple account)
+            modelBuilder.Entity<Customer>(entity =>
+            {
+                entity.HasKey(e => e.CustomerId);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
 
+                entity.HasIndex(e => e.Email).IsUnique();
+            });            
+
+            // Admin configuration (single account)
+            modelBuilder.Entity<Admin>(entity =>
+            {
+                entity.HasKey(e => e.AdminId);
+                entity.Property(e => e.UserName).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Password).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.Currency).HasMaxLength(10).HasDefaultValue("SGD");
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
+                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
+
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.HasIndex(e => e.UserName).IsUnique();
+            });         
+            
             // Product configuration
             modelBuilder.Entity<Product>(entity =>
             {
@@ -41,8 +72,6 @@ namespace GoodShoe.Data
                 entity.Property(e => e.Color).HasMaxLength(50);
                 entity.Property(e => e.Category).HasMaxLength(50);
                 entity.Property(e => e.ImageUrl).HasMaxLength(200);
-                
-                // Added image properties
                 entity.Property(e => e.Image).HasColumnType("varbinary(max)");
                 entity.Property(e => e.ImageFileName).HasMaxLength(255);
             });
@@ -58,24 +87,9 @@ namespace GoodShoe.Data
                     .WithMany(e => e.ProductVariants)
                     .HasForeignKey(e => e.ProductId)
                     .OnDelete(DeleteBehavior.Cascade);
-
+                
                 // Unique constraint: one size per product
                 entity.HasIndex(e => new { e.ProductId, e.Size }).IsUnique();
-            });
-
-            // Customer configuration - matching migration with FirstName/LastName
-            modelBuilder.Entity<Customer>(entity =>
-            {
-                entity.HasKey(e => e.CustomerId);
-                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.LastName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Phone).HasMaxLength(20);
-                entity.Property(e => e.Address).HasMaxLength(500);
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
-
-                entity.HasIndex(e => e.Email);
             });
 
             // Cart configuration
@@ -150,27 +164,34 @@ namespace GoodShoe.Data
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            // Admin configuration (single account)
-            modelBuilder.Entity<Admin>(entity =>
-            {
-                entity.HasKey(e => e.AdminId);
-                entity.Property(e => e.UserName).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Phone).HasMaxLength(20);
-                entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Currency).HasMaxLength(10).HasDefaultValue("SGD");
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETDATE()");
-                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("GETDATE()");
-
-                entity.HasIndex(e => e.Email).IsUnique();
-                entity.HasIndex(e => e.UserName).IsUnique();
-            });
-
             // Seed data - to match the migration
             SeedData(modelBuilder);
         }
 
         private void SeedData(ModelBuilder modelBuilder)
         {
+            // Seed admin
+            modelBuilder.Entity<Admin>().HasData(
+                new Admin 
+                { 
+                    AdminId = 1, 
+                    UserName = "admin", 
+                    Email = "admin@goodshoe.com", 
+                    Password = "admin123",
+                    Phone = "+65 1234 5678", 
+                    DOB = new DateTime(1990, 1, 1), 
+                    Currency = "SGD", 
+                    CreatedAt = new DateTime(2024, 1, 1), 
+                    UpdatedAt = new DateTime(2024, 1, 1) 
+                }
+            );            
+            
+            // Seed customers
+            modelBuilder.Entity<Customer>().HasData(
+                new Customer { CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@email.com", Password = "password123", Phone = "+65 9876 5432", Address = "456 Customer Road, Singapore", CreatedAt = new DateTime(2024, 1, 15), UpdatedAt = new DateTime(2024, 1, 15) },
+                new Customer { CustomerId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@email.com", Password = "password123", Phone = "+65 8765 4321", Address = "789 Shopper Lane, Singapore", CreatedAt = new DateTime(2024, 1, 16), UpdatedAt = new DateTime(2024, 1, 16) }
+            );
+            
             // Update existing products with new structure
             modelBuilder.Entity<Product>().HasData(
                 new Product { ProductId = 1, Name = "Cloudsurfer Next", Brand = "Puma", Price = 259.00m, Description = "Lace up in Swiss-engineered runners with these Cloudsurfer Next trainers from On Running.", Color = "White", Category = "Unisex", ImageUrl = "/images/products/image1.png"},
@@ -201,13 +222,7 @@ namespace GoodShoe.Data
             }
             
             modelBuilder.Entity<ProductVariant>().HasData(productVariants);
-
-            // Seed customers
-            modelBuilder.Entity<Customer>().HasData(
-                new Customer { CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@email.com", Phone = "+65 9876 5432", Address = "456 Customer Road, Singapore", CreatedAt = new DateTime(2024, 1, 15), UpdatedAt = new DateTime(2024, 1, 15) },
-                new Customer { CustomerId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@email.com", Phone = "+65 8765 4321", Address = "789 Shopper Lane, Singapore", CreatedAt = new DateTime(2024, 1, 16), UpdatedAt = new DateTime(2024, 1, 16) }
-            );
-
+            
             // Seed orders
             modelBuilder.Entity<Order>().HasData(
                 new Order { OrderId = 1, CustomerId = 1, TotalAmount = 409.00m, Status = "Pending", Address = "456 Customer Road, Singapore", PaymentMethod = "Credit Card", PaymentStatus = "Pending", CreatedAt = new DateTime(2024, 7, 4), UpdatedAt = new DateTime(2024, 7, 4) },
@@ -221,10 +236,6 @@ namespace GoodShoe.Data
                 new OrderItem { Id = 2, OrderId = 1, ProductVariantId = 11, ProductName = "Aero Burst", Size = 9, Quantity = 1, UnitPrice = 150.00m, TotalPrice = 150.00m }, // Product 2, Size 9
                 new OrderItem { Id = 3, OrderId = 2, ProductVariantId = 12, ProductName = "Aero Burst", Size = 10, Quantity = 1, UnitPrice = 150.00m, TotalPrice = 150.00m }, // Product 2, Size 10
                 new OrderItem { Id = 4, OrderId = 3, ProductVariantId = 4, ProductName = "Cloudsurfer Next", Size = 11, Quantity = 1, UnitPrice = 259.00m, TotalPrice = 259.00m } // Product 1, Size 11
-            );
-            // Seed single admin
-            modelBuilder.Entity<Admin>().HasData(
-                new Admin { AdminId = 1, UserName = "Admin User", Phone = "+65 1234 5678", DOB = new DateTime(1990, 1, 1), Email = "admin@goodshoe.com", Currency = "SGD", CreatedAt = new DateTime(2024, 1, 1), UpdatedAt = new DateTime(2024, 1, 1) }
             );
         }
         

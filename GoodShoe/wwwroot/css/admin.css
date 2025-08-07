@@ -560,29 +560,42 @@
 }
 
 /*Updated Order Management*/
-.pagination .page-link {
+.admin-pagination {
+    display: flex !important;
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 20px 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+.admin-page-item {
+    margin: 0 2px;
+    display: list-item;
+}
+
+.admin-page-link {
     color: #454545;
-    border-color: #e8e8e8;
+    border: 1px solid #e8e8e8;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: white;
+    text-decoration: none;
+    display: block;
 }
 
-.pagination .page-item.active .page-link {
-    color: #ffffff;
-    background-color: #a6a4a4;
-    border-color: #939292;
+.admin-page-item.active .admin-page-link {
+    color: #ffffff !important;
+    background-color: #454545 !important;
+    border-color: #454545 !important;
 }
 
-.pagination .page-link:hover {
-    color: #333;
-    background-color: #f8f9fa;
-    border-color: #e8e8e8;
-}
-
-.pagination .page-link:focus {
-    outline: none;
-    box-shadow: none;
-    border-color: #e8e8e8;
-    color: #454545;
-    background-color: transparent;
+.admin-page-item.disabled .admin-page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .alert {

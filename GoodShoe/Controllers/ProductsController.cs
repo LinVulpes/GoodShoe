@@ -131,8 +131,16 @@ namespace GoodShoe.Controllers
 
             if (product?.Image == null)
             {
+                // Return placeholder image from wwwroot
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", "placeholder.jpg");
+                if (System.IO.File.Exists(placeholderPath))
+                {
+                    var placeholderBytes = await System.IO.File.ReadAllBytesAsync(placeholderPath);
+                    return File(placeholderBytes, "image/jpeg");
+                }
                 return NotFound();
             }
+    
             return File(product.Image, "image/jpeg");
         }
         

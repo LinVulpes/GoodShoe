@@ -53,6 +53,8 @@ namespace GoodShoe.ViewModels
         public string Status { get; set; } = string.Empty;
         public string StatusColor { get; set; } = string.Empty;
         public decimal TotalAmount { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal DeliveryFee { get; set; } = 20.00m;
         public DateTime Date { get; set; }
         public List<OrderItemDetailViewModel> Items { get; set; } = new();
         
@@ -61,6 +63,14 @@ namespace GoodShoe.ViewModels
         public bool CanBeShipped { get; set; }
         public bool CanBeDelivered { get; set; }
         public List<string> AvailableStatuses { get; set; } = new() { "Pending", "Shipping", "Delivered", "Cancelled" };
+        
+        // Formatted properties
+        public string FormattedOrderId => $"#{OrderID.ToString("D6")}";
+        public string FormattedDate => Date.ToString("MMM dd, yyyy");
+        public string FormattedTime => Date.ToString("hh:mm tt");
+        public string EstimatedDeliveryDate => Date.AddDays(5).ToString("MMM dd, yyyy");
+        public string MaskedPaymentMethod => 
+            PaymentMethod.Contains("Card") ? $"{PaymentMethod} ending in ****" : PaymentMethod;        
     }
 
     public class OrderItemDetailViewModel

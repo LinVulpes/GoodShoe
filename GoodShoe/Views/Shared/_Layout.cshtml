@@ -1,10 +1,4 @@
-@using Microsoft.AspNetCore.Identity
-@using GoodShoe.Models
-@using GoodShoe.ViewModels
-@inject SignInManager<ApplicationUser> SignInManager
-@inject UserManager<ApplicationUser> UserManager
-
-<!DOCTYPE html>
+@*Updated _Layout.cshtml*@
 <html lang="en" class="h-100">
 <head>
     <meta charset="utf-8" />
@@ -20,7 +14,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="~/css/order-confirmation.css" asp-append-version="true" />
-    @RenderSection("Styles", required: false)
+    @RenderSection("Styles", required: false)    
 </head>
 <body class="d-flex flex-column h-100">
 <header>
@@ -52,10 +46,13 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Home" asp-action="About">About</a>
                     </li>
-                    <!-- TEMP: admin site for easy testing purposes. to delete after authentication bits are working -->
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin</a>
-                    </li>
+                    <!-- Admin link - only show if admin is logged in -->
+                    @if (Context.Session.GetInt32("AdminId").HasValue)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+                        </li>
+                    }
                 </ul>
 
                 <!-- Right Side: Cart, User Profile, Login/Logout -->
@@ -63,38 +60,68 @@
                     <!-- Shopping Cart -->
                     <div class="me-3" title="Shopping Cart">
                         <a asp-controller="Cart" asp-action="Index" class="text-decoration-none">
-                            <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30" />
+                            <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30"/>
                         </a>
                     </div>
 
-                    @if (SignInManager.IsSignedIn(User))
+                    @{
+                        var customerId = Context.Session.GetInt32("CustomerId");
+                        var adminId = Context.Session.GetInt32("AdminId");
+                        var customerName = Context.Session.GetString("CustomerName");
+                        var adminName = Context.Session.GetString("AdminName");
+                        var isLoggedIn = customerId.HasValue || adminId.HasValue;
+                    }
+
+                    @if (isLoggedIn)
                     {
                         <!-- Logged-in user: show profile picture + name in a dropdown -->
                         <div class="dropdown">
-                            <a asp-controller="Profile" asp-action="Index" class="text-decoration-none me-2">
-                                <img src="~/images/profile.png" alt="User Icon" width="40" height="40"
-                                     style="border-radius: 50%;" />
-                            </a>
+                            @if (customerId.HasValue)
+                            {
+                                <a asp-controller="Profile" asp-action="Index" class="text-decoration-none me-2">
+                                    <img src="~/images/profile.png" alt="User Icon" width="40" height="40"
+                                         style="border-radius: 50%;"/>
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Admin" asp-action="Index" class="text-decoration-none me-2">
+                                    <img src="~/images/profile.png" alt="Admin Icon" width="40" height="40"
+                                         style="border-radius: 50%;"/>
+                                </a>
+                            }
+
                             <button class="btn btn-outline-dark dropdown-toggle" type="button" id="userMenu"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                @UserManager.GetUserName(User)
+                                @(customerName ?? adminName)
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
-                                        <i class="bi bi-person me-2"></i>Profile
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-controller="Orders" asp-action="History">
-                                        <i class="bi bi-clock-history me-2"></i>Order History
-                                    </a>
-                                </li>
+                                @if (customerId.HasValue)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
+                                            <i class="bi bi-person me-2"></i>Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Orders" asp-action="History">
+                                            <i class="bi bi-clock-history me-2"></i>Order History
+                                        </a>
+                                    </li>
+                                }
+                                else if (adminId.HasValue)
+                                {
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Admin" asp-action="Index">
+                                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                        </a>
+                                    </li>
+                                }
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>
                                 <li>
-                                    <form method="post" asp-controller="Account" asp-action="Logout" 
+                                    <form method="post" asp-controller="Account" asp-action="Logout"
                                           asp-route-returnUrl="@Url.Action("Index", "Home")" class="d-inline">
                                         <button type="submit" class="dropdown-item">
                                             <i class="bi bi-box-arrow-right me-2"></i>Logout
@@ -109,10 +136,10 @@
                         <!-- Not logged in: show profile icon only + Sign In button -->
                         <div class="me-lg-4" title="Profile">
                             <a asp-controller="Profile" asp-action="Index" title="View Profile">
-                                <img src="~/images/profile.png" alt="User Icon" width="50" height="50" style="border-radius: 50%;" />
+                                <img src="~/images/profile.png" alt="User Icon" width="50" height="50" style="border-radius: 50%;"/>
                             </a>
                         </div>
-                        
+
                         <div class="me-lg-4 btn-sm" title="Sign-In">
                             <a class="btn btn-dark signin-btn" asp-controller="Account" asp-action="Login">
                                 Sign In

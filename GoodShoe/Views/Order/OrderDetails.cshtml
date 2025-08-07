@@ -1,0 +1,178 @@
+@model GoodShoe.ViewModels.OrderDetailsViewModel
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<link rel="stylesheet" href="~/css/admin.css" />
+<div class="container-fluid px-4 py-3">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Order Details</h1>
+            <p class="text-muted">Order #@Model.OrderID • @(Model.Date.ToString("MMM dd, yyyy"))</p>
+        </div>
+        <div>
+            <a href="@Url.Action("OrderList", "Admin")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Order Information -->
+        <div class="col-lg-8">
+            <!-- Order Status -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Order Status
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <span class="status-badge @Model.StatusColor me-3">@Model.Status</span>
+                        <div>
+                            <p class="mb-1"><strong>Current Status:</strong> @Model.Status</p>
+                            <p class="mb-0 text-muted">Order Date: @Model.Date.ToString("MMM dd, yyyy") at @Model.Date.ToString("hh:mm tt")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Items -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-shopping-bag"></i> Order Items (@Model.Items.Count)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="order-item-detail d-flex align-items-center p-3 border-bottom">
+                                <img src="@item.ImageUrl" alt="@item.ProductName" class="product-image-detail me-3" />
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">@item.ProductName</h6>
+                                    <p class="text-muted mb-1">
+                                        Size: US @item.Size • Qty: @item.Quantity
+                                    </p>
+                                    <p class="text-muted mb-0">Unit Price: @item.Price.ToString("C")</p>
+                                </div>
+                                <div class="text-end">
+                                    <p class="h6 mb-0">@((item.Price * item.Quantity).ToString("C"))</p>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="p-3">
+                            <p class="text-muted mb-0">No items found for this order.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-truck"></i> Shipping Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Recipient:</strong> @Model.CustomerName</p>
+                            <p><strong>Email:</strong> @Model.CustomerEmail</p>
+                            <p><strong>Phone:</strong> @Model.CustomerPhone</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Shipping Address:</strong></p>
+                            <p class="text-muted">@Model.Address</p>
+                            <p><strong>Estimated Delivery:</strong> @Model.Date.AddDays(5).ToString("MMM dd, yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Order Summary & Billing -->
+        <div class="col-lg-4">
+            <!-- Order Summary -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calculator"></i> Order Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="summary-line d-flex justify-content-between mb-2">
+                        <span>Subtotal (@Model.Items.Sum(i => i.Quantity) items)</span>
+                        <span>@((Model.TotalAmount - 20.00m).ToString("C"))</span>
+                    </div>
+                    
+                    <div class="summary-line d-flex justify-content-between mb-2">
+                        <span>Delivery & Handling</span>
+                        <span>$20.00</span>
+                    </div>
+                    
+                    <hr>
+                    <div class="summary-line d-flex justify-content-between">
+                        <strong>Total Paid</strong>
+                        <strong class="text-success">@Model.TotalAmount.ToString("C")</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-credit-card"></i> Billing Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Payment Method:</strong> @Model.PaymentMethod</p>
+                    <hr>
+                    <button class="btn btn-outline-primary btn-sm w-100">
+                        <i class="fas fa-download"></i> Download Invoice
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .order-item-detail {
+        transition: background-color 0.2s;
+    }
+    
+    .order-item-detail:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .product-image-detail {
+        width: 120px;
+        height: 120px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+    }
+    
+    .summary-line {
+        font-size: 0.95rem;
+    }
+    
+    .card-header h5 {
+        color: #495057;
+    }
+    
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+</style>

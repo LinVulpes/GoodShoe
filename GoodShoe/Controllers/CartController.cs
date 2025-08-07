@@ -1,7 +1,6 @@
 using GoodShoe.ViewModels;
 using GoodShoe.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using GoodShoe.Extensions;
 
 namespace GoodShoe.Controllers
@@ -9,38 +8,20 @@ namespace GoodShoe.Controllers
     public class CartController : Controller
     {
         private readonly ICartService _cartService;
+        private readonly IAuthService _authService;
 
         // Constructor comes first
-        public CartController(ICartService cartService)
+        public CartController(ICartService cartService, IAuthService authService)
         {
             _cartService = cartService;
+            _authService = authService;
         }
-
-        // Index method to display cart
+        // Latest Index for Cart Controller
         public IActionResult Index()
         {
-            try
-            {
-                var items = _cartService.GetCartItems();
-
-                // Debug logging
-                System.Diagnostics.Debug.WriteLine($"Cart Index: Displaying {items.Count} items");
-
-                // Debug: Print each item
-                foreach (var item in items)
-                {
-                    System.Diagnostics.Debug.WriteLine($"Item: {item.ProductName}, Qty: {item.Quantity}, Price: {item.Price}");
-                }
-
-                return View(items); // expects List<CartItemViewModel>
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Error in Cart Index: {ex.Message}");
-                TempData["CartError"] = "Error loading cart. Please try again.";
-                return View(new List<CartItemViewModel>());
-            }
-        }
+            var cartItems = _cartService.GetCartItems();
+            return View(cartItems);
+        }        
 
         [HttpPost]
         public IActionResult AddToCart(int productId, string size, int quantity = 1)
@@ -112,6 +93,14 @@ namespace GoodShoe.Controllers
                 {
                     TempData["CartError"] = "Your cart is empty.";
                     return RedirectToAction("Index");
+                }
+                
+                // Check if the customer is login or not.
+                var currentCustomer = _authService.GetCurrentCustomer();
+                if (currentCustomer == null)
+                {
+                    TempData["Message"] = "Please login to complete your purchase.";
+                    return RedirectToAction("Login", "Account");
                 }
 
                 // Save to session using the extension method
