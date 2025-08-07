@@ -12,7 +12,7 @@
         <h1 class="section-title">Edit Product</h1>
     </div>
 
-    <!-- Next is the form section -->
+    <!-- Form section -->
     <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
         <div class="form-group">
@@ -86,16 +86,16 @@
             <!-- Image Preview -->
             <img id="imagePreview" style="display: none; max-width: 200px; max-height: 150px; margin-top: 10px;" class="img-thumbnail" />
         </div>
-        
         <div class="form-group">
             <label asp-for="ImageUrl" class="control-label">Image URL:</label>
             <input asp-for="ImageUrl" class="form-control" />
             <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
 
+        <!-- Submit and Cancel buttons -->
         <div class="form-group">
             <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="ProdList" class="btn btn-primary">Cancel</a> <!-- back to list -->
+            <a asp-action="ProdList" class="btn btn-primary">Cancel</a> <!-- go back to list -->
         </div>
     </form>
 </div>

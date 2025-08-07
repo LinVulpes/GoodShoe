@@ -309,7 +309,8 @@ namespace GoodShoe.Controllers
             return View("Create", new Product());
         }
 
-        // Edit product details
+     // ~~ Edit product details ~~
+        // Handle GET request to edit the item
         [HttpGet]
         public IActionResult Edit(int Id)
         {
@@ -321,6 +322,8 @@ namespace GoodShoe.Controllers
                 return NotFound();
             return View(prod);
         }
+
+        // Handle POST request to save the edits
         [HttpPost]
         public IActionResult Edit(Product prod, string[] selectedSizes)
         {
@@ -332,6 +335,7 @@ namespace GoodShoe.Controllers
                 {
                     if (ModelState.IsValid)
                     {
+                        // First add the shoe model details to product database
                         context.Product.Add(prod);
                         context.SaveChanges();
                         
@@ -346,6 +350,7 @@ namespace GoodShoe.Controllers
                                     Size = size,
                                     StockCount = 0 // Default stock, for admin to update later
                                 };
+                                // Then add the shoe variant to its database
                                 context.ProductVariant.Add(variant);
                             }
                         }
@@ -373,7 +378,9 @@ namespace GoodShoe.Controllers
                         existingProduct.Color = prod.Color;
                         existingProduct.Category = prod.Category;
                         existingProduct.ImageUrl = prod.ImageUrl;
-                        
+
+                        context.Product.Update(prod); // update the product database context
+
                         // Simple variant management: remove all and recreate
                         context.ProductVariant.RemoveRange(existingProduct.ProductVariants);
                             
@@ -387,7 +394,7 @@ namespace GoodShoe.Controllers
                                     Size = size,
                                     StockCount = 0
                                 };
-                                context.ProductVariant.Add(variant);
+                                context.ProductVariant.Add(variant); // add the recreated variants to db context
                             }
                         }
                         context.SaveChanges();

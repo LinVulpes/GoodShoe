@@ -28,7 +28,7 @@
     <!-- Details content -->
     <div class="container">
         <img src="@Url.Action("GetImage", "Products", new { id = Model?.ProductId })"
-             alt="" />
+             alt="@Model?.Name" />
     </div>
     <div class="container">
     <dl class="row">

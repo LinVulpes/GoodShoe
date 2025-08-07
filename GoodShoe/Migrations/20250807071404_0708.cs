@@ -5,7 +5,7 @@
 namespace GoodShoe.Migrations
 {
     /// <inheritdoc />
-    public partial class _0108 : Migration
+    public partial class _0708 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

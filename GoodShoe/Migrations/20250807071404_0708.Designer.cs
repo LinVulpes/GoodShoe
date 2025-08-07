@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GoodShoe.Migrations
 {
     [DbContext(typeof(GoodShoeDbContext))]
-    [Migration("20250801071406_0108")]
-    partial class _0108
+    [Migration("20250807071404_0708")]
+    partial class _0708
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
