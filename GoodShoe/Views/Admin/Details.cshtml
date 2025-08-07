@@ -4,11 +4,33 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<link rel="stylesheet" href="~/css/admin.css" />
 
-<div>
-    <h4>Product</h4>
-    <hr />
+<div class="admin-container">
+
+    <!-- Header -->
+    <div class="admin-header">
+        <h1 class="admin-title">
+            <i class="fas fa-circle-info"></i>
+            Product Details
+        </h1>
+        <a asp-controller="Admin" asp-action="ProdList" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i>
+            Return to List
+        </a>
+    </div>
+
+    <!-- Controls: Edit product -->
+    <div class="admin-controls">
+        <a asp-action="Edit" asp-route-id="@Model?.ProductId" class="btn btn-primary">Edit</a>
+    </div>
+
+    <!-- Details content -->
+    <div class="container">
+        <img src="@Url.Action("GetImage", "Products", new { id = Model?.ProductId })"
+             alt="" />
+    </div>
+    <div class="container">
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
@@ -85,8 +107,5 @@
             </tbody>
         </table>
     }
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.ProductId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    </div>
 </div>
