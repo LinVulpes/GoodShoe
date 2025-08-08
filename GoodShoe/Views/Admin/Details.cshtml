@@ -234,23 +234,18 @@
         padding-top: 20px;
         border-top: 2px solid #f0f0f0;
     }
-
-    .back-button-container {
-        margin-bottom: 20px;
-    }
 </style>
+
 <body>
     <div class="details-container">
-        <!-- Back Button -->
-        <div class="back-button-container">
-            <a asp-controller="Admin" asp-action="ProdList" class="btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back to Product
-            </a>
-        </div>
-
         <!-- Header -->
         <div class="details-header">
-            <h1 class="details-title">Product Details</h1>
+            <h1 class="details-title">
+                <i class="fas fa-circle-info"></i>
+                Product Details</h1>
+            <a asp-controller="Admin" asp-action="ProdList" class="btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to List
+            </a>
         </div>
 
         <!-- Product Details Grid -->

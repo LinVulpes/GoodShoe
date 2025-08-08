@@ -3,14 +3,17 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<link rel="stylesheet" href="~/css/admin.css" />
 
-<div class="container main-context">
-    <!-- First section of main container has title -->
-    <div class="section-title">
-        <h1>Edit Product</h1>
+<div class="crud-container">
+    <!-- Header -->
+    <div class="crud-header">
+        <h1 class="crud-title">
+            <i class="fas fa-pen-to-square"></i>
+            Edit Product</h1>
     </div>
 
-    <!-- Next is the form section -->
+    <!-- Form section -->
     <form asp-action="Edit" method="post" enctype="multipart/form-data">
 
         <div class="form-group">
@@ -91,9 +94,10 @@
             <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
 
+        <!-- Submit and Cancel buttons -->
         <div class="form-group">
             <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="ProdList" class="btn btn-primary">Cancel</a> <!-- back to list -->
+            <a asp-action="ProdList" class="btn btn-primary">Cancel</a> <!-- goes back to product list -->
         </div>
     </form>
 </div>

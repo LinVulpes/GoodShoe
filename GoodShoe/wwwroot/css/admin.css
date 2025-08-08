@@ -138,6 +138,10 @@
     font-size: 16px;
 }
 
+.back-button {
+    margin-bottom: 20px;
+}
+
 /* Dashboard Stats */
 .stats-grid {
     display: grid;
@@ -988,8 +992,8 @@
     color: #7f8c8d;
 }
 
-/* Create Product Form */
-.create-container {
+/* Create/Edit/Delete Product Form */
+.crud-container {
     max-width: 800px;
     margin: 40px auto;
     padding: 40px;
@@ -997,14 +1001,14 @@
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.create-header {
+.crud-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 40px;
 }
 
-.create-title {
+.crud-title {
     font-size: 24px;
     font-weight: 600;
     color: #000;
@@ -1015,12 +1019,12 @@
     background: #000;
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .publish-btn:hover {
@@ -1247,12 +1251,12 @@
         flex-direction: column;
         align-items: center;
     }
-    .create-container {
+    .crud-container {
         margin: 20px;
         padding: 20px;
     }
 
-    .create-header {
+    .crud-header {
         flex-direction: column;
         align-items: flex-start;
         gap: 20px;
