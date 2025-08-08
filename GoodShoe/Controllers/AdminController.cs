@@ -301,7 +301,7 @@ namespace GoodShoe.Controllers
             return RedirectToAction("OrderList");
         }
 
-        // Add new product. Opens the edit view but with a new product
+        // --- Add new product ---
         [HttpGet]
         public IActionResult Create()
         {
@@ -309,9 +309,8 @@ namespace GoodShoe.Controllers
             return View("Create", new Product());
         }
 
-     // ~~ Edit product details ~~
-        // Handle GET request to edit the item
-        [HttpGet]
+        // --- Edit product details ---
+        [HttpGet]         // Handle GET request to edit the item
         public IActionResult Edit(int Id)
         {
             ViewBag.Action = "Edit";
@@ -323,8 +322,7 @@ namespace GoodShoe.Controllers
             return View(prod);
         }
 
-        // Handle POST request to save the edits
-        [HttpPost]
+        [HttpPost]        // Handle POST request to save the edits
         public IActionResult Edit(Product prod, string[] selectedSizes)
         {
             // Handles Size Selection
@@ -379,7 +377,10 @@ namespace GoodShoe.Controllers
                         existingProduct.Category = prod.Category;
                         existingProduct.ImageUrl = prod.ImageUrl;
 
-                        context.Product.Update(prod); // update the product database context
+                        // Update the database context
+                        context.Entry(prod).State = EntityState.Modified;
+                        context.Product.Update(prod);
+                        context.SaveChanges();
 
                         // Simple variant management: remove all and recreate
                         context.ProductVariant.RemoveRange(existingProduct.ProductVariants);
@@ -399,15 +400,15 @@ namespace GoodShoe.Controllers
                         }
                         context.SaveChanges();
                     }
-                    return RedirectToAction("ProdList", "Admin");
                 }
             }
-            ViewBag.Action = (prod.ProductId == 0) ? "Create" : "Edit";
-            return View(prod);
+            //ViewBag.Action = (prod.ProductId == 0) ? "Create" : "Edit";
+            //return View(prod);
+            return RedirectToAction("ProdList", "Admin");
         }
 
-        // Delete product
-        [HttpGet]
+        // --- Delete product ---
+        [HttpGet]        // Handle GET request for the item to be deleted
         public IActionResult Delete(int Id)
         {
             var prod = context.Product
@@ -418,7 +419,7 @@ namespace GoodShoe.Controllers
             return View(prod);
         }
         
-        [HttpPost]
+        [HttpPost]        // Handle POST request to save the deletion
         public IActionResult Delete(Product prod)
         {
             var existingProduct = context.Product
@@ -435,7 +436,7 @@ namespace GoodShoe.Controllers
             return RedirectToAction("ProdList", "Admin");
         }
 
-        // Product Details
+        // --- Product Details ---
         public IActionResult Details(int Id)
         {
             var prod = context.Product
