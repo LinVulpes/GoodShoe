@@ -289,16 +289,43 @@ namespace GoodShoe.Controllers
             return RedirectToAction("OrderList");
         }
 
-        // Add new product. Opens the edit view but with a new product
+        // --- Add new product ---
         [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Action = "Create";
             return View("Create", new Product());
         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ProductFormViewModel model)
+        {
+            // Create a new product
+            var product = new Product
+            {
+                ProductId = model.ProductId,
+                Name = model.Name,
+                Brand = model.Brand,
+                Description = model.Description,
+                Price = model.Price,
+                Category = model.Category,
+                Color = model.Color,
+                ImageUrl = model.ImageUrl
+            };
+            // Add product info to database context and save
+            context.Product.Add(product);
+            context.SaveChanges();
+            // Create its size variants
+            var variant = new ProductVariant
+            {
+                // uhhhhhhhhhh
+            };
+            TempData["SuccessMessage"] = "Product created successfully!";
+            return RedirectToAction("ProdList");
+        }
 
-        // Edit product details
-        [HttpGet]
+        // --- Edit product details ---
+        [HttpGet] // handle GET request to the item to be edited
         public IActionResult Edit(int Id)
         {
             ViewBag.Action = "Edit";
@@ -309,7 +336,7 @@ namespace GoodShoe.Controllers
                 return NotFound();
             return View(prod);
         }
-        [HttpPost]
+        [HttpPost] // handle POST request to make the edits
         public IActionResult Edit(Product prod, string[] selectedSizes)
         {
             // Handles Size Selection
@@ -320,6 +347,7 @@ namespace GoodShoe.Controllers
                 {
                     if (ModelState.IsValid)
                     {
+                        // First add the shoe model details to the database
                         context.Product.Add(prod);
                         context.SaveChanges();
                         
@@ -334,6 +362,7 @@ namespace GoodShoe.Controllers
                                     Size = size,
                                     StockCount = 0 // Default stock, for admin to update later
                                 };
+                                // Then add the shoe variant to its database
                                 context.ProductVariant.Add(variant);
                             }
                         }
@@ -378,6 +407,9 @@ namespace GoodShoe.Controllers
                                 context.ProductVariant.Add(variant);
                             }
                         }
+                        // update changes to the databases and save
+                        context.Entry(prod).State = EntityState.Modified;
+                        context.Product.Update(prod);
                         context.SaveChanges();
                     }
                     return RedirectToAction("ProdList", "Admin");
@@ -387,8 +419,8 @@ namespace GoodShoe.Controllers
             return View(prod);
         }
 
-        // Delete product
-        [HttpGet]
+        // --- Delete product ---
+        [HttpGet] // handle GET request for the item to be deleted
         public IActionResult Delete(int Id)
         {
             var prod = context.Product
@@ -398,8 +430,7 @@ namespace GoodShoe.Controllers
                 return NotFound();
             return View(prod);
         }
-        
-        [HttpPost]
+        [HttpPost] // handle POST request to make the deletion
         public IActionResult Delete(Product prod)
         {
             var existingProduct = context.Product
@@ -416,7 +447,7 @@ namespace GoodShoe.Controllers
             return RedirectToAction("ProdList", "Admin");
         }
 
-        // Product Details
+        // --- Product Details ---
         public IActionResult Details(int Id)
         {
             var prod = context.Product
