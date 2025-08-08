@@ -300,27 +300,34 @@ namespace GoodShoe.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductFormViewModel model)
         {
-            // Create a new product
-            var product = new Product
+            try
             {
-                ProductId = model.ProductId,
-                Name = model.Name,
-                Brand = model.Brand,
-                Description = model.Description,
-                Price = model.Price,
-                Category = model.Category,
-                Color = model.Color,
-                ImageUrl = model.ImageUrl
-            };
-            // Add product info to database context and save
-            context.Product.Add(product);
-            context.SaveChanges();
-            // Create its size variants
-            var variant = new ProductVariant
+                // Create a new product
+                var product = new Product
+                {
+                    ProductId = model.ProductId,
+                    Name = model.Name,
+                    Brand = model.Brand,
+                    Description = model.Description,
+                    Price = model.Price,
+                    Category = model.Category,
+                    Color = model.Color,
+                    ImageUrl = model.ImageUrl
+                };
+                // Add product info to database context and save
+                context.Product.Add(product);
+                context.SaveChanges();
+                // Create its size variants
+                var variant = new ProductVariant
+                {
+                    // uhhhhhhhhhh
+                };
+                TempData["SuccessMessage"] = "Product created successfully!";
+            }
+            catch (Exception ex)
             {
-                // uhhhhhhhhhh
-            };
-            TempData["SuccessMessage"] = "Product created successfully!";
+                TempData["ErrorMessage"] = "Error creating product: " + ex.Message;
+            }
             return RedirectToAction("ProdList");
         }
 
