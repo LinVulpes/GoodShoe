@@ -17,11 +17,20 @@
                 Add New Product</h1>
         </div>
 
+        <!-- Form start -->
+
         <!-- Product Name -->
         <div class="form-group">
             <label class="form-label">Product Name:</label>
             <input asp-for="Name" class="form-input" placeholder="Enter product name" required />
             <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <!-- Brand -->
+        <div class="form-group">
+            <label class="form-label">Brand Name:</label>
+            <input asp-for="Brand" class="form-input" placeholder="Enter brand name" required />
+            <span asp-validation-for="Brand" class="text-danger"></span>
         </div>
 
         <!-- Product Description -->
@@ -92,6 +101,13 @@
             </select>
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
+
+        <!-- Color -->
+        <div class="form-group">
+            <label class="form-label">Color:</label>
+            <input asp-for="Color" class="form-input" placeholder="Enter color(s) of product" required />
+            <span asp-validation-for="Color" class="text-danger"></span>
+        </div>
         
         <!-- Product Image Upload (NEW) -->
         <div class="form-group">
@@ -115,9 +131,7 @@
             </div>
             <span asp-validation-for="ImageUrl" class="text-danger"></span>
         </div>
-        
-        <!-- Brand field (hidden but required for model) -->
-        <input asp-for="Brand" type="hidden" value="Default Brand" />
+
 
         <!-- Submit/Cancel -->
         <div class="form-group">
