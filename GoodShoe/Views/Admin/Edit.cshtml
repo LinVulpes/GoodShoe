@@ -1,116 +1,649 @@
 ﻿@model GoodShoe.Models.Product
-
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Product - GoodShoe Admin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container main-context">
-    <!-- First section of main container has title -->
-    <div class="section-title">
-        <h1>Edit Product</h1>
+<style>
+    .create-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .create-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .create-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+    }
+
+    .btn-primary {
+        background: #454545;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background: #333;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        color: white;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 16px;
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #454545;
+        box-shadow: 0 0 0 3px rgba(69, 69, 69, 0.1);
+    }
+
+    .form-textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .sizes-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .sizes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+
+    .size-option {
+        position: relative;
+    }
+
+    .size-checkbox {
+        display: none;
+    }
+
+    .size-label {
+        display: block;
+        padding: 12px;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .size-checkbox:checked + .size-label {
+        background: #454545;
+        border-color: #454545;
+        color: white;
+    }
+
+    .size-label:hover {
+        border-color: #454545;
+    }
+
+    .stock-inputs-container {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #dee2e6;
+    }
+
+    .stock-input-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e8e8e8;
+    }
+
+    .stock-input-group label {
+        min-width: 80px;
+        margin: 0 12px 0 0;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .stock-input {
+        width: 100px;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .stock-input:focus {
+        outline: none;
+        border-color: #454545;
+    }
+
+    .image-upload-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .current-image {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        border: 2px solid #e8e8e8;
+        margin-bottom: 10px;
+    }
+
+    .image-preview {
+        max-width: 200px;
+        max-height: 150px;
+        border-radius: 8px;
+        border: 2px solid #e8e8e8;
+        margin-top: 10px;
+    }
+
+    .text-danger {
+        color: #e74c3c;
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .form-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    .back-button-container {
+        margin-bottom: 20px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+    .btn-close {
+        float: right;
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    /* Added */
+    .sizes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+
+    .size-option {
+        position: relative;
+    }
+
+    .size-checkbox {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .size-label {
+        display: block;
+        padding: 12px;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        user-select: none;
+    }
+
+    .size-checkbox:checked + .size-label {
+        background: #454545;
+        border-color: #454545;
+        color: white;
+    }
+
+    .size-label:hover {
+        border-color: #454545;
+        background: #f8f9fa;
+    }
+
+    .size-checkbox:checked + .size-label:hover {
+        background: #333;
+    }    
+</style>
+<body>
+<div class="create-container">
+    <!-- Back Button -->
+    <div class="back-button-container">
+        <a asp-controller="Admin" asp-action="ProdList" class="btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Product List
+        </a>
     </div>
 
-    <!-- Next is the form section -->
-    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <!-- Display Success/Error Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
+        </div>
+    }
 
+    <!-- Form -->
+    <form method="post" asp-controller="Admin" asp-action="Edit" id="editForm" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        
+        <!-- IMPORTANT: Hidden field for ProductId -->
+        <input type="hidden" asp-for="ProductId" />
+
+        <!-- Header -->
+        <div class="create-header">
+            <h1 class="create-title">Edit Product: @Model.Name</h1>
+            <button type="submit" class="btn-primary">
+                <i class="bi bi-check-circle"></i> Update Product
+            </button>
+        </div>
+
+        <!-- Product Name -->
         <div class="form-group">
-            <label asp-for="Name" class="control-label">Name:</label>
-            <input asp-for="Name" class="form-control" />
+            <label class="form-label" asp-for="Name">Product Name *</label>
+            <input asp-for="Name" class="form-control" placeholder="Enter product name" required/>
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
+        <!-- Product Description -->
         <div class="form-group">
-            <label asp-for="Brand" class="control-label"></label>
-            <input asp-for="Brand" class="form-control" />
+            <label class="form-label" asp-for="Description">Product Description</label>
+            <textarea asp-for="Description" class="form-control form-textarea" placeholder="Enter product description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Brand -->
+        <div class="form-group">
+            <label class="form-label" asp-for="Brand">Brand</label>
+            <input asp-for="Brand" class="form-control" placeholder="Enter brand name (optional)"/>
             <span asp-validation-for="Brand" class="text-danger"></span>
         </div>
 
-        <div class="form-group">
-            <label asp-for="Price" class="control-label"></label>
-            <input asp-for="Price" class="form-control" />
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div>
-        
-        <!-- Shoe Sizes -->
-        <div class="form-group">
-            <label class="control-label">Available Sizes:</label>
-            <div class="row">
-                @{
-                    var availableSizes = Model.GetSizesList();
-                }
-                @for (int size = 8; size <= 16; size++)
-                {
-                    <div class="col-md-3">
-                        <input type="checkbox" 
-                               name="selectedSizes" 
-                               value="@size" 
-                               id="size@size" 
-                               @(availableSizes.Contains(size.ToString()) ? "checked" : "") />
-                        <label for="size@size">US @size</label>
-                    </div>
-                }
+        <!-- Price and Category Row -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Price">Product Price *</label>
+                    <input asp-for="Price" type="number" step="0.01" min="0" class="form-control" placeholder="0.00" required/>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Category">Category *</label>
+                    <select asp-for="Category" class="form-control" required>
+                        <option value="">Select Category</option>
+                        <option value="Men">Men</option>
+                        <option value="Women">Women</option>
+                        <option value="Unisex">Unisex</option>
+                    </select>
+                    <span asp-validation-for="Category" class="text-danger"></span>
+                </div>
             </div>
         </div>
 
+        <!-- Color -->
         <div class="form-group">
-            <label asp-for="Description" class="control-label"></label>
-            <input asp-for="Description" class="form-control" />
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-        
-        <div class="form-group">
-            <label asp-for="Color" class="control-label"></label>
-            <input asp-for="Color" class="form-control" />
+            <label class="form-label" asp-for="Color">Color</label>
+            <input asp-for="Color" class="form-control" placeholder="Enter product color (optional)"/>
             <span asp-validation-for="Color" class="text-danger"></span>
         </div>
 
-        <!-- Current Image Display (NEW) -->
-        @if (Model.Image != null)
-        {
-            <div class="form-group">
-                <label class="control-label">Current Image:</label><br>
-                <img src="@Url.Action("GetImage", "Products", new { id = Model.ProductId })" 
-                     alt="Current product image" 
-                     style="max-width: 200px; max-height: 150px;" 
-                     class="img-thumbnail" />
-            </div>
-        }
+        <!-- Sizes and Stock Section -->
+        <div class="sizes-section">
+            <h5 style="margin-bottom: 15px; color: #333;">Available Sizes & Stock *</h5>
 
-        <!-- Upload New Image (NEW) -->
-        <div class="form-group">
-            <label for="imageFile" class="control-label">Upload New Image:</label>
-            <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" onchange="previewImage(this);" />
-            <div class="form-text">Supported formats: JPG, PNG, GIF, BMP</div>
-            <!-- Image Preview -->
-            <img id="imagePreview" style="display: none; max-width: 200px; max-height: 150px; margin-top: 10px;" class="img-thumbnail" />
+            <!-- Size Selection -->
+            <div class="form-group">
+                <label class="form-label">Select Sizes</label>
+                <div class="sizes-grid">
+                    @{
+                        var sizes = new int[] { 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+                    }                    
+                    @foreach (var size in sizes)
+                    {
+                        var isChecked = Model.ProductVariants?.Any(pv => pv.Size == size) ?? false;
+                        <div class="size-option">
+                            <input type="checkbox" 
+                                   name="selectedSizes" 
+                                   value="@size" 
+                                   id="size_@size" 
+                                   class="size-checkbox" 
+                                   @(isChecked ? "checked" : "")>
+                            <label for="size_@size" class="size-label">US @size</label>
+                        </div>
+                    }
+                </div>
+                <small class="form-text">Select at least one size</small>
+            </div>
+
+            <!-- Stock Count Inputs -->
+            <div id="stockInputsContainer" class="stock-inputs-container">
+                <h6 style="margin-bottom: 15px; color: #333;">Set Stock Count for Selected Sizes</h6>
+                <div id="stockInputsList">
+                    <!-- Stock inputs will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Hidden inputs to ensure stock counts are submitted -->
+            <div id="hiddenStockInputs" style="display: none;">
+                <!-- These will be populated by JavaScript before form submission -->
+            </div>
         </div>
         
-        <div class="form-group">
-            <label asp-for="ImageUrl" class="control-label">Image URL:</label>
-            <input asp-for="ImageUrl" class="form-control" />
-            <span asp-validation-for="ImageUrl" class="text-danger"></span>
-        </div>
+        <!-- Image Upload Section -->
+        <div class="image-upload-section">
+            <h5 style="margin-bottom: 15px; color: #333;">Product Images</h5>
 
-        <div class="form-group">
-            <input type="submit" value="Save" class="btn btn-primary" />
-            <a asp-action="ProdList" class="btn btn-primary">Cancel</a> <!-- back to list -->
+            <!-- Current Image Display -->
+            @if (Model.Image != null || !string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="form-group">
+                    <label class="form-label">Current Image:</label>
+                    @if (Model.Image != null)
+                    {
+                        <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Image)" 
+                             class="current-image" alt="Current Product Image"/>
+                    }
+                    else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="current-image" alt="Current Product Image"/>
+                    }
+                </div>
+            }
+
+            <!-- File Upload -->
+            <div class="form-group">
+                <label class="form-label" for="imageFile">Upload New Product Image</label>
+                <input type="file" name="imageFile" id="imageFile" class="form-control" accept="image/*" onchange="previewImage(this);"/>
+                <div class="form-text">Supported formats: JPG, PNG, GIF, BMP (Max 5MB). Leave empty to keep current image.</div>
+                <img id="imagePreview" class="image-preview" style="display: none;" alt="Preview"/>
+            </div>
+
+            <!-- URL Input -->
+            <div class="form-group">
+                <label class="form-label" asp-for="ImageUrl">Or Enter Image URL</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg"/>
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                <div class="form-text">This will override the uploaded file if both are provided.</div>
+            </div>
         </div>
     </form>
 </div>
-
+</body>
 <script>
-function previewImage(input) {
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('imagePreview').src = e.target.result;
-            document.getElementById('imagePreview').style.display = 'block';
+    // Image preview function
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
         }
-        reader.readAsDataURL(input.files[0]);
     }
-}
-</script>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    // Handle size selection and stock input generation
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM loaded, initializing size selection...');
+        
+        const sizeCheckboxes = document.querySelectorAll('input[name="selectedSizes"]');
+        const stockContainer = document.getElementById('stockInputsContainer');
+        const stockInputsList = document.getElementById('stockInputsList');
+        const hiddenStockInputs = document.getElementById('hiddenStockInputs');
+        const form = document.getElementById('editForm');
+        
+        // Store stock values - Initialize with existing values from the model
+        const stockValues = {};
+
+        // Initialize stock values from existing product variants
+        @if (Model.ProductVariants != null)
+        {
+        @foreach (var variant in Model.ProductVariants)
+        {
+        <text>stockValues[@variant.Size] = @variant.StockCount;</text>
+        }
+        }
+
+        function updateStockInputs() {
+            console.log('Updating stock inputs...');
+
+            const selectedSizes = [];
+            sizeCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedSizes.push(parseInt(cb.value));
+                }
+            });
+
+            // Clear existing stock inputs
+            stockInputsList.innerHTML = '';
+
+            if (selectedSizes.length > 0) {
+                stockContainer.style.display = 'block';
+
+                selectedSizes.forEach(size => {
+                    const currentStock = stockValues[size] || 0;
+
+                    const stockGroup = document.createElement('div');
+                    stockGroup.className = 'stock-input-group';
+                    stockGroup.innerHTML = `
+                        <label for="stock_${size}">US ${size}:</label>
+                        <input type="number" 
+                               name="stockCounts[${size}]" 
+                               id="stock_${size}" 
+                               class="stock-input" 
+                               min="0" 
+                               value="${currentStock}" 
+                               placeholder="0">
+                        <small style="margin-left: 8px; color: #6c757d;">units</small>
+                    `;
+                    stockInputsList.appendChild(stockGroup);
+
+                    // Add event listener to update stored value when changed
+                    const stockInput = document.getElementById(`stock_${size}`);
+                    stockInput.addEventListener('input', function() {
+                        stockValues[size] = parseInt(this.value) || 0;
+                        console.log(`Updated stock for size ${size}: ${stockValues[size]}`);
+                    });
+                });
+            } else {
+                stockContainer.style.display = 'none';
+            }
+
+            updateHiddenInputs();
+        }
+
+        function updateHiddenInputs() {
+            // Clear existing hidden inputs
+            hiddenStockInputs.innerHTML = '';
+
+            // Add hidden inputs for all selected sizes
+            sizeCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    const size = parseInt(cb.value);
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `stockCounts[${size}]`;
+                    hiddenInput.value = stockValues[size] || 0;
+                    hiddenStockInputs.appendChild(hiddenInput);
+                }
+            });
+        }
+        
+        // Add event listeners to size checkboxes
+        sizeCheckboxes.forEach((checkbox, index) => {
+            console.log(`Adding listener to checkbox ${index}: size ${checkbox.value}`);
+
+            checkbox.addEventListener('change', function() {
+                console.log(`Size ${this.value} checkbox changed to: ${this.checked}`);
+                updateStockInputs();
+            });
+
+            // Also add click listener to the label for better UX
+            const label = document.querySelector(`label[for="${checkbox.id}"]`);
+            if (label) {
+                label.addEventListener('click', function(e) {
+                    console.log(`Label clicked for size ${checkbox.value}`);
+                    // The checkbox change event will fire automatically
+                });
+            }
+        });
+
+        // Form validation and submission
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const name = document.querySelector('[name="Name"]').value.trim();
+                const price = document.querySelector('[name="Price"]').value;
+                const category = document.querySelector('[name="Category"]').value;
+                const selectedSizes = Array.from(sizeCheckboxes).filter(cb => cb.checked);
+
+                if (!name) {
+                    alert('Please enter a product name');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!price || price <= 0) {
+                    alert('Please enter a valid price');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!category) {
+                    alert('Please select a category');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (selectedSizes.length === 0) {
+                    alert('Please select at least one size');
+                    e.preventDefault();
+                    return;
+                }
+
+                // Update hidden inputs before final submission
+                updateHiddenInputs();
+
+                // Validate that stock counts are valid
+                let hasValidStock = true;
+                selectedSizes.forEach(cb => {
+                    const size = parseInt(cb.value);
+                    if (stockValues[size] < 0) {
+                        hasValidStock = false;
+                    }
+                });
+
+                if (!hasValidStock) {
+                    alert('Please enter valid stock counts (0 or more) for all selected sizes');
+                    e.preventDefault();
+                    return;
+                }
+            });
+        }
+
+        // Initialize the form
+        console.log('Initializing stock inputs...');
+        updateStockInputs();
+
+        // Debug: Log all checkboxes
+        sizeCheckboxes.forEach(cb => {
+            console.log(`Checkbox for size ${cb.value}: checked=${cb.checked}, id=${cb.id}`);
+        });
+    });
+</script>

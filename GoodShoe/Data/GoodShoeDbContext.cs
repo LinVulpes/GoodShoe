@@ -21,14 +21,6 @@ namespace GoodShoe.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
-            
-            // ADDED: ApplicationUser configuration
-            /*modelBuilder.Entity<ApplicationUser>(entity =>
-            {
-                entity.Property(e => e.Location).HasMaxLength(255);
-            });*/
-            
             // Customer configuration (multiple account)
             modelBuilder.Entity<Customer>(entity =>
             {
@@ -64,7 +56,8 @@ namespace GoodShoe.Data
             // Product configuration
             modelBuilder.Entity<Product>(entity =>
             {
-                entity.HasKey(e => e.ProductId);
+                entity.Property(e => e.ProductId)
+                    .ValueGeneratedNever();
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Brand).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
@@ -79,7 +72,7 @@ namespace GoodShoe.Data
             // ProductVariant configuration - Added for Shoe Sizes
             modelBuilder.Entity<ProductVariant>(entity =>
             {
-                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Id).ValueGeneratedOnAdd();
                 entity.Property(e => e.Size).IsRequired();
                 entity.Property(e => e.StockCount).HasDefaultValue(0);
 
@@ -163,6 +156,8 @@ namespace GoodShoe.Data
                     .HasForeignKey(e => e.ProductVariantId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+            
+            base.OnModelCreating(modelBuilder);
 
             // Seed data - to match the migration
             SeedData(modelBuilder);
