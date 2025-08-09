@@ -244,6 +244,54 @@
         font-size: 16px;
         cursor: pointer;
     }
+    
+    /* Added */
+    .sizes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        max-width: 400px;
+        margin-bottom: 20px;
+    }
+
+    .size-option {
+        position: relative;
+    }
+
+    .size-checkbox {
+        opacity: 0;
+        position: absolute;
+        z-index: -1;
+    }
+
+    .size-label {
+        display: block;
+        padding: 12px;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: white;
+        user-select: none;
+    }
+
+    .size-checkbox:checked + .size-label {
+        background: #454545;
+        border-color: #454545;
+        color: white;
+    }
+
+    .size-label:hover {
+        border-color: #454545;
+        background: #f8f9fa;
+    }
+
+    .size-checkbox:checked + .size-label:hover {
+        background: #333;
+    }    
 </style>
 <body>
 <div class="create-container">
@@ -344,17 +392,20 @@
             <div class="form-group">
                 <label class="form-label">Select Sizes</label>
                 <div class="sizes-grid">
-                    @for (int size = 8; size <= 16; size++)
+                    @{
+                        var sizes = new int[] { 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+                    }                    
+                    @foreach (var size in sizes)
                     {
                         var isChecked = Model.ProductVariants?.Any(pv => pv.Size == size) ?? false;
                         <div class="size-option">
                             <input type="checkbox" 
                                    name="selectedSizes" 
                                    value="@size" 
-                                   id="size@size" 
+                                   id="size_@size" 
                                    class="size-checkbox" 
                                    @(isChecked ? "checked" : "")>
-                            <label for="size@size" class="size-label">US @size</label>
+                            <label for="size_@size" class="size-label">US @size</label>
                         </div>
                     }
                 </div>
@@ -430,6 +481,8 @@
 
     // Handle size selection and stock input generation
     document.addEventListener('DOMContentLoaded', function () {
+        console.log('DOM loaded, initializing size selection...');
+        
         const sizeCheckboxes = document.querySelectorAll('input[name="selectedSizes"]');
         const stockContainer = document.getElementById('stockInputsContainer');
         const stockInputsList = document.getElementById('stockInputsList');
@@ -438,33 +491,35 @@
         
         // Store stock values - Initialize with existing values from the model
         const stockValues = {};
-        
-        // Initialize all sizes to 0 first
-        for (let i = 8; i <= 16; i++) {
-            stockValues[i] = 0;
-        }
 
         // Initialize stock values from existing product variants
         @if (Model.ProductVariants != null)
         {
-            @foreach (var variant in Model.ProductVariants)
-            {
-                <text>stockValues[@variant.Size] = @variant.StockCount;</text>
-            }
+        @foreach (var variant in Model.ProductVariants)
+        {
+        <text>stockValues[@variant.Size] = @variant.StockCount;</text>
+        }
         }
 
         function updateStockInputs() {
-            const selectedSizes = Array.from(sizeCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => parseInt(cb.value));
+            console.log('Updating stock inputs...');
+
+            const selectedSizes = [];
+            sizeCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    selectedSizes.push(parseInt(cb.value));
+                }
+            });
 
             // Clear existing stock inputs
             stockInputsList.innerHTML = '';
 
             if (selectedSizes.length > 0) {
-                stockContainer.classList.remove('hidden');
-                
+                stockContainer.style.display = 'block';
+
                 selectedSizes.forEach(size => {
+                    const currentStock = stockValues[size] || 0;
+
                     const stockGroup = document.createElement('div');
                     stockGroup.className = 'stock-input-group';
                     stockGroup.innerHTML = `
@@ -474,103 +529,121 @@
                                id="stock_${size}" 
                                class="stock-input" 
                                min="0" 
-                               value="${stockValues[size] || 0}" 
+                               value="${currentStock}" 
                                placeholder="0">
                         <small style="margin-left: 8px; color: #6c757d;">units</small>
                     `;
                     stockInputsList.appendChild(stockGroup);
-                    
+
                     // Add event listener to update stored value when changed
                     const stockInput = document.getElementById(`stock_${size}`);
                     stockInput.addEventListener('input', function() {
                         stockValues[size] = parseInt(this.value) || 0;
-                        updateHiddenInputs();
+                        console.log(`Updated stock for size ${size}: ${stockValues[size]}`);
                     });
                 });
             } else {
-                stockContainer.classList.add('hidden');
+                stockContainer.style.display = 'none';
             }
-            
+
             updateHiddenInputs();
         }
 
         function updateHiddenInputs() {
             // Clear existing hidden inputs
             hiddenStockInputs.innerHTML = '';
-            
+
             // Add hidden inputs for all selected sizes
-            const selectedSizes = Array.from(sizeCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => parseInt(cb.value));
-            
-            selectedSizes.forEach(size => {
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = `stockCounts[${size}]`;
-                hiddenInput.value = stockValues[size] || 0;
-                hiddenStockInputs.appendChild(hiddenInput);
+            sizeCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    const size = parseInt(cb.value);
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = `stockCounts[${size}]`;
+                    hiddenInput.value = stockValues[size] || 0;
+                    hiddenStockInputs.appendChild(hiddenInput);
+                }
             });
         }
-
+        
         // Add event listeners to size checkboxes
-        sizeCheckboxes.forEach(checkbox => {
+        sizeCheckboxes.forEach((checkbox, index) => {
+            console.log(`Adding listener to checkbox ${index}: size ${checkbox.value}`);
+
             checkbox.addEventListener('change', function() {
-                console.log(`Size ${this.value} changed to: ${this.checked}`);
+                console.log(`Size ${this.value} checkbox changed to: ${this.checked}`);
                 updateStockInputs();
             });
+
+            // Also add click listener to the label for better UX
+            const label = document.querySelector(`label[for="${checkbox.id}"]`);
+            if (label) {
+                label.addEventListener('click', function(e) {
+                    console.log(`Label clicked for size ${checkbox.value}`);
+                    // The checkbox change event will fire automatically
+                });
+            }
         });
 
         // Form validation and submission
-        form.addEventListener('submit', function (e) {
-            const name = document.querySelector('[name="Name"]').value.trim();
-            const price = document.querySelector('[name="Price"]').value;
-            const category = document.querySelector('[name="Category"]').value;
-            const selectedSizes = Array.from(sizeCheckboxes).filter(cb => cb.checked);
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const name = document.querySelector('[name="Name"]').value.trim();
+                const price = document.querySelector('[name="Price"]').value;
+                const category = document.querySelector('[name="Category"]').value;
+                const selectedSizes = Array.from(sizeCheckboxes).filter(cb => cb.checked);
 
-            if (!name) {
-                alert('Please enter a product name');
-                e.preventDefault();
-                return;
-            }
+                if (!name) {
+                    alert('Please enter a product name');
+                    e.preventDefault();
+                    return;
+                }
 
-            if (!price || price <= 0) {
-                alert('Please enter a valid price');
-                e.preventDefault();
-                return;
-            }
+                if (!price || price <= 0) {
+                    alert('Please enter a valid price');
+                    e.preventDefault();
+                    return;
+                }
 
-            if (!category) {
-                alert('Please select a category');
-                e.preventDefault();
-                return;
-            }
+                if (!category) {
+                    alert('Please select a category');
+                    e.preventDefault();
+                    return;
+                }
 
-            if (selectedSizes.length === 0) {
-                alert('Please select at least one size');
-                e.preventDefault();
-                return;
-            }
+                if (selectedSizes.length === 0) {
+                    alert('Please select at least one size');
+                    e.preventDefault();
+                    return;
+                }
 
-            // Update hidden inputs before final submission
-            updateHiddenInputs();
+                // Update hidden inputs before final submission
+                updateHiddenInputs();
 
-            // Validate that stock counts are provided for selected sizes
-            let hasValidStock = true;
-            selectedSizes.forEach(cb => {
-                const size = parseInt(cb.value);
-                if (stockValues[size] < 0) {
-                    hasValidStock = false;
+                // Validate that stock counts are valid
+                let hasValidStock = true;
+                selectedSizes.forEach(cb => {
+                    const size = parseInt(cb.value);
+                    if (stockValues[size] < 0) {
+                        hasValidStock = false;
+                    }
+                });
+
+                if (!hasValidStock) {
+                    alert('Please enter valid stock counts (0 or more) for all selected sizes');
+                    e.preventDefault();
+                    return;
                 }
             });
-
-            if (!hasValidStock) {
-                alert('Please enter valid stock counts (0 or more) for all selected sizes');
-                e.preventDefault();
-                return;
-            }
-        });
+        }
 
         // Initialize the form
+        console.log('Initializing stock inputs...');
         updateStockInputs();
+
+        // Debug: Log all checkboxes
+        sizeCheckboxes.forEach(cb => {
+            console.log(`Checkbox for size ${cb.value}: checked=${cb.checked}, id=${cb.id}`);
+        });
     });
 </script>
