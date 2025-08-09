@@ -78,7 +78,7 @@ namespace GoodShoe.Migrations
                     b.HasIndex("UserName")
                         .IsUnique();
 
-                    b.ToTable("Admin");
+                    b.ToTable("Admin", (string)null);
 
                     b.HasData(
                         new
@@ -115,7 +115,7 @@ namespace GoodShoe.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Carts");
+                    b.ToTable("Carts", (string)null);
                 });
 
             modelBuilder.Entity("GoodShoe.Models.CartItem", b =>
@@ -146,7 +146,7 @@ namespace GoodShoe.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("CartItems");
+                    b.ToTable("CartItems", (string)null);
                 });
 
             modelBuilder.Entity("GoodShoe.Models.Customer", b =>
@@ -200,7 +200,7 @@ namespace GoodShoe.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
 
                     b.HasData(
                         new
@@ -283,7 +283,7 @@ namespace GoodShoe.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
 
                     b.HasData(
                         new
@@ -361,7 +361,7 @@ namespace GoodShoe.Migrations
 
                     b.HasIndex("ProductVariantId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
 
                     b.HasData(
                         new
@@ -459,7 +459,7 @@ namespace GoodShoe.Migrations
 
                     b.HasKey("ProductId");
 
-                    b.ToTable("Product");
+                    b.ToTable("Product", (string)null);
 
                     b.HasData(
                         new
@@ -554,7 +554,7 @@ namespace GoodShoe.Migrations
                     b.HasIndex("ProductId", "Size")
                         .IsUnique();
 
-                    b.ToTable("ProductVariant");
+                    b.ToTable("ProductVariant", (string)null);
 
                     b.HasData(
                         new

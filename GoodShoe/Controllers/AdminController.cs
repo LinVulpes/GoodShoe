@@ -76,12 +76,217 @@ namespace GoodShoe.Controllers
             return View(prod);
         }
         
-        // Create New Product (for admin)
+        // Create New Product (for admin) - GET
         [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Action = "Create";
-            return View("Create", new Product());
+            return View(new Product());
+        }
+
+        // Create New Product (for admin) - POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product, string[] selectedSizes, IFormFile imageFile,
+            Dictionary<int, int> stockCounts)
+        {
+            try
+            {
+                // Debug logging to check what's being received
+                Console.WriteLine("=== CREATE PRODUCT DEBUG ===");
+                Console.WriteLine($"Product Name: '{product?.Name}'");
+                Console.WriteLine($"Product Price: {product?.Price}");
+                Console.WriteLine($"Product Category: '{product?.Category}'");
+                Console.WriteLine($"Selected Sizes: {(selectedSizes != null ? $"[{string.Join(",", selectedSizes)}]" : "null")}");
+
+                if (stockCounts != null)
+                {
+                    Console.WriteLine($"Stock Counts received: {stockCounts.Count} items");
+                    foreach (var kvp in stockCounts)
+                    {
+                        Console.WriteLine($"  Size {kvp.Key}: {kvp.Value} units");
+                    }
+                }
+
+                // Clear ModelState to avoid validation issues
+                ModelState.Clear();
+
+                // Handle image upload if provided
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png", "image/gif", "image/bmp" };
+                    if (allowedTypes.Contains(imageFile.ContentType.ToLower()))
+                    {
+                        using (var memoryStream = new MemoryStream())
+                        {
+                            await imageFile.CopyToAsync(memoryStream);
+                            product.Image = memoryStream.ToArray();
+                            product.ImageFileName = imageFile.FileName;
+                        }
+                    }
+                    else
+                    {
+                        TempData["ErrorMessage"] = "Invalid image format. Please use JPG, PNG, GIF, or BMP.";
+                        ViewBag.Action = "Create";
+                        return View(product);
+                    }
+                }
+
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(product.Name))
+                {
+                    TempData["ErrorMessage"] = "Product name is required.";
+                    ViewBag.Action = "Create";
+                    return View(product);
+                }
+
+                if (product.Price <= 0)
+                {
+                    TempData["ErrorMessage"] = "Product price must be greater than 0.";
+                    ViewBag.Action = "Create";
+                    return View(product);
+                }
+
+                if (string.IsNullOrWhiteSpace(product.Category))
+                {
+                    TempData["ErrorMessage"] = "Category is required.";
+                    ViewBag.Action = "Create";
+                    return View(product);
+                }
+
+                if (selectedSizes == null || selectedSizes.Length == 0)
+                {
+                    TempData["ErrorMessage"] = "At least one size must be selected.";
+                    ViewBag.Action = "Create";
+                    return View(product);
+                }
+
+                // Validate stock counts if provided
+                if (stockCounts != null)
+                {
+                    foreach (var kvp in stockCounts)
+                    {
+                        if (kvp.Value < 0)
+                        {
+                            TempData["ErrorMessage"] = "Stock counts cannot be negative.";
+                            ViewBag.Action = "Create";
+                            return View(product);
+                        }
+                    }
+                }
+
+                // MANUAL ID GENERATION: Get the next available ProductId
+                var maxProductId = 0;
+                if (context.Product.Any())
+                {
+                    maxProductId = context.Product.Max(p => p.ProductId);
+                }
+                var nextProductId = maxProductId + 1;
+
+                // Double-check that this ID doesn't exist (safety check)
+                while (context.Product.Any(p => p.ProductId == nextProductId))
+                {
+                    nextProductId++;
+                }
+
+                Console.WriteLine($"Generated ProductId: {nextProductId}");
+
+                // Set default values for new product
+                if (string.IsNullOrWhiteSpace(product.Brand))
+                    product.Brand = "Default Brand";
+
+                if (string.IsNullOrWhiteSpace(product.Color))
+                    product.Color = "Standard";
+
+                if (string.IsNullOrWhiteSpace(product.Description))
+                    product.Description = "";
+
+                Console.WriteLine("Adding product to database...");
+
+                // Create a completely new Product entity with manually assigned ID
+                var newProduct = new Product
+                {
+                    ProductId = nextProductId, // Manually assign the ID
+                    Name = product.Name.Trim(),
+                    Brand = product.Brand.Trim(),
+                    Price = product.Price,
+                    Description = product.Description?.Trim() ?? "",
+                    Color = product.Color.Trim(),
+                    Category = product.Category.Trim(),
+                    ImageUrl = product.ImageUrl?.Trim(),
+                    Image = product.Image,
+                    ImageFileName = product.ImageFileName?.Trim(),
+                    CreatedAt = DateTime.Now
+                };
+
+                // Add product to database first
+                context.Product.Add(newProduct);
+                await context.SaveChangesAsync();
+
+                Console.WriteLine($"Product created successfully with ID: {newProduct.ProductId}");
+
+                // FIXED: Create ProductVariants properly
+                Console.WriteLine("Creating ProductVariants...");
+                var variants = new List<ProductVariant>();
+
+                foreach (var sizeStr in selectedSizes)
+                {
+                    if (int.TryParse(sizeStr, out var size))
+                    {
+                        var stockCount = 0;
+                        if (stockCounts != null && stockCounts.ContainsKey(size))
+                        {
+                            stockCount = Math.Max(0, stockCounts[size]);
+                        }
+
+                        var variant = new ProductVariant
+                        {
+                            // DO NOT set Id - let the database auto-generate it
+                            ProductId = newProduct.ProductId,
+                            Size = size,
+                            StockCount = stockCount
+                        };
+
+                        variants.Add(variant);
+                        Console.WriteLine($"Prepared variant: ProductId={newProduct.ProductId}, Size={size}, Stock={stockCount}");
+                    }
+                }
+
+                // Add all variants at once and save
+                if (variants.Any())
+                {
+                    Console.WriteLine($"Adding {variants.Count} variants to context...");
+                    context.ProductVariant.AddRange(variants);
+                    
+                    // IMPORTANT: Save changes to commit the variants
+                    var variantsAdded = await context.SaveChangesAsync();
+                    Console.WriteLine($"Successfully saved {variantsAdded} changes to database!");
+                    
+                    // Verify variants were added
+                    var createdVariants = await context.ProductVariant
+                        .Where(pv => pv.ProductId == newProduct.ProductId)
+                        .ToListAsync();
+                    Console.WriteLine($"Verification: Found {createdVariants.Count} variants in database for ProductId {newProduct.ProductId}");
+                }
+
+                Console.WriteLine("Product creation completed successfully!");
+                TempData["SuccessMessage"] = $"Product '{newProduct.Name}' created successfully with {selectedSizes.Length} size variants!";
+                return RedirectToAction("ProdList", "Admin");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"=== ERROR IN CREATE PRODUCT ===");
+                Console.WriteLine($"Error message: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+
+                TempData["ErrorMessage"] = $"Error creating product: {ex.Message}";
+                ViewBag.Action = "Create";
+                return View(product);
+            }
         }
 
         // GET method : Edit product details (for admin)
@@ -100,7 +305,8 @@ namespace GoodShoe.Controllers
         // POST method : Edit product details (for admin)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Product product, string[] selectedSizes, IFormFile imageFile)
+        public async Task<IActionResult> Edit(Product product, string[] selectedSizes, IFormFile imageFile,
+            Dictionary<int, int> stockCounts)
         {
             try
             {
@@ -120,7 +326,7 @@ namespace GoodShoe.Controllers
                     else
                     {
                         TempData["ErrorMessage"] = "Invalid image format. Please use JPG, PNG, GIF, or BMP.";
-                        ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
+                        ViewBag.Action = "Edit";
                         return View(product);
                     }
                 }
@@ -129,118 +335,148 @@ namespace GoodShoe.Controllers
                 if (string.IsNullOrWhiteSpace(product.Name))
                 {
                     TempData["ErrorMessage"] = "Product name is required.";
-                    ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
+                    ViewBag.Action = "Edit";
                     return View(product);
                 }
 
                 if (product.Price <= 0)
                 {
                     TempData["ErrorMessage"] = "Product price must be greater than 0.";
-                    ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
+                    ViewBag.Action = "Edit";
                     return View(product);
                 }
 
                 if (string.IsNullOrWhiteSpace(product.Category))
                 {
                     TempData["ErrorMessage"] = "Category is required.";
-                    ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
+                    ViewBag.Action = "Edit";
                     return View(product);
                 }
 
                 if (selectedSizes == null || selectedSizes.Length == 0)
                 {
                     TempData["ErrorMessage"] = "At least one size must be selected.";
-                    ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
+                    ViewBag.Action = "Edit";
                     return View(product);
                 }
 
-                // For new products
-                if (product.ProductId == 0)
+                // Validate stock counts if provided
+                if (stockCounts != null)
                 {
-                    // Set default values
-                    if (string.IsNullOrWhiteSpace(product.Brand))
-                        product.Brand = "Default Brand";
-                    
-                    if (string.IsNullOrWhiteSpace(product.Color))
-                        product.Color = "Standard";
-
-                    context.Product.Add(product);
-                    await context.SaveChangesAsync();
-
-                    // Create ProductVariants for selected sizes
-                    foreach (var sizeStr in selectedSizes)
+                    foreach (var kvp in stockCounts)
                     {
-                        if (int.TryParse(sizeStr, out var size))
+                        if (kvp.Value < 0)
                         {
-                            var variant = new ProductVariant
-                            {
-                                ProductId = product.ProductId,
-                                Size = size,
-                                StockCount = 0 // Default stock, admin can update later
-                            };
-                            context.ProductVariant.Add(variant);
+                            TempData["ErrorMessage"] = "Stock counts cannot be negative.";
+                            ViewBag.Action = "Edit";
+                            return View(product);
                         }
                     }
-                    await context.SaveChangesAsync();
+                }
 
-                    TempData["SuccessMessage"] = "Product created successfully!";
+                var existingProduct = context.Product
+                    .Include(p => p.ProductVariants)
+                    .FirstOrDefault(p => p.ProductId == product.ProductId);
+
+                if (existingProduct == null)
+                {
+                    TempData["ErrorMessage"] = "Product not found.";
                     return RedirectToAction("ProdList", "Admin");
                 }
-                // For existing products
-                else
+
+                // Update product properties
+                existingProduct.Name = product.Name;
+                existingProduct.Brand = product.Brand ?? "Default Brand";
+                existingProduct.Price = product.Price;
+                existingProduct.Description = product.Description;
+                existingProduct.Color = product.Color ?? "Standard";
+                existingProduct.Category = product.Category;
+                existingProduct.ImageUrl = product.ImageUrl;
+
+                // Update image if new one was uploaded
+                if (product.Image != null)
                 {
-                    var existingProduct = context.Product
-                        .Include(p => p.ProductVariants)
-                        .FirstOrDefault(p => p.ProductId == product.ProductId);
+                    existingProduct.Image = product.Image;
+                    existingProduct.ImageFileName = product.ImageFileName;
+                }
 
-                    if (existingProduct != null)
+                // FIXED: Handle ProductVariants with foreign key constraints
+                var selectedSizeInts = selectedSizes.Select(s => int.Parse(s)).ToList();
+                var existingVariants = existingProduct.ProductVariants.ToList();
+
+                // Check if any variants are referenced by OrderItems before deleting
+                foreach (var variant in existingVariants)
+                {
+                    if (!selectedSizeInts.Contains(variant.Size))
                     {
-                        // Update product properties
-                        existingProduct.Name = product.Name;
-                        existingProduct.Brand = product.Brand ?? "Default Brand";
-                        existingProduct.Price = product.Price;
-                        existingProduct.Description = product.Description;
-                        existingProduct.Color = product.Color ?? "Standard";
-                        existingProduct.Category = product.Category;
-                        existingProduct.ImageUrl = product.ImageUrl;
-
-                        // Update image if new one was uploaded
-                        if (product.Image != null)
+                        // Check if this variant is referenced by any OrderItems
+                        var isReferenced = context.OrderItems.Any(oi => oi.ProductVariantId == variant.Id);
+                        
+                        if (isReferenced)
                         {
-                            existingProduct.Image = product.Image;
-                            existingProduct.ImageFileName = product.ImageFileName;
+                            // If referenced, set stock to 0 instead of deleting
+                            variant.StockCount = 0;
+                            Console.WriteLine($"Variant Size {variant.Size} is referenced by orders. Setting stock to 0 instead of deleting.");
                         }
-
-                        // Remove existing variants and create new ones
-                        context.ProductVariant.RemoveRange(existingProduct.ProductVariants);
-
-                        foreach (var sizeStr in selectedSizes)
+                        else
                         {
-                            if (int.TryParse(sizeStr, out int size))
-                            {
-                                var variant = new ProductVariant
-                                {
-                                    ProductId = existingProduct.ProductId,
-                                    Size = size,
-                                    StockCount = 0 // Admin can update stock separately
-                                };
-                                context.ProductVariant.Add(variant);
-                            }
+                            // Safe to remove if not referenced
+                            context.ProductVariant.Remove(variant);
+                            Console.WriteLine($"Removing variant Size {variant.Size} - not referenced by any orders.");
                         }
-
-                        await context.SaveChangesAsync();
-                        TempData["SuccessMessage"] = "Product updated successfully!";
-                        return RedirectToAction("ProdList", "Admin");
                     }
                 }
+
+                // Update existing variants or add new ones
+                foreach (var sizeStr in selectedSizes)
+                {
+                    if (int.TryParse(sizeStr, out int size))
+                    {
+                        var stockCount = 0;
+                        if (stockCounts != null && stockCounts.ContainsKey(size))
+                        {
+                            stockCount = Math.Max(0, stockCounts[size]); // Ensure non-negative
+                        }
+
+                        var existingVariant = existingVariants.FirstOrDefault(v => v.Size == size);
+                        
+                        if (existingVariant != null)
+                        {
+                            // Update existing variant
+                            existingVariant.StockCount = stockCount;
+                            Console.WriteLine($"Updated existing variant Size {size} with stock {stockCount}");
+                        }
+                        else
+                        {
+                            // Add new variant
+                            var newVariant = new ProductVariant
+                            {
+                                ProductId = existingProduct.ProductId,
+                                Size = size,
+                                StockCount = stockCount
+                            };
+                            context.ProductVariant.Add(newVariant);
+                            Console.WriteLine($"Added new variant Size {size} with stock {stockCount}");
+                        }
+                    }
+                }
+
+                await context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Product updated successfully!";
+                return RedirectToAction("ProdList", "Admin");
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = "Error saving product: " + ex.Message;
+                Console.WriteLine($"Error in Edit method: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                }
+                
+                TempData["ErrorMessage"] = "Error updating product: " + ex.Message;
+                ViewBag.Action = "Edit";
+                return View(product);
             }
-
-            ViewBag.Action = (product.ProductId == 0) ? "Create" : "Edit";
-            return View(product);
         }
 
         // Get method : Delete product (for admin)
