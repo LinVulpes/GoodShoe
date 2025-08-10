@@ -627,13 +627,65 @@ namespace GoodShoe.Controllers
         {
             try
             {
-                var order = context.Orders.FirstOrDefault(o => o.OrderId == orderId);
+                var order = context.Orders
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                    .FirstOrDefault(o => o.OrderId == orderId);
+                    
                 if (order != null)
                 {
+                    string previousStatus = order.Status;
                     order.Status = newStatus;
-                    await context.SaveChangesAsync();
+                    order.UpdatedAt = DateTime.Now;
 
+                    // If order is being marked as "Delivered", reduce stock
+                    if (newStatus.Equals("Delivered", StringComparison.OrdinalIgnoreCase) && 
+                        !previousStatus.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var orderItem in order.OrderItems)
+                        {
+                            var productVariant = orderItem.ProductVariant;
+                            if (productVariant != null)
+                            {
+                                // Reduce stock by the ordered quantity
+                                if (productVariant.StockCount >= orderItem.Quantity)
+                                {
+                                    productVariant.StockCount -= orderItem.Quantity;
+                                    Console.WriteLine($"Reduced stock for ProductVariant {productVariant.Id} (Size {productVariant.Size}) by {orderItem.Quantity}. New stock: {productVariant.StockCount}");
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"Warning: Insufficient stock for ProductVariant {productVariant.Id}. Available: {productVariant.StockCount}, Requested: {orderItem.Quantity}");
+                                    // Set stock to 0 if insufficient stock
+                                    productVariant.StockCount = 0;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If order status is changed back from "Delivered" to something else, restore stock
+                    else if (previousStatus.Equals("Delivered", StringComparison.OrdinalIgnoreCase) && 
+                             !newStatus.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var orderItem in order.OrderItems)
+                        {
+                            var productVariant = orderItem.ProductVariant;
+                            if (productVariant != null)
+                            {
+                                // Restore stock by adding back the ordered quantity
+                                productVariant.StockCount += orderItem.Quantity;
+                                Console.WriteLine($"Restored stock for ProductVariant {productVariant.Id} (Size {productVariant.Size}) by {orderItem.Quantity}. New stock: {productVariant.StockCount}");
+                            }
+                        }
+                    }
+
+                    await context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Order status updated successfully!";
+                    
+                    if (newStatus.Equals("Delivered", StringComparison.OrdinalIgnoreCase))
+                    {
+                        TempData["SuccessMessage"] += " Product stock has been updated.";
+                    }
                 }
                 else
                 {
@@ -642,11 +694,11 @@ namespace GoodShoe.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Error updating order status: {ex.Message}");
                 TempData["ErrorMessage"] = "Error updating order status: " + ex.Message;
             }
             return RedirectToAction("OrderList");
         }
-        
         
         // Method for deleting orders
         [HttpPost]

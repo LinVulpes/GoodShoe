@@ -89,12 +89,8 @@
                                             data-stock="@stockCount"
                                             data-variant-id="@(variant?.Id ?? 0)"
                                             @(!isAvailable ? "disabled" : "")
-                                            onclick="selectSize(this, @size, 'US @size', @stockCount, @(variant?.Id ?? 0))">
+                                            onclick="@(isAvailable ? $"selectSize(this, {size}, 'US {size}', {stockCount}, {variant?.Id ?? 0})" : "")">
                                         US @size
-                                        @if (stockCount > 0 && stockCount <= 5)
-                                        {
-                                            <small class="stock-indicator">(@stockCount left)</small>
-                                        }
                                     </button>
                                 }
                             </div>

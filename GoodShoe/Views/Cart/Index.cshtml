@@ -9,7 +9,7 @@
     </div>
     
     <h2 class="cart-page-title mb-4">Your Cart</h2>
-
+    
     @if (!Model.Any())
     {
         <div class="cart-empty-state text-center py-5">
@@ -26,7 +26,7 @@
             <div class="col-lg-8">
                 @foreach (var item in Model)
                 {
-                    <div class="cart-product-card mb-3">
+                    <div class="cart-product-card mb-3" data-product-id="@item.ProductID" data-size="@item.Size">
                         <div class="row align-items-center">
                             <!-- Product Image -->
                             <div class="col-md-3">
@@ -40,6 +40,7 @@
                                 <h5 class="cart-product-name mb-1">@item.ProductName</h5>
                                 <p class="cart-product-category mb-1">Men's Everyday Shoe</p>
                                 <p class="cart-product-size mb-0">Size: @item.Size</p>
+                                <small class="stock-info text-muted">Loading stock info...</small>
                             </div>
                             
                             <!-- Quantity Controls -->
@@ -50,22 +51,28 @@
                                         <input type="hidden" name="productId" value="@item.ProductID" />
                                         <input type="hidden" name="size" value="@item.Size" />
                                         <input type="hidden" name="quantity" value="-1" />
-                                        <button type="submit" class="cart-quantity-btn btn btn-outline-secondary btn-sm" 
+                                        <button type="submit" 
+                                                class="cart-quantity-btn btn btn-outline-secondary btn-sm minus-btn" 
                                                 title="Decrease quantity">
                                             <i class="bi bi-dash"></i>
                                         </button>
                                     </form>
                                     
                                     <!-- Quantity Display -->
-                                    <span class="cart-quantity-display mx-2" id="qty-@item.ProductID">@item.Quantity</span>
+                                    <span class="cart-quantity-display mx-2" id="qty-@item.ProductID-@item.Size.Replace(" ", "")">@item.Quantity</span>
                                     
                                     <!-- Plus Button -->
-                                    <form asp-action="AddToCart" method="post" class="d-inline" onsubmit="console.log('Plus button clicked for product:', @item.ProductID);">
+                                    <form asp-action="AddToCart" method="post" class="d-inline plus-form" 
+                                          data-product-id="@item.ProductID" 
+                                          data-size="@item.Size">
                                         <input type="hidden" name="productId" value="@item.ProductID" />
                                         <input type="hidden" name="size" value="@item.Size" />
                                         <input type="hidden" name="quantity" value="1" />
-                                        <button type="submit" class="cart-quantity-btn btn btn-outline-secondary btn-sm"
-                                                title="Increase quantity">
+                                        <button type="submit" 
+                                                class="cart-quantity-btn btn btn-outline-secondary btn-sm plus-btn"
+                                                title="Increase quantity"
+                                                data-product-id="@item.ProductID" 
+                                                data-size="@item.Size">
                                             <i class="bi bi-plus"></i>
                                         </button>
                                     </form>
@@ -79,14 +86,15 @@
                                     <p class="cart-item-price mb-1">@item.Price.ToString("C")</p>
                                     
                                     <!-- Subtotal for this specific item (changes with quantity) -->
-                                    <p class="cart-item-subtotal mb-2 text-muted small">Subtotal: @(item.Price * item.Quantity)</p>
+                                    <p class="cart-item-subtotal mb-2 text-muted small">Subtotal: @((item.Price * item.Quantity).ToString("C"))</p>
                                     
                                     <!-- Remove Button -->
                                     <form asp-action="RemoveFromCart" method="post" class="d-inline">
                                         <input type="hidden" name="productId" value="@item.ProductID" />
                                         <input type="hidden" name="size" value="@item.Size" />
                                         <button type="submit" class="cart-remove-btn btn btn-link text-danger p-0"
-                                                title="Remove item from cart">
+                                                title="Remove item from cart"
+                                                onclick="return confirm('Are you sure you want to remove this item?')">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
@@ -119,12 +127,12 @@
                         <strong>@((Model.Sum(i => i.Price * i.Quantity) + 20).ToString("C"))</strong>
                     </div>
                     
-                    <!-- Checkout Button | Working in progress -->
+                    <!-- Checkout Button -->
                     <div class="d-grid gap-2">
                         <form asp-controller="Cart" asp-action="PrepareCheckout" method="post">
                             <button type="submit"
                                     class="btn btn-dark w-100 cart-checkout-button"
-                            @(Model.Count == 0 ? "disabled" : "")>
+                                    @(Model.Count == 0 ? "disabled" : "")>
                                 Continue to Checkout
                             </button>
                         </form>
@@ -134,13 +142,108 @@
         </div>
     }
 </div>
+
 <script>
-    document.querySelectorAll('.payment-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            const selectedMethod = this.getAttribute('data-method');
-            document.querySelector(`input[name="PaymentMethod"]`).value = selectedMethod;
+    // Store stock information for each cart item
+    let stockInfo = {};
+
+    // Load stock information when page loads
+    document.addEventListener('DOMContentLoaded', function () {
+        loadStockInformation();
+
+        // Add event listener to plus buttons to check stock before allowing form submission
+        document.querySelectorAll('.plus-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                const productId = this.getAttribute('data-product-id');
+                const size = this.getAttribute('data-size');
+                const key = `${productId}-${size}`;
+
+                if (stockInfo[key] && !stockInfo[key].canIncrease) {
+                    e.preventDefault();
+                    showStockAlert(productId, size);
+                    return false;
+                }
+            });
         });
+    });
+
+    async function loadStockInformation() {
+        const cartItems = document.querySelectorAll('.cart-product-card');
+
+        for (let item of cartItems) {
+            const productId = item.getAttribute('data-product-id');
+            const size = item.getAttribute('data-size');
+
+            try {
+                const response = await fetch(`/Cart/GetStockInfo?productId=${productId}&size=${encodeURIComponent(size)}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const key = `${productId}-${size}`;
+                    stockInfo[key] = data;
+
+                    // Update stock info display
+                    const stockInfoElement = item.querySelector('.stock-info');
+                    if (data.availableToAdd > 0) {
+                        stockInfoElement.textContent = `${data.availableToAdd} more available (${data.totalStock} total stock)`;
+                        stockInfoElement.classList.remove('text-danger');
+                        stockInfoElement.classList.add('text-muted');
+                    } else {
+                        stockInfoElement.textContent = `Maximum stock reached (${data.totalStock} total)`;
+                        stockInfoElement.classList.remove('text-muted');
+                        stockInfoElement.classList.add('text-danger');
+                    }
+
+                    // Update plus button state
+                    const plusBtn = item.querySelector('.plus-btn');
+                    if (!data.canIncrease) {
+                        plusBtn.disabled = true;
+                        plusBtn.classList.add('disabled');
+                        plusBtn.title = `Maximum stock (${data.totalStock}) reached`;
+                    } else {
+                        plusBtn.disabled = false;
+                        plusBtn.classList.remove('disabled');
+                        plusBtn.title = `Add one more (${data.availableToAdd} available)`;
+                    }
+
+                    // DON'T disable minus button - let it work even when quantity = 1
+                    // This allows the item to be removed when quantity goes to 0
+                    const minusBtn = item.querySelector('.minus-btn');
+                    minusBtn.disabled = false;
+                    minusBtn.classList.remove('disabled');
+
+                    // Update title based on current quantity
+                    if (data.currentCartQuantity === 1) {
+                        minusBtn.title = 'Remove item from cart';
+                    } else {
+                        minusBtn.title = 'Decrease quantity';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading stock info:', error);
+                const stockInfoElement = item.querySelector('.stock-info');
+                stockInfoElement.textContent = 'Stock info unavailable';
+                stockInfoElement.classList.add('text-warning');
+            }
+        }
+    }
+
+    function showStockAlert(productId, size) {
+        const key = `${productId}-${size}`;
+        const info = stockInfo[key];
+
+        if (info) {
+            alert(`Cannot add more items. You have ${info.currentCartQuantity} items in cart out of ${info.totalStock} total stock available.`);
+        } else {
+            alert('Cannot add more items. Stock limit reached.');
+        }
+    }
+
+    // Refresh stock info after any cart updates
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            // Page was loaded from cache, refresh stock info
+            setTimeout(loadStockInformation, 100);
+        }
     });
 </script>
