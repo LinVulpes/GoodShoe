@@ -3,7 +3,11 @@
     ViewData["Title"] = "Order Details";
 }
 
-<link rel="stylesheet" href="~/css/admin.css" />
+@section Scripts {
+    <link rel="stylesheet" href="~/css/order.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true"/>
+}
+
 <div class="container-fluid px-4 py-3">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
@@ -145,34 +149,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    .order-item-detail {
-        transition: background-color 0.2s;
-    }
-    
-    .order-item-detail:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .product-image-detail {
-        width: 120px;
-        height: 120px;
-        border-radius: 8px;
-        border: 1px solid #dee2e6;
-    }
-    
-    .summary-line {
-        font-size: 0.95rem;
-    }
-    
-    .card-header h5 {
-        color: #495057;
-    }
-    
-    .status-badge {
-        font-size: 0.85rem;
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-    }
-</style>

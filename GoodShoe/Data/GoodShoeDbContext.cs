@@ -160,7 +160,7 @@ namespace GoodShoe.Data
             base.OnModelCreating(modelBuilder);
 
             // Seed data - to match the migration
-            SeedData(modelBuilder);
+            // SeedData(modelBuilder);
         }
 
         private void SeedData(ModelBuilder modelBuilder)
