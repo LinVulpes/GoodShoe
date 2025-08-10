@@ -1,5 +1,6 @@
 ﻿using GoodShoe.Data;
-using GoodShoe.Services; //so ICartService/CartService are in scope
+using GoodShoe.Services;
+using Microsoft.AspNetCore.Mvc.Razor; //so ICartService/CartService are in scope
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,12 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+});
+
+// Path for any action of Product Management in AdminController to looks in Views/Admin/Product_Management/
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    options.ViewLocationFormats.Add("/Views/Admin/Product_Management/{0}.cshtml");
 });
 
 // Make IHttpContextAccessor available (needed by CartService)

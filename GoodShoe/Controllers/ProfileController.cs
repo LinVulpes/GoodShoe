@@ -7,7 +7,6 @@ using GoodShoe.Services;
 
 namespace GoodShoe.Controllers
 {
-    // [Authorize] // Disabled for testing - re-enable later
     public class ProfileController : Controller
     {
         private readonly GoodShoeDbContext _context;
@@ -18,7 +17,7 @@ namespace GoodShoe.Controllers
             _context = context;
             _authService = authService;
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -28,35 +27,83 @@ namespace GoodShoe.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Get purchase history
-            var purchaseHistory = await _context.Orders
-                .Where(o => o.CustomerId == currentCustomer.CustomerId)
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.ProductVariant)
-                .ThenInclude(pv => pv.Product)
-                .OrderByDescending(o => o.CreatedAt)
-                .SelectMany(o => o.OrderItems.Select(oi => new PurchaseHistoryItem
-                {
-                    ProductName = oi.ProductName,
-                    Description = oi.ProductVariant.Product.Description ?? "",
-                    Size = oi.Size.ToString(),
-                    Price = oi.UnitPrice,
-                    ImageUrl = oi.ProductVariant.Product.ImageUrl ?? "",
-                    PurchaseDate = o.CreatedAt
-                }))
-                .ToListAsync();
-
-            var viewModel = new ProfileViewModel
+            try
             {
-                CustomerId = currentCustomer.CustomerId,
-                FullName = currentCustomer.FullName,
-                Email = currentCustomer.Email,
-                PhoneNumber = currentCustomer.Phone,
-                Location = currentCustomer.Address,
-                PurchaseHistory = purchaseHistory
-            };
+                // Get purchase history with better error handling
+                var orders = await _context.Orders
+                    .Where(o => o.CustomerId == currentCustomer.CustomerId)
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.ProductVariant)
+                    .ThenInclude(pv => pv.Product)
+                    .OrderByDescending(o => o.CreatedAt)
+                    .ToListAsync();
 
-            return View(viewModel);
+                var purchaseHistory = new List<PurchaseHistoryItem>();
+                
+                foreach (var order in orders)
+                {
+                    foreach (var item in order.OrderItems)
+                    {
+                        purchaseHistory.Add(new PurchaseHistoryItem
+                        {
+                            ProductName = item.ProductName,
+                            Description = item.ProductVariant?.Product?.Description ?? "No description available",
+                            Size = item.Size.ToString(),
+                            Price = item.UnitPrice,
+                            ImageUrl = item.ProductVariant?.Product?.ImageUrl ?? "/images/no-image.png",
+                            PurchaseDate = order.CreatedAt,
+                            Quantity = item.Quantity,
+                            OrderId = order.OrderId,
+                            Status = order.Status
+                        });
+                    }
+                }
+
+                // DEBUG: Log what we found
+                System.Diagnostics.Debug.WriteLine("=== Purchase History Debug ===");
+                System.Diagnostics.Debug.WriteLine($"Found {orders.Count} orders with {purchaseHistory.Count} items");
+                
+                var currentOrders = purchaseHistory.Where(p => p.IsNewOrder).ToList();
+                var pastOrders = purchaseHistory.Where(p => !p.IsNewOrder).ToList();
+                
+                System.Diagnostics.Debug.WriteLine($"Current Orders: {currentOrders.Count}");
+                System.Diagnostics.Debug.WriteLine($"Past Orders: {pastOrders.Count}");
+                
+                foreach (var item in purchaseHistory)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Product: {item.ProductName}, Status: '{item.Status}', StatusClass: '{item.StatusClass}', IsNew: {item.IsNewOrder}");
+                }
+
+                var viewModel = new ProfileViewModel
+                {
+                    CustomerId = currentCustomer.CustomerId,
+                    FullName = currentCustomer.FullName,
+                    Email = currentCustomer.Email,
+                    PhoneNumber = currentCustomer.Phone,
+                    Location = currentCustomer.Address,
+                    PurchaseHistory = purchaseHistory
+                };
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error loading purchase history: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+
+                var viewModel = new ProfileViewModel
+                {
+                    CustomerId = currentCustomer.CustomerId,
+                    FullName = currentCustomer.FullName,
+                    Email = currentCustomer.Email,
+                    PhoneNumber = currentCustomer.Phone,
+                    Location = currentCustomer.Address,
+                    PurchaseHistory = new List<PurchaseHistoryItem>()
+                };
+
+                TempData["Error"] = $"Unable to load purchase history: {ex.Message}";
+                return View(viewModel);
+            }            
         }
         
         [HttpGet]
@@ -83,23 +130,50 @@ namespace GoodShoe.Controllers
 
         // POST: Profile/Edit
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditProfileViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
             var currentCustomer = _authService.GetCurrentCustomer();
             if (currentCustomer == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
+            // Server-side email validation using EmailAddressAttribute or custom validation
+            if (!string.IsNullOrEmpty(model.Email))
+            {
+                var emailAttribute = new System.ComponentModel.DataAnnotations.EmailAddressAttribute();
+                if (!emailAttribute.IsValid(model.Email))
+                {
+                    ModelState.AddModelError("Email", "Please enter a valid email address.");
+                }
+            }
+
+            // Additional custom validations
+            if (string.IsNullOrWhiteSpace(model.FirstName))
+            {
+                ModelState.AddModelError("FirstName", "First name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.LastName))
+            {
+                ModelState.AddModelError("LastName", "Last name is required.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email address is required.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             // Check if email is taken by another user
             if (model.Email != currentCustomer.Email && await _authService.IsEmailTakenAsync(model.Email))
             {
-                ModelState.AddModelError("Email", "Email is already registered.");
+                ModelState.AddModelError("Email", "This email address is already registered to another account.");
                 return View(model);
             }
 
@@ -121,8 +195,9 @@ namespace GoodShoe.Controllers
                 TempData["Success"] = "Profile updated successfully!";
                 return RedirectToAction("Index");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                // Log the exception if you have logging configured
                 TempData["Error"] = "Failed to update profile. Please try again.";
                 return View(model);
             }
@@ -165,6 +240,53 @@ namespace GoodShoe.Controllers
             {
                 TempData["Error"] = "Failed to change password. Please try again.";
                 return RedirectToAction("Edit");
+            }
+        }
+        
+        // POST: Profile/DeleteAccount
+        [HttpPost]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var currentCustomer = _authService.GetCurrentCustomer();
+            if (currentCustomer == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            try
+            {
+                // Delete related order items first (to maintain referential integrity)
+                var customerOrders = await _context.Orders
+                    .Where(o => o.CustomerId == currentCustomer.CustomerId)
+                    .Include(o => o.OrderItems)
+                    .ToListAsync();
+
+                foreach (var order in customerOrders)
+                {
+                    _context.OrderItems.RemoveRange(order.OrderItems);
+                }
+
+                // Delete orders
+                _context.Orders.RemoveRange(customerOrders);
+
+                // Delete customer account
+                _context.Customers.Remove(currentCustomer);
+
+                // Save all changes
+                await _context.SaveChangesAsync();
+
+                // Clear session/authentication
+                _authService.Logout();
+
+                // Set success message for redirect
+                TempData["Success"] = "Your account has been permanently deleted. We're sorry to see you go!";
+        
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Failed to delete account. Please try again or contact support.";
+                return RedirectToAction("Index");
             }
         }
         

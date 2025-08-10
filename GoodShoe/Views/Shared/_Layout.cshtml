@@ -76,6 +76,7 @@
                     {
                         <!-- Logged-in user: show profile picture + name in a dropdown -->
                         <div class="dropdown">
+                            <!--== Customer or Admin Login ? ==-->
                             @if (customerId.HasValue)
                             {
                                 <a asp-controller="Profile" asp-action="Index" class="text-decoration-none me-2">
@@ -95,21 +96,17 @@
                                     data-bs-toggle="dropdown" aria-expanded="false">
                                 @(customerName ?? adminName)
                             </button>
+                            <!-- === Dropdown-menu for admin and customer === -->
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
-                                @if (customerId.HasValue)
+                                @if (customerId.HasValue) // For Customer
                                 {
                                     <li>
                                         <a class="dropdown-item" asp-controller="Profile" asp-action="Index">
                                             <i class="bi bi-person me-2"></i>Profile
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Orders" asp-action="History">
-                                            <i class="bi bi-clock-history me-2"></i>Order History
-                                        </a>
-                                    </li>
                                 }
-                                else if (adminId.HasValue)
+                                else if (adminId.HasValue) // For Admin
                                 {
                                     <li>
                                         <a class="dropdown-item" asp-controller="Admin" asp-action="Index">

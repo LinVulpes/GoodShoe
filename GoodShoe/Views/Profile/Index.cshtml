@@ -1,87 +1,155 @@
-﻿@using GoodShoe.ViewModels
-@model GoodShoe.ViewModels.ProfileViewModel
+﻿@model GoodShoe.ViewModels.ProfileViewModel
 
 @{
-ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Account Profile";
 }
 
 <style>
     .profile-container {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 40px 20px;
         min-height: 100vh;
     }
 
-    .profile-header {
-        background: white;
-        padding: 20px;
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding: 30px 0;
+        background-color: #e8e2d5;
         border-radius: 8px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
     }
 
-    .profile-title {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
+    .page-title {
+        font-size: 2.5rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+        color: #8b7355;
+    }
+
+    .page-subtitle {
+        font-size: 1.1rem;
+        color: #9d8b73;
+    }
+
+    .profile-section {
+        background: white;
+        margin-bottom: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(139, 115, 85, 0.1);
+        border: 1px solid #e8e2d5;
+        overflow: hidden;
+    }
+
+    .section-header {
+        background-color: #d4c4a8;
+        padding: 20px 25px;
+        border-bottom: 1px solid #c4b49d;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 400;
+        color: #6b5b4d;
+        margin: 0;
+    }
+
+    .section-content {
+        padding: 25px;
     }
 
     .profile-field {
-        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
         padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #f0ede6;
     }
 
     .profile-field:last-child {
         border-bottom: none;
         margin-bottom: 0;
-        padding-bottom: 0;
     }
 
     .field-label {
-        font-weight: 600;
-        color: #555;
-        margin-bottom: 5px;
-        display: block;
+        font-weight: 500;
+        color: #b19a7f;
+        min-width: 140px;
+        font-size: 1rem;
     }
 
     .field-value {
-        color: #333;
+        color: #6b5b4d;
+        flex: 1;
+        margin: 0 15px;
         font-size: 0.95rem;
     }
 
+    .password-value {
+        letter-spacing: 3px;
+        font-family: monospace;
+        color: #9d8b73;
+    }
+
     .edit-link {
-        color: #007bff;
+        color: #d4c4a8;
         text-decoration: none;
-        font-size: 0.85rem;
-        margin-left: 10px;
+        font-size: 0.9rem;
+        padding: 6px 12px;
+        border: 1px solid #d4c4a8;
+        border-radius: 4px;
+        background-color: transparent;
     }
 
     .edit-link:hover {
-        text-decoration: underline;
+        color: #ffffff;
+        background-color: #7d522f;
     }
 
-    .purchase-history {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        margin-top: 25px;
     }
 
-    .purchase-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #333;
+    .profile-button {
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-weight: 400;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        font-size: 0.95rem;
+        background-color: #d4c4a8;
+        color: #6b5b4d;
+        border: 1px solid #d4c4a8;
+        transition: all 0.3s ease;
+    }
+
+    .profile-button:hover {
+        background-color: #b3a085;
+        border-color: #b3a085;
+        color: #6b5b4d;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .order-section-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+        color: #8b7355;
         margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #d4c4a8;
     }
 
     .purchase-item {
         display: flex;
         align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #eee;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0ede6;
     }
 
     .purchase-item:last-child {
@@ -93,7 +161,8 @@ ViewData["Title"] = "Profile";
         height: 100px;
         border-radius: 6px;
         object-fit: cover;
-        margin-right: 15px;
+        margin-right: 20px;
+        border: 1px solid #e8e2d5;
     }
 
     .purchase-details {
@@ -101,92 +170,642 @@ ViewData["Title"] = "Profile";
     }
 
     .purchase-name {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 2px;
-        font-size: 0.95rem;
+        font-weight: 500;
+        color: #6b5b4d;
+        margin-bottom: 5px;
+        font-size: 1.05rem;
     }
 
     .purchase-description {
-        color: #666;
-        font-size: 0.85rem;
-        margin-bottom: 2px;
+        color: #9d8b73;
+        font-size: 0.9rem;
+        margin-bottom: 3px;
     }
 
     .purchase-size {
-        color: #666;
+        color: #a0845c;
         font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+
+    .purchase-date {
+        color: #9d8b73;
+        font-size: 0.85rem;
+        margin-bottom: 3px;
+    }
+
+    .purchase-order {
+        color: #8b7355;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .purchase-quantity {
+        color: #8b7355;
+        font-size: 0.9rem;
+        margin-right: 20px;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .purchase-status {
+        margin-right: 20px;
+        min-width: 100px;
+        text-align: center;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-pending {
+        background-color: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+    }
+
+    .status-shipping {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border: 1px solid #bee5eb;
+    }
+
+    .status-delivered {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .status-cancelled {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
     }
 
     .purchase-price {
         font-weight: 600;
-        color: #333;
+        color: #8b7355;
+        font-size: 1.1rem;
+        min-width: 80px;
+        text-align: right;
+    }
+
+    .alert-success {
+        padding: 15px 20px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        background-color: #d4edda;
+        color: #155724;
+        border-color: #c3e6cb;
+    }
+
+    .btn-close {
+        float: right;
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }    
+
+    .empty-message {
+        text-align: center;
+        color: #9d8b73;
+        font-style: italic;
+        padding: 40px 20px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(204, 204, 204, 0.5);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 10px 30px rgba(107, 91, 77, 0.3);
+        border: 1px solid #e8e2d5;
+    }
+
+    .close {
+        color: #9d8b73;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .close:hover {
+        color: #6b5b4d;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #8b7355;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d4c4a8;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        background-color: white;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #c4b49d;
+    }
+
+    .modal-buttons {
+        text-align: right;
+        margin-top: 25px;
+    }
+
+    .delete-account-section {
+        margin-top: 40px;
+        padding: 25px;
+        background-color: #faf8f5;
+        border: 1px solid #e8e2d5;
+        border-radius: 8px;
+    }
+
+    .delete-title {
+        color: #8b7355;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 10px;
+    }
+
+    .delete-description {
+        color: #9d8b73;
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .btn-delete-account {
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-weight: 400;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        font-size: 0.95rem;
+        background-color: #dd6b77;
+        color: #ffffff;
+        transition: all 0.3s ease;
+    }
+
+    .btn-delete-account:hover {
+        background-color: #dd2235;
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .delete-modal {
+        display: none;
+        position: fixed;
+        z-index: 1001;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .delete-modal-content {
+        background-color: white;
+        margin: 8% auto;
+        padding: 40px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 550px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        border: 1px solid #e8e2d5;
+        text-align: center;
+    }
+
+    .delete-modal-title {
+        color: #dc3545;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .delete-modal-warning {
+        color: #6b5b4d;
+        font-size: 1rem;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+
+    .delete-confirmation-input {
+        margin: 25px 0;
+        text-align: left;
+    }
+
+    .delete-confirmation-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 500;
+        color: #6b5b4d;
         font-size: 0.95rem;
     }
 
-    .password-value {
-        letter-spacing: 2px;
-        font-family: monospace;
+    .delete-confirmation-field {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #dc3545;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        background-color: white;
+    }
+
+    .delete-confirmation-field:focus {
+        outline: none;
+        border-color: #c82333;
+        box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+    }
+
+    .delete-modal-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn-cancel-delete {
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-weight: 400;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        font-size: 0.95rem;
+        background-color: #d4c4a8;
+        color: #6b5b4d;
+        border: 1px solid #d4c4a8;
+        transition: all 0.3s ease;
+    }
+
+    .btn-cancel-delete:hover {
+        background-color: #b3a085;
+        border-color: #b3a085;
+        transform: translateY(-1px);
+    }
+
+    .btn-confirm-delete {
+        padding: 12px 24px;
+        border-radius: 4px;
+        font-weight: 400;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        font-size: 0.95rem;
+        background-color: #dc3545;
+        color: white;
+        border: 1px solid #dc3545;
+        transition: all 0.3s ease;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .btn-confirm-delete.enabled {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .btn-confirm-delete.enabled:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+        transform: translateY(-1px);
     }
 </style>
 
 <div class="profile-container">
-    <div class="profile-header">
-        <h1 class="profile-title">Profile</h1>
+    @Html.AntiForgeryToken()
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">User Profile</h1>
+        <p class="page-subtitle">Manage your account information and view your purchase history</p>
+    </div>
 
-        @if (TempData["Success"] != null)
-        {
-        <div class="alert alert-success">
+    <!-- Success Alert -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" role="alert">
             @TempData["Success"]
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
         </div>
-        }
+    }
 
-        <div class="profile-field">
-            <span class="field-label">Email:</span>
-            <span class="field-value">@Model.Email</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+    <!-- Personal Information Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Personal Information</h2>
         </div>
+        <div class="section-content">
+            <div class="profile-field">
+                <span class="field-label">Full Name:</span>
+                <span class="field-value">@Model.FullName</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Password:</span>
-            <span class="field-value password-value">••••••••••</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
-        </div>
+            <div class="profile-field">
+                <span class="field-label">Email:</span>
+                <span class="field-value">@Model.Email</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Phone Number:</span>
-            <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
-        </div>
+            <div class="profile-field">
+                <span class="field-label">Phone:</span>
+                <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Location:</span>
-            <div class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</div>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            <div class="profile-field">
+                <span class="field-label">Password:</span>
+                <span class="field-value password-value">••••••••••</span>
+                <a href="#" onclick="openPasswordModal()" class="edit-link">Change</a>
+            </div>
+
+            <div class="action-buttons">
+                <a href="@Url.Action("Edit")" class="profile-button">Edit Profile</a>
+                <a href="#" onclick="openPasswordModal()" class="profile-button">Change Password</a>
+            </div>
         </div>
     </div>
 
-    <div class="purchase-history">
-        <h2 class="purchase-title">Purchase History</h2>
-
-        @if (Model.PurchaseHistory != null && Model.PurchaseHistory.Any())
-        {
-        @foreach (var item in Model.PurchaseHistory)
-        {
-        <div class="purchase-item">
-            <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" />
-            <div class="purchase-details">
-                <div class="purchase-name">@item.ProductName</div>
-                <div class="purchase-description">@item.Description</div>
-                <div class="purchase-size">Size @item.Size</div>
-            </div>
-            <div class="purchase-price">$@item.Price.ToString("F2")</div>
+    <!-- Address Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Address</h2>
         </div>
-        }
-        }
-        else
-        {
-        <p class="text-muted">No purchase history available.</p>
-        }
+        <div class="section-content">
+            <div class="profile-field">
+                <span class="field-label">Location:</span>
+                <span class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase History Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Purchase History</h2>
+        </div>
+        <div class="section-content">
+            <!-- Current Orders Section -->
+            @if (Model.CurrentOrders != null && Model.CurrentOrders.Any())
+            {
+            <h4 class="order-section-title">Current Orders</h4>
+            @foreach (var item in Model.CurrentOrders)
+            {
+            <div class="purchase-item">
+                <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" onerror="this.src='/images/placeholder.png'"/>
+                <div class="purchase-details">
+                    <div class="purchase-name">@item.ProductName</div>
+                    <div class="purchase-description">@item.Description</div>
+                    <div class="purchase-size">Size: @item.Size</div>
+                    <div class="purchase-date">@item.PurchaseDate.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+                </div>
+                <div class="purchase-quantity">@item.Quantity</div>
+                <div class="purchase-status">
+                    <span class="status-badge @item.StatusClass">@item.Status</span>
+                </div>
+                <div class="purchase-price">$@item.TotalPrice.ToString("F2")</div>
+            </div>
+            }
+            }
+
+            <!-- Past Orders Section -->
+            @if (Model.PastOrders != null && Model.PastOrders.Any())
+            {
+            @if (Model.CurrentOrders != null && Model.CurrentOrders.Any())
+            {
+            <div style="margin: 30px 0; border-top: 2px solid #f0ede6;"></div>
+            }
+            <h4 class="order-section-title">Past Orders</h4>
+            @foreach (var item in Model.PastOrders)
+            {
+            <div class="purchase-item">
+                <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" onerror="this.src='/images/placeholder.png'"/>
+                <div class="purchase-details">
+                    <div class="purchase-name">@item.ProductName</div>
+                    <div class="purchase-description">@item.Description</div>
+                    <div class="purchase-size">Size: @item.Size</div>
+                    <div class="purchase-date">@item.PurchaseDate.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+                </div>
+                <div class="purchase-quantity">@item.Quantity</div>
+                <div class="purchase-status">
+                    <span class="status-badge @item.StatusClass">@item.Status</span>
+                </div>
+                <div class="purchase-price">$@item.TotalPrice.ToString("F2")</div>
+            </div>
+            }
+            }
+
+            <!-- Empty State -->
+            @if ((Model.CurrentOrders == null || !Model.CurrentOrders.Any()) && (Model.PastOrders == null || !Model.PastOrders.Any()))
+            {
+            <div class="empty-message">
+                <p>No purchase history available.</p>
+                <p>Start shopping to see your orders here!</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Delete Account Section -->
+    <div class="delete-account-section">
+        <h3 class="delete-title">Danger Zone</h3>
+        <p class="delete-description">Once you delete your account, there is no going back. Please be certain.</p>
+        <a href="#" onclick="confirmDelete()" class="btn-delete-account">Delete Account</a>
     </div>
 </div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <h2 class="delete-modal-title">⚠️ Delete Account</h2>
+        <p class="delete-modal-warning">
+            <strong>This action is permanent and cannot be undone!</strong><br><br>
+            All your data, purchase history, and account information will be permanently deleted.
+            You will lose access to your account immediately and won't be able to recover it.
+        </p>
+
+        <div class="delete-confirmation-input">
+            <label for="deleteConfirmation" class="delete-confirmation-label">
+                To confirm deletion, please type <strong>"DELETE MY ACCOUNT"</strong> in the box below:
+            </label>
+            <input type="text" id="deleteConfirmation" class="delete-confirmation-field"
+                   placeholder="Type: DELETE MY ACCOUNT" autocomplete="off">
+        </div>
+
+        <div class="delete-modal-buttons">
+            <button type="button" onclick="closeDeleteModal()" class="btn-cancel-delete">
+                Cancel
+            </button>
+            <button type="button" id="confirmDeleteBtn" onclick="finalDeleteAccount()" class="btn-confirm-delete">
+                Delete My Account Forever
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePasswordModal()">&times;</span>
+        <h2 style="color: #8b7355; margin-bottom: 20px;">Change Password</h2>
+        <form id="passwordForm" action="@Url.Action("ChangePassword")" method="post">
+            <div class="form-group">
+                <label for="currentPassword" class="form-label">Current Password:</label>
+                <input type="password" id="currentPassword" name="CurrentPassword" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="newPassword" class="form-label">New Password:</label>
+                <input type="password" id="newPassword" name="NewPassword" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm New Password:</label>
+                <input type="password" id="confirmPassword" name="ConfirmPassword" required class="form-control">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" onclick="closePasswordModal()" class="profile-button" style="margin-right: 10px;">Cancel</button>
+                <button type="submit" class="profile-button">Change Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+        document.getElementById('passwordForm').reset();
+    }
+
+    window.onclick = function(event) {
+        var passwordModal = document.getElementById('passwordModal');
+        var deleteModal = document.getElementById('deleteModal');
+
+        if (event.target == passwordModal) {
+            closePasswordModal();
+        }
+        if (event.target == deleteModal) {
+            closeDeleteModal();
+        }
+    }
+
+    document.getElementById('passwordForm').addEventListener('submit', function(e) {
+        var newPassword = document.getElementById('newPassword').value;
+        var confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+            e.preventDefault();
+            alert('New password and confirm password do not match!');
+            return false;
+        }
+
+        if (newPassword.length < 6) {
+            e.preventDefault();
+            alert('Password must be at least 6 characters long!');
+            return false;
+        }
+    });
+
+    function confirmDelete() {
+        document.getElementById('deleteModal').style.display = 'block';
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        document.getElementById('deleteConfirmation').value = '';
+        updateDeleteButton();
+    }
+
+    function updateDeleteButton() {
+        const input = document.getElementById('deleteConfirmation');
+        const button = document.getElementById('confirmDeleteBtn');
+        const requiredText = 'DELETE MY ACCOUNT';
+
+        if (input.value.trim().toUpperCase() === requiredText) {
+            button.classList.add('enabled');
+        } else {
+            button.classList.remove('enabled');
+        }
+    }
+
+    function finalDeleteAccount() {
+        const input = document.getElementById('deleteConfirmation');
+        const requiredText = 'DELETE MY ACCOUNT';
+
+        if (input.value.trim().toUpperCase() === requiredText) {
+            const button = document.getElementById('confirmDeleteBtn');
+            button.innerHTML = 'Processing Deletion...';
+            button.style.opacity = '0.7';
+            button.style.pointerEvents = 'none';
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '@Url.Action("DeleteAccount", "Profile")';
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (token) {
+                const hiddenToken = document.createElement('input');
+                hiddenToken.type = 'hidden';
+                hiddenToken.name = '__RequestVerificationToken';
+                hiddenToken.value = token.value;
+                form.appendChild(hiddenToken);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        } else {
+            alert('Please type "DELETE MY ACCOUNT" exactly as shown to confirm deletion.');
+            input.focus();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteInput = document.getElementById('deleteConfirmation');
+        if (deleteInput) {
+            deleteInput.addEventListener('input', updateDeleteButton);
+            deleteInput.addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    finalDeleteAccount();
+                }
+            });
+        }
+    });
+</script>

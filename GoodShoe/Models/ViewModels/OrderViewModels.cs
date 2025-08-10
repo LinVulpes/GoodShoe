@@ -27,7 +27,7 @@ namespace GoodShoe.ViewModels
         public string StatusColor => Status.ToLower() switch
         {
             "pending" => "status-pending",
-            "shipping" => "status-shipping", 
+            "shipping" => "status-shipping",
             "delivered" => "status-delivered",
             "cancelled" => "status-cancelled",
             _ => "status-pending"
