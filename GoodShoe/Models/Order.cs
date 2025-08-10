@@ -40,7 +40,7 @@ namespace GoodShoe.Models
         public string StatusColor => Status.ToLower() switch
         {
             "pending" => "warning",
-            "shipped" => "info", 
+            "shipping" => "info", 
             "delivered" => "success",
             "cancelled" => "danger",
             _ => "secondary"
@@ -49,7 +49,7 @@ namespace GoodShoe.Models
         public string StatusDisplayClass => Status.ToLower() switch
         {
             "pending" => "badge-warning",
-            "shipped" => "badge-info",
+            "shipping" => "badge-info",
             "delivered" => "badge-success", 
             "cancelled" => "badge-danger",
             _ => "badge-secondary"

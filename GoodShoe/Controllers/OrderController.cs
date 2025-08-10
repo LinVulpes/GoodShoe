@@ -12,12 +12,14 @@ namespace GoodShoe.Controllers
     {
         private readonly GoodShoeDbContext _db;
         private readonly ICartService _cartService;
+        private readonly IAuthService _authService;
         private const decimal DELIVERY_FEE = 20.00m;
 
-        public OrderController(GoodShoeDbContext db, ICartService cartService)
+        public OrderController(GoodShoeDbContext db, ICartService cartService, IAuthService authService)
         {
             _db = db;
             _cartService = cartService;
+            _authService = authService;
         }
 
         //handle GET requests to /Order/Checkout
@@ -67,6 +69,13 @@ namespace GoodShoe.Controllers
             {
                 try
                 {
+                    var currentCustomer = _authService.GetCurrentCustomer();
+                    if (currentCustomer == null)
+                    {
+                        TempData["CartError"] = "Please login to complete your purchase.";
+                        return RedirectToAction("Login", "Account");
+                    }
+
                     // Get Cart Items from session
                     var cartItems = GetCartItems();
 
@@ -79,11 +88,11 @@ namespace GoodShoe.Controllers
                         return RedirectToAction("Index", "Cart");
                     }
 
-                    // Create new order
+                    // Create new order with PROPER customer ID
                     var order = new Order()
                     {
-                        CustomerId = 1,
-                        TotalAmount = calculatedTotal, // Use calculated total, not model.Total
+                        CustomerId = currentCustomer.CustomerId, // FIXED: Use actual customer ID
+                        TotalAmount = calculatedTotal,
                         Status = "Pending",
                         Address = $"{model.FirstName} {model.LastName}, {model.Address}",
                         PaymentMethod = model.PaymentMethod,
@@ -97,7 +106,7 @@ namespace GoodShoe.Controllers
                     _db.SaveChanges();
 
                     // Create order items - FIXED: Use 'item' instead of 'cartItems'
-                    foreach (var item in cartItems)
+                     foreach (var item in cartItems)
                     {
                         // Find the ProductVariant that matches the product and size
                         var productVariant = _db.ProductVariant
@@ -106,8 +115,7 @@ namespace GoodShoe.Controllers
 
                         if (productVariant == null)
                         {
-                            throw new Exception(
-                                $"Product variant not found for Product ID {item.ProductID} and size {item.Size}");
+                            throw new Exception($"Product variant not found for Product ID {item.ProductID} and size {item.Size}");
                         }
 
                         var orderItem = new OrderItem
@@ -120,7 +128,7 @@ namespace GoodShoe.Controllers
                             UnitPrice = item.Price,
                             TotalPrice = item.Price * item.Quantity
                         };
-                        _db.OrderItems.Add(orderItem); // Use OrderItems (plural) to match your DbContext
+                        _db.OrderItems.Add(orderItem);
                     }
 
                     _db.SaveChanges();
@@ -133,7 +141,7 @@ namespace GoodShoe.Controllers
                     TempData["OrderId"] = order.OrderId;
                     TempData["OrderSuccess"] = "Order placed successfully!";
 
-                    System.Diagnostics.Debug.WriteLine($"Order created successfully with ID: {order.OrderId}");
+                    System.Diagnostics.Debug.WriteLine($"Order created successfully with ID: {order.OrderId} for Customer: {currentCustomer.CustomerId}");
                     return RedirectToAction("Confirmation");
                 }
                 catch (Exception ex)
@@ -141,13 +149,11 @@ namespace GoodShoe.Controllers
                     System.Diagnostics.Debug.WriteLine($"Error creating order: {ex.Message}");
                     TempData["CartError"] = "Error processing your order. Please try again.";
 
-                    // Re-populate cart items if order creation fails
                     model.CartItems = GetCartItems();
                     return View(model);
                 }
             }
 
-            // Re-populate cart items if validation fails
             model.CartItems = GetCartItems();
             return View(model);
         }
