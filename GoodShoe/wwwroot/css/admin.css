@@ -1176,6 +1176,10 @@
     max-width: 150px;
 }
 
+.bi-check-circle-fill {
+    animation: pulse 2s infinite;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .admin-container {
