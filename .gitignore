@@ -86,7 +86,6 @@ Thumbs.db
 desktop.ini
 
 # Optional: ignore backups
-*.bak
 *.orig
 *.tmp
 
