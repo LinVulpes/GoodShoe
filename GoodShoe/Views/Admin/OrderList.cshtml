@@ -7,17 +7,19 @@
 <link rel="stylesheet" href="~/css/admin.css" />
 
 <div class="admin-container">
+    <!-- Back Button -->
+    <div class="back-button-container">
+        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
     <!-- Header -->
     <div class="admin-header">
         <h1 class="admin-title">
             <i class="fas fa-list-alt"></i>
             Order Status
         </h1>
-        <div class="header-action back-button-container mb-4">
-            <a href="@Url.Action("Index", "Admin")" class="btn btn-secondary">
-                <i class="bi bi-arrow-left"></i> Back
-            </a>
-        </div>
     </div>
     
     <!-- Search and Filters -->
