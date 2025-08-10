@@ -3,17 +3,17 @@
 @{ 
     ViewData["Title"] = "Product Details";
 }
-
 @section Scripts {
+    <!-- Page-specific CSS -->
     <link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
+
     <script>
-        // Pass Razor value to JS
-        const productId = '@Model.ProductId';
+        // Pass Razor model data to JS
+        const productId = @Model.ProductId;             // numeric
+        const productIdStr = "@Model.ProductId";        // string
     </script>
-    <script>
-        // share the numeric productId to site.js
-        const productId = @Model.ProductId;
-    </script>
+
+    <!-- Page-specific or global JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
 }
 
