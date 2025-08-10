@@ -61,59 +61,71 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-function selectSize(button, sizeValue, sizeLabel, stockCount, variantId) {
-    console.log('Selected Size:', sizeLabel, 'Stock:', stockCount, 'VariantId:', variantId);
+let selectedSizeInfo = null;
 
-    // Clear previous selection
-    document.querySelectorAll('.size-button').forEach(btn => btn.classList.remove('selected'));
+function selectSize(button, size, sizeLabel, stockCount, variantId) {
+    // Don't allow selection if out of stock
+    if (stockCount <= 0) {
+        console.log('Size out of stock:', size);
+        return;
+    }
 
-    // Highlight selected button
+    // Remove selection from all other buttons
+    document.querySelectorAll('.size-button').forEach(btn => {
+        btn.classList.remove('selected');
+    });
+
+    // Add selection to current button
     button.classList.add('selected');
 
-    // Store selected values
-    selectedSizeValue = sizeValue;
-    selectedVariantId = variantId;
+    // Store selected size information
+    selectedSizeInfo = {
+        size: size,
+        sizeLabel: sizeLabel,
+        stockCount: stockCount,
+        variantId: variantId
+    };
 
     // Update hidden form fields
-    document.getElementById('selectedSize').value = sizeValue;
+    document.getElementById('selectedSize').value = size;
     document.getElementById('selectedVariantId').value = variantId;
 
-    // Enable Add to Cart button
+    // Enable add to cart button
     const addToCartBtn = document.getElementById('addToCartBtn');
     addToCartBtn.disabled = false;
+    addToCartBtn.textContent = `Add to cart - ${sizeLabel}`;
 
-    // Update button text with stock info
-    if (stockCount > 0 && stockCount <= 5) {
-        addToCartBtn.textContent = `Add US ${sizeValue} to cart (${stockCount} left)`;
-    } else {
-        addToCartBtn.textContent = `Add US ${sizeValue} to cart`;
-    }
+    console.log('Selected size:', selectedSizeInfo);
 }
 
 function addToCart() {
-    // Check stock availability before submitting
-    fetch(`/Products/CheckSizeAvailability?productId=${productId}&size=${selectedSizeValue}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            if (data.available && data.stock > 0) {
-                console.log('Stock confirmed, submitting form...');
-                document.getElementById('addToCartForm').submit();
-            } else {
-                alert('Sorry, this size is no longer available.');
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error('Error checking availability:', error);
-            // Fallback: Submit the form anyway
-            document.getElementById('addToCartForm').submit();
-        });
+    if (!selectedSizeInfo) {
+        alert('Please select a size first.');
+        return;
+    }
+
+    if (selectedSizeInfo.stockCount <= 0) {
+        alert('Sorry, this size is out of stock.');
+        return;
+    }
+
+    // Show loading state
+    const addToCartBtn = document.getElementById('addToCartBtn');
+    const originalText = addToCartBtn.textContent;
+    addToCartBtn.disabled = true;
+    addToCartBtn.innerHTML = '<i class="spinner-border spinner-border-sm me-2"></i>Adding...';
+
+    // Submit the form
+    document.getElementById('addToCartForm').submit();
 }
 
+// Enhanced real-time stock checking with out-of-stock styling
 function updateSizeAvailability() {
+    if (typeof productId === 'undefined') {
+        console.warn('productId not defined');
+        return;
+    }
+
     fetch(`/Products/GetAvailableSizes?productId=${productId}`)
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
@@ -126,26 +138,55 @@ function updateSizeAvailability() {
                 const size = parseInt(button.dataset.size);
                 const sizeData = sizes.find(s => s.sizeValue === size);
 
-                if (sizeData && sizeData.available) {
-                    button.disabled = false;
-                    button.classList.remove('disabled');
-                    button.dataset.stock = sizeData.stock;
+                // Remove all previous state classes
+                button.classList.remove('disabled', 'low-stock');
 
-                    // Update stock indicator
-                    const stockIndicator = button.querySelector('.stock-indicator');
+                // Remove any stock indicators
+                let stockIndicator = button.querySelector('.stock-indicator');
+                if (stockIndicator) {
+                    stockIndicator.remove();
+                }
+
+                if (sizeData && sizeData.stock > 0) {
+                    // Size is available
+                    button.disabled = false;
+                    button.dataset.stock = sizeData.stock;
+                    button.dataset.variantId = sizeData.variantId || button.dataset.variantId;
+
+                    // Remove any existing stock indicators
+                    let stockIndicator = button.querySelector('.stock-indicator');
                     if (stockIndicator) {
-                        stockIndicator.textContent = `(${sizeData.stock} left)`;
-                    } else if (sizeData.stock <= 5) {
-                        button.innerHTML += `<small class="stock-indicator">(${sizeData.stock} left)</small>`;
+                        stockIndicator.remove();
                     }
                 } else {
+                    // Size is out of stock
                     button.disabled = true;
-                    button.classList.add('disabled');
-                    button.classList.remove('selected');
+                    button.classList.add('disabled', 'out-of-stock');
+                    button.dataset.stock = '0';
 
-                    // Remove stock indicator if exists
-                    const stockIndicator = button.querySelector('.stock-indicator');
-                    if (stockIndicator) stockIndicator.remove();
+                    // Remove selection if this was the selected size
+                    if (button.classList.contains('selected')) {
+                        button.classList.remove('selected');
+                        selectedSizeInfo = null;
+
+                        // Reset form and button state
+                        const addToCartBtn = document.getElementById('addToCartBtn');
+                        if (addToCartBtn) {
+                            addToCartBtn.disabled = true;
+                            addToCartBtn.textContent = 'Add to cart';
+                        }
+
+                        const selectedSizeInput = document.getElementById('selectedSize');
+                        const selectedVariantInput = document.getElementById('selectedVariantId');
+                        if (selectedSizeInput) selectedSizeInput.value = '';
+                        if (selectedVariantInput) selectedVariantInput.value = '';
+                    }
+
+                    // Remove any existing stock indicators
+                    let stockIndicator = button.querySelector('.stock-indicator');
+                    if (stockIndicator) {
+                        stockIndicator.remove();
+                    }
                 }
             });
         })
@@ -154,88 +195,102 @@ function updateSizeAvailability() {
         });
 }
 
+
 //** ====== JS of Animation and transition for Contact page ====== **//
 // Contact Form Submission
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-    const form = this;
-    const submitBtn = document.getElementById('submitBtn');
-    const btnText = submitBtn.querySelector('.btn-text');
-    const btnLoading = submitBtn.querySelector('.btn-loading');
-    const btnSuccess = submitBtn.querySelector('.btn-success');
-    const successAlert = document.getElementById('successAlert');
+            const form = this;
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = submitBtn.querySelector('.btn-text');
+            const btnLoading = submitBtn.querySelector('.btn-loading');
+            const btnSuccess = submitBtn.querySelector('.btn-success');
+            const successAlert = document.getElementById('successAlert');
 
-    // Show loading state
-    btnText.classList.add('d-none');
-    btnLoading.classList.remove('d-none');
-    submitBtn.disabled = true;
+            // Show loading state
+            btnText.classList.add('d-none');
+            btnLoading.classList.remove('d-none');
+            submitBtn.disabled = true;
 
-    // Simulate form submission
-    setTimeout(() => {
-        // Show success state on button
-        btnLoading.classList.add('d-none');
-        btnSuccess.classList.remove('d-none');
-        submitBtn.classList.add('btn-success-state');
+            // Simulate form submission
+            setTimeout(() => {
+                // Show success state on button
+                btnLoading.classList.add('d-none');
+                btnSuccess.classList.remove('d-none');
+                submitBtn.classList.add('btn-success-state');
 
-        // Show floating success alert with animation
-        successAlert.style.display = 'block';
+                // Show floating success alert with animation
+                successAlert.style.display = 'block';
 
-        // Auto-hide success alert after 1 seconds
-        setTimeout(() => {
-            successAlert.style.display = 'none';
-        }, 1000);
+                // Auto-hide success alert after 1 seconds
+                setTimeout(() => {
+                    successAlert.style.display = 'none';
+                }, 1000);
 
-        // Reset button state after 2 seconds
-        setTimeout(() => {
-            btnSuccess.classList.add('d-none');
-            btnText.classList.remove('d-none');
-            submitBtn.classList.remove('btn-success-state');
-            submitBtn.disabled = false;
+                // Reset button state after 2 seconds
+                setTimeout(() => {
+                    btnSuccess.classList.add('d-none');
+                    btnText.classList.remove('d-none');
+                    submitBtn.classList.remove('btn-success-state');
+                    submitBtn.disabled = false;
 
-            // Reset form
-            form.reset();
-        }, 2000);
+                    // Reset form
+                    form.reset();
+                }, 2000);
 
-    }, 1500);
+            }, 1500);
+        });
+    }
 });
 
 // Newsletter Form Submission
-document.getElementById('newsletterForm').addEventListener('submit', function (e) {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', function() {
+    const newsletterForm = document.getElementById('newsletterForm');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    const emailInput = this.querySelector('.newsletter-input');
-    const submitBtn = this.querySelector('.btn-newsletter');
-    const originalText = submitBtn.innerHTML;
+            const emailInput = this.querySelector('.newsletter-input');
+            const submitBtn = this.querySelector('.btn-newsletter');
+            const originalText = submitBtn.innerHTML;
 
-    // Show loading state
-    if (submitBtn.disabled) return; // this will prevent from multiple clicks of a button
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
+            // Show loading state
+            if (submitBtn.disabled) return; // this will prevent from multiple clicks of a button
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Subscribing...';
 
-    // Simulate subscription
-    setTimeout(() => {
-        submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Subscribed!';
-        submitBtn.style.background = '#28a745';
+            // Simulate subscription
+            setTimeout(() => {
+                submitBtn.innerHTML = '<i class="bi bi-check-circle me-2"></i>Subscribed!';
+                submitBtn.style.background = '#28a745';
 
-        // Reset loading after 2 seconds
-        setTimeout(() => {
-            submitBtn.innerHTML = originalText;
-            submitBtn.style.background = '';
-            submitBtn.disabled = false;
-            emailInput.value = '';
-        }, 2000);
+                // Reset loading after 2 seconds
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.background = '';
+                    submitBtn.disabled = false;
+                    emailInput.value = '';
+                }, 2000);
 
-    }, 1500);
+            }, 1500);
+        });
+    }
 });
 
 // Smooth hover effects for contact cards
-document.querySelectorAll('.contact-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-10px)';
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    const contactCards = document.querySelectorAll('.contact-card');
+    contactCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-10px)';
+        });
 
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
     });
 });
