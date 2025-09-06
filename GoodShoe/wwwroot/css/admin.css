@@ -1180,6 +1180,72 @@
     animation: pulse 2s infinite;
 }
 
+/* Chart Section Styles */
+.chart-section {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.year-navigation {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.year-btn {
+    background: #f8f9fa;
+    border: 2px solid #e9ecef;
+    border-radius: 6px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.3s ease;
+}
+
+.year-btn:hover {
+    background: #e9ecef;
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.year-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #f8f9fa;
+    border-color: #e9ecef;
+    color: #6c757d;
+}
+
+.current-year {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    min-width: 60px;
+    text-align: center;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+
+#revenueChart {
+    max-height: 400px;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
     .admin-container {

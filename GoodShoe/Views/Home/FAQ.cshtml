@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "FAQ - GoodShoe";
+}
+
+@section Scripts {
+    <link rel="stylesheet" href="~/css/shared-style.css" asp-append-version="true"/>
+    <script src="~/js/shared-script.js"></script>
+}
+
+<html lang="en">
+<body>
+    <div class="container">
+        <div class="faq-container">
+            <div class="faq-header">
+                <h1>Frequently Asked Questions</h1>
+                <p>Find answers to common questions about GoodShoe</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" class="form-control search-input" id="faqSearch" placeholder="Search FAQ...">
+            </div>
+
+            <div class="category-tabs">
+                <button class="category-tab active" data-category="all">All</button>
+                <button class="category-tab" data-category="orders">Orders</button>
+                <button class="category-tab" data-category="shipping">Shipping</button>
+                <button class="category-tab" data-category="returns">Returns</button>
+                <button class="category-tab" data-category="account">Account</button>
+                <button class="category-tab" data-category="products">Products</button>
+            </div>
+
+            <div class="faq-content">
+                <!-- Orders Category -->
+                <div class="faq-item" data-category="orders">
+                    <div class="faq-question">
+                        <span>How do I place an order on GoodShoe?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Placing an order is simple:</p>
+                        <ul>
+                            <li>Browse our sports shoe collection on the home page</li>
+                            <li>Use filters to find shoes by brand, size, or price</li>
+                            <li>Click on a product to view details</li>
+                            <li>Select your size and click "Add to Cart"</li>
+                            <li>Review your cart and proceed to checkout</li>
+                            <li>Complete the mock payment process</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-category="orders">
+                    <div class="faq-question">
+                        <span>Can I modify or cancel my order?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Once an order is placed, you can view it in your Order History. Since this is a demonstration website with mock checkout, order modifications are handled through the admin panel for testing purposes.</p>
+                    </div>
+                </div>
+
+                <!-- Shipping Category -->
+                <div class="faq-item" data-category="shipping">
+                    <div class="faq-question">
+                        <span>What are your shipping options?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>GoodShoe offers several shipping options:</p>
+                        <ul>
+                            <li>Standard Delivery (3-5 business days) - Free for orders over $100</li>
+                            <li>Express Delivery (1-2 business days) - $15</li>
+                            <li>Same Day Delivery (within Singapore) - $25</li>
+                        </ul>
+                        <p>Note: This is a demo website, so actual shipping is not available.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-category="shipping">
+                    <div class="faq-question">
+                        <span>How can I track my order?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>You can track your orders by:</p>
+                        <ul>
+                            <li>Logging into your account and visiting the Order History page</li>
+                            <li>Viewing order status updates (Pending, Shipped, Delivered)</li>
+                            <li>Receiving order confirmation emails</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Returns Category -->
+                <div class="faq-item" data-category="returns">
+                    <div class="faq-question">
+                        <span>What is your return policy?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>GoodShoe offers a 30-day return policy:</p>
+                        <ul>
+                            <li>Items must be in original condition with tags</li>
+                            <li>Shoes must be unworn and in original packaging</li>
+                            <li>Return shipping is free for defective items</li>
+                            <li>Refunds processed within 5-7 business days</li>
+                        </ul>
+                        <p>Note: This is a demonstration website - actual returns are not processed.</p>
+                    </div>
+                </div>
+
+                <!-- Account Category -->
+                <div class="faq-item" data-category="account">
+                    <div class="faq-question">
+                        <span>How do I create an account?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Creating an account is easy:</p>
+                        <ul>
+                            <li>Click on "Profile" in the navigation menu</li>
+                            <li>Select "Register" to create a new account</li>
+                            <li>Fill in your email, password, and personal details</li>
+                            <li>Verify your email address</li>
+                            <li>Start shopping with your new account!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-category="account">
+                    <div class="faq-question">
+                        <span>How do I reset my password?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To reset your password:</p>
+                        <ul>
+                            <li>Go to the login page</li>
+                            <li>Click "Forgot Password"</li>
+                            <li>Enter your registered email address</li>
+                            <li>Check your email for reset instructions</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Products Category -->
+                <div class="faq-item" data-category="products">
+                    <div class="faq-question">
+                        <span>What types of shoes do you sell?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>GoodShoe specializes in sports shoes for:</p>
+                        <ul>
+                            <li>Men's athletic footwear</li>
+                            <li>Women's sports shoes</li>
+                            <li>Unisex running shoes</li>
+                            <li>Training and fitness shoes</li>
+                            <li>Various brands and price ranges</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="faq-item" data-category="products">
+                    <div class="faq-question">
+                        <span>How do I find the right shoe size?</span>
+                        <span class="faq-toggle">▼</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>To find your perfect fit:</p>
+                        <ul>
+                            <li>Check our size guide on each product page</li>
+                            <li>Measure your feet in the evening when they're largest</li>
+                            <li>Consider the shoe's intended use (running shoes may need extra room)</li>
+                            <li>Read customer reviews for sizing feedback</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="no-results">
+                <h4>No results found</h4>
+                <p>Try adjusting your search terms or browse different categories.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

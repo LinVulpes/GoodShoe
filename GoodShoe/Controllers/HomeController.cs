@@ -95,6 +95,16 @@ public class HomeController : Controller
         
         return View(viewModel);
     }
+    
+    public IActionResult FAQ()
+    {
+        return View();
+    }
+    
+    public IActionResult Terms()
+    {
+        return View();
+    }
 
     public IActionResult Privacy()
     {
