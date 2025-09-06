@@ -46,6 +46,49 @@ namespace GoodShoe.Controllers
             var totalRevenue = context.Orders
                 .Where(o => o.Status == "Delivered" && o.PaymentStatus == "Completed")
                 .Sum(o => o.TotalAmount);
+            
+            // Get all available years with delivered orders
+            var availableYears = context.Orders
+                .Where(o => o.Status == "Delivered" && o.PaymentStatus == "Completed")
+                .Select(o => o.CreatedAt.Year)
+                .Distinct()
+                .OrderBy(y => y)
+                .ToList();
+
+            // If no delivered orders, include current year for empty chart
+            if (!availableYears.Any())
+            {
+                availableYears.Add(DateTime.Now.Year);
+            }
+
+            // Calculate revenue for each available year
+            var yearlyRevenueData = new Dictionary<int, object>();
+    
+            foreach (var year in availableYears)
+            {
+                var monthlyRevenue = new decimal[12];
+                var monthLabels = new string[12];
+        
+                for (int month = 1; month <= 12; month++)
+                {
+                    var startOfMonth = new DateTime(year, month, 1);
+                    var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            
+                    monthlyRevenue[month - 1] = context.Orders
+                        .Where(o => o.Status == "Delivered" && 
+                                    o.PaymentStatus == "Completed" &&
+                                    o.CreatedAt >= startOfMonth && 
+                                    o.CreatedAt <= endOfMonth)
+                        .Sum(o => (decimal?)o.TotalAmount) ?? 0;
+                
+                    monthLabels[month - 1] = startOfMonth.ToString("MMM yyyy");
+                }
+        
+                yearlyRevenueData[year] = new {
+                    labels = monthLabels,
+                    data = monthlyRevenue
+                };
+            }
 
             // Pass all statistics to the view
             ViewBag.TotalProducts = totalProducts;
@@ -62,6 +105,10 @@ namespace GoodShoe.Controllers
             ViewBag.CancelledOrders = cancelledOrders;
             ViewBag.RecentOrders = recentOrders;
             ViewBag.TotalRevenue = totalRevenue;
+            
+            // Multi-year chart data
+            ViewBag.YearlyRevenueData = System.Text.Json.JsonSerializer.Serialize(yearlyRevenueData);
+            ViewBag.AvailableYears = availableYears;
 
             return View();
         }

@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Register";
 }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
     <div class="text-center" style="max-width: 400px; width: 100%;">
@@ -59,7 +62,3 @@
         </div>
     </div>
 </div>
-
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

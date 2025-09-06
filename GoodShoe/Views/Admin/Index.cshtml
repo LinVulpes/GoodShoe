@@ -94,7 +94,7 @@
                 <p>Delivered Orders</p>
             </div>
         </div>
-
+        
         <!-- Revenue Card -->
         <div class="stat-card">
             <div class="stat-icon orders">
@@ -116,7 +116,21 @@
                 <p>Recent Orders (7 days)</p>
             </div>
         </div>
-        
+    </div>
+    
+    <!-- Revenue Chart -->
+    <div class="chart-section">
+        <div class="chart-header">
+            <h2 class="section-title">Revenue Overview</h2>
+            <div class="year-navigation">
+                <button id="prevYear" class="year-btn">← 2023</button>
+                <span id="currentYear" class="current-year">2024</span>
+                <button id="nextYear" class="year-btn">2025 →</button>
+            </div>
+        </div>
+        <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+        </div>
     </div>
     
     <!-- Quick Actions -->
@@ -149,3 +163,179 @@
         </div>
     </div>
 </div>
+
+<!-- Chart.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+    let currentDisplayYear = new Date().getFullYear();
+    let revenueChart;
+    
+    // Get data from controller
+    const allRevenueData = @Html.Raw(ViewBag.YearlyRevenueData);
+    const availableYears = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.AvailableYears));
+    
+    // Set current year to the latest available year with data
+    if (availableYears && availableYears.length > 0) {
+        currentDisplayYear = Math.max(...availableYears);
+    }
+
+    function updateYearNavigation() {
+        const prevBtn = document.getElementById('prevYear');
+        const nextBtn = document.getElementById('nextYear');
+        const currentYearSpan = document.getElementById('currentYear');
+        
+        currentYearSpan.textContent = currentDisplayYear;
+        prevBtn.textContent = `← ${currentDisplayYear - 1}`;
+        nextBtn.textContent = `${currentDisplayYear + 1} →`;
+        
+        // Enable/disable buttons based on available data
+        const minYear = Math.min(...availableYears);
+        const maxYear = Math.max(...availableYears);
+        
+        prevBtn.disabled = currentDisplayYear <= minYear;
+        nextBtn.disabled = currentDisplayYear >= maxYear;
+    }
+
+    function updateChart() {
+        const yearData = allRevenueData[currentDisplayYear];
+        
+        if (!yearData) {
+            // No data for this year, show empty chart
+            revenueChart.data.labels = [`Jan ${currentDisplayYear}`, `Feb ${currentDisplayYear}`, 
+                                       `Mar ${currentDisplayYear}`, `Apr ${currentDisplayYear}`, 
+                                       `May ${currentDisplayYear}`, `Jun ${currentDisplayYear}`, 
+                                       `Jul ${currentDisplayYear}`, `Aug ${currentDisplayYear}`, 
+                                       `Sep ${currentDisplayYear}`, `Oct ${currentDisplayYear}`, 
+                                       `Nov ${currentDisplayYear}`, `Dec ${currentDisplayYear}`];
+            revenueChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        } else {
+            revenueChart.data.labels = yearData.labels;
+            revenueChart.data.datasets[0].data = yearData.data;
+        }
+        
+        // Update chart max value based on current year's data
+        const maxDataValue = Math.max(...revenueChart.data.datasets[0].data);
+        const chartMax = maxDataValue > 0 ? Math.ceil(maxDataValue / 1000) * 1000 : 1000;
+        const stepSize = chartMax <= 5000 ? 500 : 1000;
+        
+        revenueChart.options.scales.y.max = chartMax;
+        revenueChart.options.scales.y.ticks.stepSize = stepSize;
+        
+        revenueChart.update();
+        updateYearNavigation();
+    }
+
+    function initializeChart() {
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        const config = {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Monthly Revenue ($)',
+                    data: [],
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderColor: '#3498db',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#3498db',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            usePointStyle: true,
+                            padding: 20,
+                            font: {
+                                size: 14,
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleFont: {
+                            size: 14,
+                            family: "'Inter', sans-serif"
+                        },
+                        bodyFont: {
+                            size: 13,
+                            family: "'Inter', sans-serif"
+                        },
+                        callbacks: {
+                            label: function (context) {
+                                return 'Revenue: $' + context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                family: "'Inter', sans-serif"
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        max: 1000,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            stepSize: 500,
+                            font: {
+                                size: 12,
+                                family: "'Inter', sans-serif"
+                            },
+                            callback: function (value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
+            }
+        };
+
+        revenueChart = new Chart(ctx, config);
+        updateChart();
+    }
+
+    // Event listeners for year navigation
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('prevYear').addEventListener('click', function() {
+            if (currentDisplayYear > Math.min(...availableYears)) {
+                currentDisplayYear--;
+                updateChart();
+            }
+        });
+
+        document.getElementById('nextYear').addEventListener('click', function() {
+            if (currentDisplayYear < Math.max(...availableYears)) {
+                currentDisplayYear++;
+                updateChart();
+            }
+        });
+
+        initializeChart();
+    });
+</script>
