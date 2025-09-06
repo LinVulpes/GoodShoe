@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - GoodShoe</title>
-    <script type="importmap"></script>
+    <script type="import map"></script>
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -62,19 +62,22 @@
 
                 <!-- Right Side: Cart, User Profile, Login/Logout -->
                 <div class="d-flex align-items-center ms-auto">
-                    <!-- Shopping Cart -->
-                    <div class="me-3" title="Shopping Cart">
-                        <a asp-controller="Cart" asp-action="Index" class="text-decoration-none">
-                            <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30"/>
-                        </a>
-                    </div>
-
                     @{
                         var customerId = Context.Session.GetInt32("CustomerId");
                         var adminId = Context.Session.GetInt32("AdminId");
                         var customerName = Context.Session.GetString("CustomerName");
                         var adminName = Context.Session.GetString("AdminName");
                         var isLoggedIn = customerId.HasValue || adminId.HasValue;
+                    }
+                    
+                    <!-- Shopping Cart -->
+                    @if (!adminId.HasValue)
+                    {
+                        <div class="me-3" title="Shopping Cart">
+                            <a asp-controller="Cart" asp-action="Index" class="text-decoration-none">
+                                <img src="~/images/cart.png" alt="Shopping Cart" width="30" height="30"/>
+                            </a>
+                        </div>
                     }
 
                     @if (isLoggedIn)
