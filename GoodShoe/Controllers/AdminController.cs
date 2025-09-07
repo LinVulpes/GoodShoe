@@ -6,9 +6,8 @@ using GoodShoe.ViewModels;
 
 namespace GoodShoe.Controllers
 {
-    public class AdminController : Controller
+    public class AdminController : BaseAdminController
     {
-
         // Establish the context
         private GoodShoeDbContext context {  get; set; }
         public AdminController(GoodShoeDbContext ctx)
