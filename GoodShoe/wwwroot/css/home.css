@@ -78,7 +78,9 @@
     line-height: 0.85;
     font-family: "The Seasons", serif;
     margin-bottom: 28vh;
-    word-wrap: break-word;
+    overflow-wrap: normal;
+    word-break: normal;
+    white-space: normal;
 }
 
 .slide-description {
