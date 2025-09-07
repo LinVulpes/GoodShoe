@@ -1,13 +1,15 @@
 ﻿using GoodShoe.Data;
-using GoodShoe.Services; //so ICartService/CartService are in scope
+using GoodShoe.Services;
+using Microsoft.AspNetCore.Mvc.Razor; //so ICartService/CartService are in scope
 using Microsoft.EntityFrameworkCore;
-using GoodShoe.Models;
-using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Container.
 builder.Services.AddControllersWithViews();
+
+// Account authentication
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Session configuration - updated with timeout 30 mins
 builder.Services.AddDistributedMemoryCache();
@@ -18,43 +20,24 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Path for any action of Product Management in AdminController to looks in Views/Admin/Product_Management/
+builder.Services.Configure<RazorViewEngineOptions>(options =>
+{
+    options.ViewLocationFormats.Add("/Views/Admin/Product_Management/{0}.cshtml");
+});
+
 // Make IHttpContextAccessor available (needed by CartService)
 builder.Services.AddHttpContextAccessor();
 
 // Register your cart service
 builder.Services.AddScoped<ICartService, CartService>();
+// Commented for now -> builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Added Entity Framework
 builder.Services.AddDbContext<GoodShoeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("GoodShoeContext"),
         sqlOptions => sqlOptions.EnableRetryOnFailure()
     ));
-
-// Add Identity services
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-{
-    // Configure password requirements
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-
-    // Configure sign-in requirements
-    options.SignIn.RequireConfirmedAccount = false;
-    options.SignIn.RequireConfirmedEmail = false;
-})
-.AddEntityFrameworkStores<GoodShoeDbContext>()
-.AddDefaultTokenProviders();
-
-// Configure application cookie
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.LoginPath = "/Account/Login";
-    options.LogoutPath = "/Account/Logout";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-});
-
 
 var app = builder.Build();
 
@@ -70,9 +53,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 app.UseSession();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
@@ -91,4 +71,5 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine($"Error initializing database: {ex.Message}");
     }
 }
+
 app.Run();

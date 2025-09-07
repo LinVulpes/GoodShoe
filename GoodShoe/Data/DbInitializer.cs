@@ -4,146 +4,76 @@ using GoodShoe.Models;
 
 namespace GoodShoe.Data
 {
-    public static class DbInitializer // Product Seed
+    public static class DbInitializer
     {
-        public static void Initialize(GoodShoeDbContext context)
+        private static void MigrateImagesToDatabase(GoodShoeDbContext context)
         {
-            // Testing Database with Test Cases
-            // Test 1 : Start Database //
-            Console.WriteLine("DbInitializer: Starting ....");
+            Console.WriteLine("DbInitializer: Migrating images to database...");
             
-            // Ensure the database is created
-            context.Database.EnsureCreated();
+            var products = context.Product
+                .Where(p => !string.IsNullOrEmpty(p.ImageUrl) && p.Image == null)
+                .ToList();
             
-            // Look for any products
-            if (context.Product.Any())
-            { 
-                // Test 2 : Test finding of products //
-                Console.WriteLine("DbInitializer: Products already exist.");
+            if (!products.Any())
+            {
+                Console.WriteLine("DbInitializer: No images to migrate.");
                 return;
             }
             
-            // Test 3 : Database adding seed data  //
-            Console.WriteLine("DbInitializer: Adding seed data/products ...");
-            // Add existing seed data
-            var products = new Product[]
-            {
-                new Product
-                {
-                    ProductId = 1,
-                    Name = "Cloudsurfer Next",
-                    Brand = "Puma",
-                    Price = 259.00M,
-                    Description = "Lace up in Swiss-engineered runners with these Cloudsurfer Next trainers from On Running.",
-                    Color = "White",
-                    Category = "Unisex",
-                    ImageUrl = "/images/products/image1.png",
-                },
-                new Product
-                {
-                    ProductId = 2,
-                    Name = "Aero Burst",
-                    Brand = "Sketchers",
-                    Price = 150.00M,
-                    Description = "Hit every mile marker in long-distance confidence and premium cushioned comfort with Skechers Aero Burst™. This well-cushioned running style has been granted the APMA Seal of Acceptance and is designed for the daily runner.",
-                    Color = "Periwinkle",
-                    Category = "Women",
-                    ImageUrl = "/images/products/image2.png",
-                },
-                
-                // GoodShoe Collection
-                new Product
-                {
-                    ProductId = 3,
-                    Name = "GoodShoe 0.1",
-                    Brand = "GoodShoe",
-                    Price = 100.00M,
-                    Description = "Men's Shoes",
-                    Color = "Brown",
-                    Category = "Men",
-                    ImageUrl = "/images/products/image3.png",
-                },
-                new Product
-                {
-                    ProductId = 4,
-                    Name = "GoodShoe 0.2",
-                    Brand = "GoodShoe",
-                    Price = 100.00M,
-                    Description = "Women's Shoes",
-                    Color = "Brown",
-                    Category = "Men",
-                    ImageUrl = "/images/products/image4.png",
-                },      
-                new Product
-                {
-                    ProductId = 5,
-                    Name = "GoodShoe 0.3",
-                    Brand = "GoodShoe",
-                    Price = 100.00M,
-                    Description = "Unisex Shoes",
-                    Color = "Black",
-                    Category = "Men",
-                    ImageUrl = "/images/products/image5.png",
-                },
-                new Product
-                {
-                    ProductId = 6,
-                    Name = "Nike Max 260",
-                    Brand = "Nike",
-                    Price = 149.99M,
-                    Description = "The Nike Air Max 270 delivers visible cushioning under every step.",
-                    Color = "White",
-                    Category = "Men",
-                    ImageUrl = "/images/products/image6.png",
-                    CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                }
-            };
-            context.Product.AddRange(products);
-            var savedCount = context.SaveChanges();
-            Console.WriteLine($"DbInitializer: Saved {savedCount} products to database");
-
-            // Add ProductVariants for each product (sizes 8-16)
-            Console.WriteLine("DbInitializer: Adding product variants (sizes 8-16) ...");
-            
-            var productVariants = new List<ProductVariant>();
-            var sizes = new int[] { 8, 9, 10, 11, 12, 13, 14, 15, 16 };
-
+            var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+    
             foreach (var product in products)
             {
-                foreach (var size in sizes)
+                try
                 {
-                    var stockCount = GetStockForProduct(product.ProductId, size);
-                    if (stockCount > 0) // Only add variants with stock
+                    // Convert relative URL to file path
+                    var imagePath = product.ImageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+                    var fullPath = Path.Combine(wwwrootPath, imagePath);
+
+                    if (File.Exists(fullPath))
                     {
-                        productVariants.Add(new ProductVariant
-                        {
-                            ProductId = product.ProductId,
-                            Size = size,
-                            StockCount = stockCount
-                        });
+                        var imageData = File.ReadAllBytes(fullPath);
+                        product.Image = imageData;
+                        product.ImageFileName = Path.GetFileName(fullPath);
+                
+                        Console.WriteLine($"Migrated image for product {product.ProductId}: {product.Name}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Image file not found for product {product.ProductId}: {fullPath}");
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error migrating image for product {product.ProductId}: {ex.Message}");
+                }
             }
-
-            context.ProductVariant.AddRange(productVariants);
-            var variantsSaved = context.SaveChanges();
-            Console.WriteLine($"DbInitializer: Saved {variantsSaved} product variants to database");
+    
+            context.SaveChanges();
+            Console.WriteLine($"DbInitializer: Migrated {products.Count(p => p.Image != null)} images to database.");
         }
         
-        private static int GetStockForProduct(int productId, int size)
+        public static void Initialize(GoodShoeDbContext context)
         {
-            // Define which sizes are available for each product and their stock
-            return productId switch
+            Console.WriteLine("DbInitializer: Starting ....");
+            
+            // Apply pending migrations
+            context.Database.Migrate();
+            
+            // Only handle image migration now
+            var productsNeedingImageMigration = context.Product
+                .Any(p => !string.IsNullOrEmpty(p.ImageUrl) && p.Image == null);
+        
+            if (productsNeedingImageMigration)
             {
-                1 => size >= 8 && size <= 12 ? 3 : 0, // Cloudsurfer Next: sizes 8-12, stock 3 each
-                2 => size >= 8 && size <= 11 ? 7 : 0, // Aero Burst: sizes 8-11, stock 7 each
-                3 => size >= 10 && size <= 14 ? 5 : 0, // GoodShoe 0.1: sizes 10-14, stock 5 each
-                4 => size >= 8 && size <= 12 ? 5 : 0, // GoodShoe 0.2: sizes 8-12, stock 5 each
-                5 => size >= 9 && size <= 13 ? 10 : 0, // GoodShoe 0.3: sizes 9-13, stock 10 each
-                6 => size >= 10 && size <= 15 ? 15 : 0, // Nike Max 260: sizes 10-15, stock 15 each
-                _ => 0
-            };
+                MigrateImagesToDatabase(context);
+            }
+            else
+            {
+                Console.WriteLine("DbInitializer: All images already migrated.");
+            }
+            
+            Console.WriteLine("DbInitializer: Completed.");
         }
         
         // Initializing IServiceProvider

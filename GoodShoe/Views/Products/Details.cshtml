@@ -3,13 +3,17 @@
 @{ 
     ViewData["Title"] = "Product Details";
 }
-
 @section Scripts {
+    <!-- Page-specific CSS -->
     <link rel="stylesheet" href="~/css/product-details.css" asp-append-version="true" />
+
     <script>
-        // Pass Razor value to JS
-        const productId = '@Model.ProductId';
+        // Pass Razor model data to JS
+        const productId = @Model.ProductId;             // numeric
+        const productIdStr = "@Model.ProductId";        // string
     </script>
+
+    <!-- Page-specific or global JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
 }
 
@@ -29,10 +33,26 @@
 
                     <!-- Product Image -->
                     <div class="product-image-container text-center">
-                        <img src="@(!string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl : $"~/images/products/{Model.ProductId}.png")"
-                             alt="@Model.Name"
-                             class="product-main-image"
-                             onerror="this.src='/images/products/placeholder.jpg'">
+                        @* Updated image handling - prioritize database image over URL *@
+                        @if (Model.Image != null)
+                        {
+                            <img src="@Url.Action("GetImage", "Products", new { id = Model.ProductId })"
+                                 alt="@Model.Name"
+                                 class="product-main-image">
+                        }
+                        else if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl"
+                                 alt="@Model.Name"
+                                 class="product-main-image"
+                                 onerror="this.src='/images/products/placeholder.jpg'">
+                        }
+                        else
+                        {
+                            <img src="/images/products/placeholder.jpg"
+                                 alt="@Model.Name"
+                                 class="product-main-image">
+                        }
                     </div>
                 </div>
 
@@ -69,12 +89,8 @@
                                             data-stock="@stockCount"
                                             data-variant-id="@(variant?.Id ?? 0)"
                                             @(!isAvailable ? "disabled" : "")
-                                            onclick="selectSize(this, @size, 'US @size', @stockCount, @(variant?.Id ?? 0))">
+                                            onclick="@(isAvailable ? $"selectSize(this, {size}, 'US {size}', {stockCount}, {variant?.Id ?? 0})" : "")">
                                         US @size
-                                        @if (stockCount > 0 && stockCount <= 5)
-                                        {
-                                            <small class="stock-indicator">(@stockCount left)</small>
-                                        }
                                     </button>
                                 }
                             </div>

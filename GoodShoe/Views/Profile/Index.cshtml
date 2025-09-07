@@ -1,192 +1,207 @@
-﻿@using GoodShoe.ViewModels
-@model GoodShoe.ViewModels.ProfileViewModel
-
+﻿@model GoodShoe.ViewModels.ProfileViewModel
 @{
-ViewData["Title"] = "Profile";
+    ViewData["Title"] = "Account Profile";
 }
 
-<style>
-    .profile-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
-        min-height: 100vh;
-    }
-
-    .profile-header {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    .profile-title {
-        font-size: 1.8rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    .profile-field {
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .profile-field:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .field-label {
-        font-weight: 600;
-        color: #555;
-        margin-bottom: 5px;
-        display: block;
-    }
-
-    .field-value {
-        color: #333;
-        font-size: 0.95rem;
-    }
-
-    .edit-link {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 0.85rem;
-        margin-left: 10px;
-    }
-
-    .edit-link:hover {
-        text-decoration: underline;
-    }
-
-    .purchase-history {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-
-    .purchase-title {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-    .purchase-item {
-        display: flex;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #eee;
-    }
-
-    .purchase-item:last-child {
-        border-bottom: none;
-    }
-
-    .purchase-image {
-        width: 100px;
-        height: 100px;
-        border-radius: 6px;
-        object-fit: cover;
-        margin-right: 15px;
-    }
-
-    .purchase-details {
-        flex: 1;
-    }
-
-    .purchase-name {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 2px;
-        font-size: 0.95rem;
-    }
-
-    .purchase-description {
-        color: #666;
-        font-size: 0.85rem;
-        margin-bottom: 2px;
-    }
-
-    .purchase-size {
-        color: #666;
-        font-size: 0.85rem;
-    }
-
-    .purchase-price {
-        font-weight: 600;
-        color: #333;
-        font-size: 0.95rem;
-    }
-
-    .password-value {
-        letter-spacing: 2px;
-        font-family: monospace;
-    }
-</style>
+@section Scripts {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true"/>
+    <script src="~/js/profile.js" asp-append-version="true"></script>
+}
 
 <div class="profile-container">
-    <div class="profile-header">
-        <h1 class="profile-title">Profile</h1>
+    @Html.AntiForgeryToken()
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1 class="page-title">User Profile</h1>
+        <p class="page-subtitle">Manage your account information and view your purchase history</p>
+    </div>
 
-        @if (TempData["Success"] != null)
-        {
-        <div class="alert alert-success">
+    <!-- Success Alert -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success" role="alert">
             @TempData["Success"]
+            <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
         </div>
-        }
+    }
 
-        <div class="profile-field">
-            <span class="field-label">Email:</span>
-            <span class="field-value">@Model.Email</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+    <!-- Personal Information Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Personal Information</h2>
         </div>
+        <div class="section-content">
+            <div class="profile-field">
+                <span class="field-label">Full Name:</span>
+                <span class="field-value">@Model.FullName</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Password:</span>
-            <span class="field-value password-value">••••••••••</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
-        </div>
+            <div class="profile-field">
+                <span class="field-label">Email:</span>
+                <span class="field-value">@Model.Email</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Phone Number:</span>
-            <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
-        </div>
+            <div class="profile-field">
+                <span class="field-label">Phone:</span>
+                <span class="field-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
 
-        <div class="profile-field">
-            <span class="field-label">Location:</span>
-            <div class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</div>
-            <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            <div class="profile-field">
+                <span class="field-label">Password:</span>
+                <span class="field-value password-value">••••••••••</span>
+                <a href="#" onclick="openPasswordModal()" class="edit-link">Change</a>
+            </div>
+
+            <div class="action-buttons">
+                <a href="@Url.Action("Edit")" class="profile-button">Edit Profile</a>
+                <a href="#" onclick="openPasswordModal()" class="profile-button">Change Password</a>
+            </div>
         </div>
     </div>
 
-    <div class="purchase-history">
-        <h2 class="purchase-title">Purchase History</h2>
-
-        @if (Model.PurchaseHistory != null && Model.PurchaseHistory.Any())
-        {
-        @foreach (var item in Model.PurchaseHistory)
-        {
-        <div class="purchase-item">
-            <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" />
-            <div class="purchase-details">
-                <div class="purchase-name">@item.ProductName</div>
-                <div class="purchase-description">@item.Description</div>
-                <div class="purchase-size">Size @item.Size</div>
-            </div>
-            <div class="purchase-price">$@item.Price.ToString("F2")</div>
+    <!-- Address Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Address</h2>
         </div>
-        }
-        }
-        else
-        {
-        <p class="text-muted">No purchase history available.</p>
-        }
+        <div class="section-content">
+            <div class="profile-field">
+                <span class="field-label">Location:</span>
+                <span class="field-value">@(string.IsNullOrEmpty(Model.Location) ? "Not provided" : Model.Location)</span>
+                <a href="@Url.Action("Edit")" class="edit-link">Edit</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase History Section -->
+    <div class="profile-section">
+        <div class="section-header">
+            <h2 class="section-title">Purchase History</h2>
+        </div>
+        <div class="section-content">
+            <!-- Current Orders Section -->
+            @if (Model.CurrentOrders != null && Model.CurrentOrders.Any())
+            {
+            <h4 class="order-section-title">Current Orders</h4>
+            @foreach (var item in Model.CurrentOrders)
+            {
+            <div class="purchase-item">
+                <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" onerror="this.src='/images/placeholder.png'"/>
+                <div class="purchase-details">
+                    <div class="purchase-name">@item.ProductName</div>
+                    <div class="purchase-description">@item.Description</div>
+                    <div class="purchase-size">Size: @item.Size</div>
+                    <div class="purchase-date">@item.PurchaseDate.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+                </div>
+                <div class="purchase-quantity">@item.Quantity</div>
+                <div class="purchase-status">
+                    <span class="status-badge @item.StatusClass">@item.Status</span>
+                </div>
+                <div class="purchase-price">$@item.TotalPrice.ToString("F2")</div>
+            </div>
+            }
+            }
+
+            <!-- Past Orders Section -->
+            @if (Model.PastOrders != null && Model.PastOrders.Any())
+            {
+            @if (Model.CurrentOrders != null && Model.CurrentOrders.Any())
+            {
+            <div style="margin: 30px 0; border-top: 2px solid #f0ede6;"></div>
+            }
+            <h4 class="order-section-title">Past Orders</h4>
+            @foreach (var item in Model.PastOrders)
+            {
+            <div class="purchase-item">
+                <img src="@item.ImageUrl" alt="@item.ProductName" class="purchase-image" onerror="this.src='/images/placeholder.png'"/>
+                <div class="purchase-details">
+                    <div class="purchase-name">@item.ProductName</div>
+                    <div class="purchase-description">@item.Description</div>
+                    <div class="purchase-size">Size: @item.Size</div>
+                    <div class="purchase-date">@item.PurchaseDate.ToString("MMM dd, yyyy 'at' h:mm tt")</div>
+                </div>
+                <div class="purchase-quantity">@item.Quantity</div>
+                <div class="purchase-status">
+                    <span class="status-badge @item.StatusClass">@item.Status</span>
+                </div>
+                <div class="purchase-price">$@item.TotalPrice.ToString("F2")</div>
+            </div>
+            }
+            }
+
+            <!-- Empty State -->
+            @if ((Model.CurrentOrders == null || !Model.CurrentOrders.Any()) && (Model.PastOrders == null || !Model.PastOrders.Any()))
+            {
+            <div class="empty-message">
+                <p>No purchase history available.</p>
+                <p>Start shopping to see your orders here!</p>
+            </div>
+            }
+        </div>
+    </div>
+
+    <!-- Delete Account Section -->
+    <div class="delete-account-section">
+        <h3 class="delete-title">Danger Zone</h3>
+        <p class="delete-description">Once you delete your account, there is no going back. Please be certain.</p>
+        <a href="#" onclick="confirmDelete()" class="btn-delete-account">Delete Account</a>
+    </div>
+</div>
+
+<!-- Delete Account Confirmation Modal -->
+<div id="deleteModal" class="delete-modal">
+    <div class="delete-modal-content">
+        <h2 class="delete-modal-title">⚠️ Delete Account</h2>
+        <p class="delete-modal-warning">
+            <strong>This action is permanent and cannot be undone!</strong><br><br>
+            All your data, purchase history, and account information will be permanently deleted.
+            You will lose access to your account immediately and won't be able to recover it.
+        </p>
+
+        <div class="delete-confirmation-input">
+            <label for="deleteConfirmation" class="delete-confirmation-label">
+                To confirm deletion, please type <strong>"DELETE MY ACCOUNT"</strong> in the box below:
+            </label>
+            <input type="text" id="deleteConfirmation" class="delete-confirmation-field"
+                   placeholder="Type: DELETE MY ACCOUNT" autocomplete="off">
+        </div>
+
+        <div class="delete-modal-buttons">
+            <button type="button" onclick="closeDeleteModal()" class="btn-cancel-delete">
+                Cancel
+            </button>
+            <button type="button" id="confirmDeleteBtn" onclick="finalDeleteAccount()" class="btn-confirm-delete">
+                Delete My Account Forever
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePasswordModal()">&times;</span>
+        <h2 style="color: #8b7355; margin-bottom: 20px;">Change Password</h2>
+        <form id="passwordForm" action="@Url.Action("ChangePassword")" method="post">
+            <div class="form-group">
+                <label for="currentPassword" class="form-label">Current Password:</label>
+                <input type="password" id="currentPassword" name="CurrentPassword" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="newPassword" class="form-label">New Password:</label>
+                <input type="password" id="newPassword" name="NewPassword" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword" class="form-label">Confirm New Password:</label>
+                <input type="password" id="confirmPassword" name="ConfirmPassword" required class="form-control">
+            </div>
+            <div class="modal-buttons">
+                <button type="button" onclick="closePasswordModal()" class="profile-button" style="margin-right: 10px;">Cancel</button>
+                <button type="submit" class="profile-button">Change Password</button>
+            </div>
+        </form>
     </div>
 </div>

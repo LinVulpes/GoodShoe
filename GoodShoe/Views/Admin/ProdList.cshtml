@@ -1,60 +1,277 @@
-﻿<!-- Product Management -->
+﻿<!-- Product Management --> 
 @model List<GoodShoe.Models.Product>
 @{
     ViewData["Title"] = "Product Management";
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    @*<link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />*@
 }
 
-<div class="container main-context">
-    <div class="header-action back-button-container mb-4">
-        <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i>
-        </a>
-    </div>
-    <h1 class="main-title">Product List</h1>
-    <a asp-controller="Admin" asp-action="Create" class="btn btn-primary mb-3">Add New Product</a>
-    
-    @if (Model != null && Model.Any())
-    {
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Brand</th>
-                    <th>Price</th>
-                    <th>Available Sizes</th>
-                    <th>Total Stock</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model)
-                {
-                    <tr>
-                        <td>@product.Name</td>
-                        <td>@product.Brand</td>
-                        <td>$@product.Price.ToString("F2")</td>
-                        <td>@product.AvailableSizes</td>
-                        <td>
-                            <span class="badge @(product.StockCount == 0 ? "bg-danger" : product.StockCount < 5 ? "bg-warning" : "bg-success")">
-                                @product.StockCount
-                            </span>
-                        </td>
-                        <td>
-                            <a asp-controller="Admin" asp-action="Details" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Details</a>
-                            <a asp-controller="Admin" asp-action="Edit" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Edit</a>
-                            <a asp-controller="Admin" asp-action="Delete" asp-route-id="@product.ProductId" class="btn btn-action btn-sm">Delete</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<style>
+    .main-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
     }
-    else
-    {
-        <div class="alert alert-info">
-            <h4>No Products Found</h4>
-            <p>There are currently no products in the database. <a asp-controller="Admin" asp-action="Create">Add your first product</a> to get started.</p>
+
+    .admin-header {
+        background: white;
+        margin-bottom: 30px;
+    }
+
+    .admin-title {
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .btn-primary {
+        background-color: #454545;
+        border-color: #454545;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        background-color: #333;
+        border-color: #333;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        border-radius: 8px;
+        padding: 8px 15px;
+    }
+
+    .btn-action {
+        background-color: #454545;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 12px 12px;
+        font-size: 14px;
+        margin: 2px;
+        text-decoration: none;
+    }
+
+    .btn-action:hover {
+        background-color: #232323;
+        color: white;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        font-size: 22px;
+        color: #333;
+        padding: 15px;
+    }
+
+    .table tbody td {
+        padding: 15px;
+        vertical-align: middle;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .product-name {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .product-brand {
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    .price-value {
+        font-weight: 600;
+        color: #27ae60;
+        font-size: 1.1rem;
+    }
+
+    .stock-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .stock-high {
+        background: #e8f5e8;
+        color: #27ae60;
+    }
+
+    .stock-low {
+        background: #fff3e0;
+        color: #f39c12;
+    }
+
+    .stock-out {
+        background: #ffebee;
+        color: #e74c3c;
+    }
+
+    .sizes-list {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+
+    .alert {
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+    }
+
+    .alert-success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+
+    .alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+
+    .btn-close {
+        float: right;
+        background: none;
+        border: none;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .back-button-container {
+        margin-bottom: 20px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+</style>
+
+<body>
+    <div class="main-container">
+        <!-- Back Button -->
+        <div class="back-button-container">
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Dashboard
+            </a>
         </div>
-    }
-</div>
+        
+        
+        <!-- Header -->
+        <div class="admin-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="admin-title">
+                    <i class="fas fa-box"></i> Product Management
+                </div>
+                <a asp-controller="Admin" asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Add New Product
+                </a>
+            </div>
+        </div>
+        
+        
+        <!-- Display Success/Error Messages -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success" role="alert">
+                @TempData["SuccessMessage"]
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["ErrorMessage"]
+                <button type="button" class="btn-close" onclick="this.parentElement.style.display='none'">&times;</button>
+            </div>
+        }
+
+        <!-- Product List -->
+        <div class="table-container">
+            <!-- Check if products exist -->
+            @if (Model != null && Model.Any())
+            {
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Brand</th>
+                        <th>Price</th>
+                        <th>Available Sizes</th>
+                        <th>Total Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Razor Template for Dynamic Rendering -->
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="product-name">@product.Name</div>
+                            </td>
+                            <td>
+                                <div class="product-brand">@product.Brand</div>
+                            </td>
+                            <td>
+                                <div class="price-value">$@product.Price.ToString("F2")</div>
+                            </td>
+                            <td>
+                                <div class="sizes-list">@product.AvailableSizes</div>
+                            </td>
+                            <td>
+                                <span
+                                    class="stock-badge @(product.StockCount == 0 ? "stock-out" : product.StockCount < 15 ? "stock-low" : "stock-high")">
+                                    @product.StockCount
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="@Url.Action("Details", "Admin", new { id = product.ProductId })"
+                                       class="btn-action">Details</a>
+                                    <a href="@Url.Action("Edit", "Admin", new { id = product.ProductId })"
+                                       class="btn-action">Edit</a>
+                                    <a href="@Url.Action("Delete", "Admin", new { id = product.ProductId })"
+                                       class="btn-action">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <h4>No Products Found</h4>
+                    <p>There are currently no products in the database. </p>
+                    <a asp-controller="Admin" asp-action="Create">Add your first product</a>
+                </div>
+            }
+        </div>
+    </div>
+</body>

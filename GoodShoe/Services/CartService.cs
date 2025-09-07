@@ -1,8 +1,5 @@
 ﻿using GoodShoe.ViewModels;           // Brings in CartItemViewModel
-using Microsoft.AspNetCore.Http;    // For accessing user session
 using Newtonsoft.Json;               // For JSON serialization/deserialization
-using System.Collections.Generic;   // For List<T>
-using System.Linq;                  // For LINQ methods like FirstOrDefault
 using GoodShoe.Data;                // For GoodShoeDbContext (database context)
 
 namespace GoodShoe.Services
@@ -64,7 +61,7 @@ namespace GoodShoe.Services
                 }
                 else
                 {
-                    // Update quantity
+                    // Update quantity (stock validation should happen in controller)
                     existing.Quantity = newQuantity;
                     System.Diagnostics.Debug.WriteLine($"Item quantity updated to: {existing.Quantity}");
                 }
@@ -79,17 +76,19 @@ namespace GoodShoe.Services
                     throw new KeyNotFoundException($"No product with ID {productId}");
 
                 // Create new CartItemViewModel with all details
-                cart.Add(new CartItemViewModel
+                var newItem = new CartItemViewModel
                 {
                     ProductID = productId,
                     ProductName = product.Name,  // Product name
                     ImageUrl = !string.IsNullOrEmpty(product.ImageUrl)
                                   ? product.ImageUrl
-                                  : $"/images/products/{product.ProductId}.png",
+                                  : $"/Products/GetImage/{product.ProductId}", // Updated to match your image handling
                     Price = product.Price, // Product price
                     Size = size,           // Selected size (e.g. "US 9")
                     Quantity = quantity    // Start with requested qty
-                });
+                };
+
+                cart.Add(newItem);
                 
                 System.Diagnostics.Debug.WriteLine($"New item added to cart. ProductID: {productId}, Quantity: {quantity}");
             }
@@ -113,7 +112,10 @@ namespace GoodShoe.Services
         public void RemoveFromCart(int productId, string size)
         {
             var cart = LoadCart();
-            cart.RemoveAll(i => i.ProductID == productId && i.Size == size);
+            var removed = cart.RemoveAll(i => i.ProductID == productId && i.Size == size);
+            
+            System.Diagnostics.Debug.WriteLine($"Removed {removed} item(s) from cart. ProductID: {productId}, Size: {size}");
+            
             SaveCart(cart);  // Save the cleaned-up cart
         }
 
@@ -121,6 +123,15 @@ namespace GoodShoe.Services
         public void ClearCart()
         {
             Session.Remove(SessionKey);
+            System.Diagnostics.Debug.WriteLine("Cart cleared from session");
+        }
+
+        // Get current quantity of a specific item in cart
+        public int GetCartItemQuantity(int productId, string size)
+        {
+            var cart = LoadCart();
+            var item = cart.FirstOrDefault(i => i.ProductID == productId && i.Size == size);
+            return item?.Quantity ?? 0;
         }
     }
 }

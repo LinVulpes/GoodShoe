@@ -34,5 +34,13 @@ namespace GoodShoe.Services
         /// Empty the entire shopping cart.
         /// </summary>
         void ClearCart();
+
+        /// <summary>
+        /// Get the current quantity of a specific item in the cart.
+        /// </summary>
+        /// <param name="productId">The ID of the product.</param>
+        /// <param name="size">The size variant.</param>
+        /// <returns>The current quantity in cart, or 0 if not found.</returns>
+        int GetCartItemQuantity(int productId, string size);
     }
 }

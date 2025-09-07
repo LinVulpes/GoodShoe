@@ -6,6 +6,7 @@
 
 @section Scripts {
     <link rel="stylesheet" href="~/css/checkout.css" asp-append-version="true"/>
+    <script src="~/js/order.js" asp-append-version="true"></script>
 }
 
 <div class="container-fluid px-4 py-3">
@@ -74,17 +75,20 @@
                         
                         <div class="mb-3">
                             <label asp-for="CardNumber" class="form-label">Card Number</label>
-                            <input asp-for="CardNumber" class="form-control" />
+                            <input asp-for="CardNumber" class="form-control"
+                                   maxlength="19" pattern="(\d{4}\s){3}\d{4}" inputmode="numeric" />
                         </div>
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ExpiryDate" class="form-label">MM/YY</label>
-                                <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY" />
+                                <input asp-for="ExpiryDate" class="form-control" placeholder="MM/YY"
+                                       pattern="(0[1-9]|1[0-2])\/\d{2}" />
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label asp-for="CVV" class="form-label">CVV</label>
-                                <input asp-for="CVV" class="form-control" />
+                                <input asp-for="CVV" class="form-control"
+                                       maxlength="3" pattern="\d{3}" inputmode="numeric" />
                             </div>
                         </div>
                     </div>
@@ -143,21 +147,7 @@
                 <div class="delivery-info mt-3">
                     <p><strong>Estimate Delivery @Model.DeliveryDateRange</strong></p>
                 </div>
-
-
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    // Payment method selection
-    document.querySelectorAll('.payment-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            document.querySelectorAll('.payment-btn').forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            const selectedMethod = this.getAttribute('data-method');
-            document.querySelector('input[name="PaymentMethod"]').value = selectedMethod;
-        });
-    });
-</script>

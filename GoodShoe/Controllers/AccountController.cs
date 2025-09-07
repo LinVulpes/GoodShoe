@@ -1,117 +1,117 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
 using GoodShoe.ViewModels;
 using GoodShoe.Models;
+using GoodShoe.Services;
 
 namespace GoodShoe.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<AccountController> _logger;
+        private readonly IAuthService _authService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
+        public AccountController(IAuthService authService)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
+            _authService = authService;
         }
 
         // GET: Account/Login
-        public async Task<IActionResult> Login(string returnUrl = null)
+        [HttpGet]
+        public IActionResult Login()
         {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-            
+            if (_authService.IsLoggedIn())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
         
-        // POST: Account/Login // Redirecting to home for now - havent connect with the database yet
+        // POST: Account/Login // Redirecting to home for now - haven't been connected with the database yet
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    // Redirectling to Home/Index after login
-                    return RedirectToAction("Index",  "Home");
-                }
-                else
-                {
-                    _logger.LogWarning("Invalid login attempt.");
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return RedirectToAction("Index",  "Home"); // Redirecting to home for now
-                }
+                return View(model);
+            }
+            
+            // Login for the admin
+            var admin = await _authService.AuthenticateAdminAsync(model.Email, model.Password);
+            if (admin != null)
+            {
+                _authService.SetCurrentAdmin(admin);
+                return RedirectToAction("Index", "Admin");
+            }
+            
+            // Login for the customer
+            var customer = await _authService.AuthenticateCustomerAsync(model.Email, model.Password);
+            if (customer != null)
+            {
+                _authService.SetCurrentCustomer(customer);
+                return RedirectToAction("Index", "Home");
             }
 
+            ModelState.AddModelError("", "Invalid email or password.");
             return View(model);
         }
 
         // GET: Account/Register
+        [HttpGet]
         public IActionResult Register()
         {
+            if (_authService.IsLoggedIn())
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View();
         }
 
         // POST: Account/Register
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var user = new ApplicationUser 
-                { 
-                    UserName = model.Email, 
-                    Email = model.Email 
-                };
-
-                var result = await _userManager.CreateAsync(user, model.Password);
-
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                return View(model);
             }
 
+            if (await _authService.IsEmailTakenAsync(model.Email))
+            {
+                ModelState.AddModelError("Email", "Email is already registered.");
+                return View(model);
+            }
+
+            var customer = await _authService.RegisterCustomerAsync(
+                model.FirstName, 
+                model.LastName, 
+                model.Email, 
+                model.Password, 
+                model.Phone, 
+                model.Address
+            );
+
+            if (customer != null)
+            {
+                _authService.SetCurrentCustomer(customer);
+                TempData["Success"] = "Account created successfully!";
+                return RedirectToAction("Index", "Home");
+            }
+
+            ModelState.AddModelError("", "Registration failed. Please try again.");
             return View(model);
         }
 
         // POST: Account/Logout
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            _authService.Logout();
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Account/Profile
-        [Authorize]
-        public async Task<IActionResult> Profile()
+        [HttpGet]
+        public IActionResult AccessDenied()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return RedirectToAction("Login");
-            }
-
-            return View(user);
+            return View();
         }
 
         private IActionResult RedirectToLocal(string returnUrl)

@@ -123,6 +123,37 @@ namespace GoodShoe.Controllers
                 .ToListAsync();
             return View("Index", unisexProducts);
         }
+        
+        // Method to put images from database
+        public async Task<IActionResult> GetImage(int id)
+        {
+            var product = await _context.Product.FindAsync(id);
+
+            if (product?.Image == null)
+            {
+                // Return placeholder image from wwwroot
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", "placeholder.jpg");
+                if (System.IO.File.Exists(placeholderPath))
+                {
+                    var placeholderBytes = await System.IO.File.ReadAllBytesAsync(placeholderPath);
+                    return File(placeholderBytes, "image/jpeg");
+                }
+                return NotFound();
+            }
+    
+            return File(product.Image, "image/jpeg");
+        }
+        
+        // Helper Method to convert File to byte array
+        private async Task<byte[]> ConvertToByteArrayAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return null;
+
+            using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            return memoryStream.ToArray();
+        }
 
         // GET: Products/Create
         public IActionResult Create()
@@ -133,14 +164,21 @@ namespace GoodShoe.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Brand,Price,Description,Color,Category,ImageUrl")] Product product)
-        {
+        public async Task<IActionResult> Create([Bind("Name,Brand,Price,Description,Color,Category,ImageUrl")] Product product, IFormFile imageFile)
+        {   
+            // Handle image upload if provided
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png"};
+                if (allowedTypes.Contains(imageFile.ContentType.ToLower()))
+                {
+                    product.Image = await ConvertToByteArrayAsync(imageFile);
+                    product.ImageFileName = imageFile.FileName;
+                }
+            }
+            
             if (ModelState.IsValid)
             {
-                // Set timestamps
-                product.CreatedAt = DateTime.UtcNow;
-                product.UpdatedAt = DateTime.UtcNow;
-                
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 
@@ -156,7 +194,7 @@ namespace GoodShoe.Controllers
                     };
                     _context.ProductVariant.Add(variant);
                 }
-                
+   
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -185,7 +223,7 @@ namespace GoodShoe.Controllers
         // POST: Products/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Brand,Price,Description,Color,Category,ImageUrl,CreatedAt")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Brand,Price,Description,Color,Category,ImageUrl,CreatedAt")] Product product, IFormFile imageFile)
         {
             if (id != product.ProductId)
             {
@@ -196,8 +234,31 @@ namespace GoodShoe.Controllers
             {
                 try
                 {
-                    // Update timestamp
-                    product.UpdatedAt = DateTime.UtcNow;
+                    var existingProduct = await _context.Product.FindAsync(id);
+                    if (existingProduct == null)
+                    {
+                        return NotFound();
+                    }
+                    
+                    // Update basic properties
+                    existingProduct.Name = product.Name;
+                    existingProduct.Brand = product.Brand;
+                    existingProduct.Price = product.Price;
+                    existingProduct.Description = product.Description;
+                    existingProduct.Color = product.Color;
+                    existingProduct.Category = product.Category;
+                    existingProduct.ImageUrl = product.ImageUrl;
+
+                    // Handle image upload if provided
+                    if (imageFile != null && imageFile.Length > 0)
+                    {
+                        var allowedTypes = new[] { "image/jpeg", "image/jpg", "image/png"};
+                        if (allowedTypes.Contains(imageFile.ContentType.ToLower()))
+                        {
+                            existingProduct.Image = await ConvertToByteArrayAsync(imageFile);
+                            existingProduct.ImageFileName = imageFile.FileName;
+                        }
+                    }
                     
                     _context.Update(product);
                     await _context.SaveChangesAsync();
@@ -261,8 +322,7 @@ namespace GoodShoe.Controllers
                         variant.StockCount = stockCounts[variant.Size];
                     }
                 }
-
-                product.UpdatedAt = DateTime.UtcNow;
+                
                 await _context.SaveChangesAsync();
                 
                 return RedirectToAction(nameof(Index));
@@ -290,7 +350,7 @@ namespace GoodShoe.Controllers
 
             var product = await _context.Product
                 .Include(p => p.ProductVariants)
-                .FirstOrDefaultAsync(m => m.ProductId == id);
+                .FirstOrDefaultAsync(p => p.ProductId == id);
             
             if (product == null)
             {
