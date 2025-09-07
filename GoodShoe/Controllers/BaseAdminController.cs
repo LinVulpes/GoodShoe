@@ -7,16 +7,23 @@ namespace GoodShoe.Controllers
     {
         public override void OnActionExecuting(ActionExecutingContext context)
         {
+            var adminId = HttpContext.Session.GetInt32("AdminId");
             var userEmail = HttpContext.Session.GetString("UserEmail");
-            var isAdmin = HttpContext.Session.GetString("IsAdmin");
             
-            if (string.IsNullOrEmpty(userEmail) || isAdmin != "true")
+            // Check if user is admin - either by AdminId OR by UserEmail
+            bool isAdmin = adminId.HasValue || (!string.IsNullOrEmpty(userEmail) && IsUserAdmin(userEmail));
+    
+            if (!isAdmin)
             {
                 context.Result = RedirectToAction("Login", "Account");
                 return;
             }
-            
             base.OnActionExecuting(context);
+        }
+        
+        private bool IsUserAdmin(string email)
+        {
+            return HttpContext.Session.GetInt32("AdminId").HasValue;
         }
     }
 }
