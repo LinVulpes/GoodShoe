@@ -2,7 +2,7 @@
 
 **GoodShoe**, a modern online store for sports shoes built as a full-stack web application using ASP .NET Core and Bootstrap. This project aims to recreate a real-world e-commerce platform designed to showcase and sell sport shoes. 
 
-You can follow this link to view our website : goodshoe.runasp.net
+You can follow this link to view our website: [goodshoe.runasp.net] (http://goodshoe.runasp.net) 
 
 ![HomeScreen Page](homescreen.png)
 
@@ -56,4 +56,5 @@ GoodShoe is a collaborative project developed by a team from the University Of N
 4. **Run the Application** :
    ```bash
    dotnet run
+
 
